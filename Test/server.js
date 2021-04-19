@@ -6,7 +6,7 @@ var port = 3000
 const fs = require('fs');
 const solc = require('solc');
 const Web3 = require('web3');
-var myContract = require('C:/Users/Ris/Desktop/Test/build/contracts/MetaCoin.json');//JSON FILE OF CONTRACT
+var myContract = require('./build/contracts/MetaCoin.json');//JSON FILE OF CONTRACT
 var Accounts = require('web3-eth-accounts');
 
 
