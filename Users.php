@@ -202,16 +202,23 @@ class StandardUser extends BaseUser
 		$this->AccountBalance = $Object->getAccountBalance();
 		
 	}
-	public function connect(){
-		$servername= "localhost";
-		$username = "root";
-		$password = "";
-		$dbname = "music-to-go";
-		$conn = new mysqli($servername, $username, $password, $dbname);
-		return $conn;
+		public function ConvertToSTICOIN($amount,$WalletPubkey,$WalletPrivateKey){
+		$host    = "localhost";
+		$port    = 8080;
+		$arr = array('REQUEST' => "ConvertToSTICoin",'PUBKEY' =>$this->getPubKey(),'AMOUNT'=>$amount,'WALLETPUBKEY'=>$WalletPubkey,'WALLETPRIVATEKEY'=>$WalletPrivateKey);
+		$message = json_encode($arr);
+		$socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
+		$result = socket_connect($socket, $host, $port) or die("Could not connect to server\n");  
+		if($result) { 
+		socket_write($socket, $message, strlen($message)) or die("Could not send data to server\n");
+		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
+		}
+		socket_close($socket);
+		$raw_data = file_get_contents('http://localhost:3000/ConvertToSTICoin');
+		$data = json_decode($raw_data, true);
+		$this->AccountBalance  =  $data['sticoin'];
 		
 	}
-	
 }
 
 class Admin extends BaseUser 
@@ -243,5 +250,6 @@ class Admin extends BaseUser
 		return $conn;
 		
 	}
+
 	
 }

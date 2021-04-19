@@ -1,0 +1,65 @@
+
+const fs = require('fs');
+const solc = require('solc');
+const Web3 = require('web3');
+const contractFile = require('C:/Users/Ris/Desktop/Test/build/contracts/Testing.json');
+
+/*
+   -- Define Provider & Variables --
+*/
+// Provider
+const providerRPC = {
+   development: 'http://localhost:7545'
+};
+const web3 = new Web3(providerRPC.development); //Change to correct network
+
+// Variables
+const account_from = {
+   privateKey: '4db9378aa99ade4cb60bf881fa82eac44daa0d72ed39b8cf80326255fd777be8',
+   address: '0x08B098A309C15bBD814906984228d756620a5A32'
+};
+const addressTo = '0x391eA90EF9C9C1F3b5DAe49861A60F600c0308bb'; // Change addressTo
+const Amount = 100;
+    
+const init = async() =>{      
+console.log(
+`Attempting to send transaction from ${account_from.address} to ${addressTo}`
+);
+
+// Sign Tx with PK
+const createTransaction = await web3.eth.accounts.signTransaction(
+{
+gas: 21000,
+to: addressTo,
+value: web3.utils.toWei(Amount.toString(), 'ether'),
+},
+account_from.privateKey
+);
+
+// Send Tx and Wait for Receipt
+const createReceipt = await web3.eth.sendSignedTransaction(
+createTransaction.rawTransaction
+);
+console.log(
+`Transaction successful with hash: ${createReceipt.transactionHash}`
+);
+
+
+}
+const balances = async () => {
+   const balanceFrom = web3.utils.fromWei(
+      await web3.eth.getBalance(account_from.address),
+      'ether'
+   );
+   const balanceTo = web3.utils.fromWei(
+      await web3.eth.getBalance(addressTo),
+      'ether'
+   );
+
+   console.log(`The balance of ${account_from.address} is: ${balanceFrom} ETH`);
+   console.log(`The balance of ${addressTo} is: ${balanceTo} ETH`);
+};
+init();
+balances();
+
+

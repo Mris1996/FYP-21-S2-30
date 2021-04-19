@@ -19,20 +19,54 @@ integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6J
 }
 
 
+.dropdown-content {
+  display: none;
+  position: absolute;
+
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {background-color: #ddd;}
+
+.dropdown:hover .dropdown-content {display: block;}
+
+.dropdown:hover .dropbtn {background-color: #3e8e41;}
+
 </style>
+</head>
 <div class="topnavbg">
 	<nav class="navbar">
 		<form method="post">
-		<input type="submit" class="btn btn-white"  style="background: url(SystemImages/Logo.png) no-repeat center;height:70px;width:350px;background-size: 350px 100px;border:none;"name="Nav_Main" id="Main"  value=""/>
+		<input type="submit" class="btn btn-white"  name="Nav_Main" id="Main"  value=""/>
 		</form>
-	
-		
-		
+<?php 
+if (!file_exists('Categories.txt')) 
+{
+	fopen("Categories.txt", "w");
+}
+$myfile = fopen("Categories.txt", "r") or die("Unable to open file!");
+while(($line = fgets($myfile)) !== false) {
+echo 
+"<form method='post' action='".$line.".php'>
+<input type='submit' class='btn btn-white' id='Main'  value='".$line."'/>
+</form>";
+}
+fclose($myfile);
 
 
 
-</head>
-<?php
+
+
+
+
+
 date_default_timezone_set("Singapore");
 require_once("Users.php");
 session_start();
@@ -50,15 +84,23 @@ exit;
 }
 
 if(isset($_SESSION['ID'])){
-echo'<h2>Hello '.$_SESSION['ID'].'</h2>
 
-<form action="Profile.php" method="post">
-	<input type="submit" style="background: url(SystemImages/ProfileIcon.png) no-repeat center;width:90px; height:90px; background-size: 90px 90px; cursor: pointer;border:none;" value="" title ="Profile Page"/>
-</form>';
 echo'<style> input[name="Nav_SignUp"]{display:none;}</style>';
 echo'<style> input[name="Nav_Login"]{display:none;}</style>';
 echo'<style> input[name="Nav_LogOut"]{display:visible;}</style>';
 echo '<h2>STICOIN BALANCE: '.$_SESSION['Object']->AccountBalance.'</h2>';
+echo'
+<form method="post">
+	<div class="dropdown">
+	<button class="dropbtn"><h2>'.$_SESSION['ID'].'</h2></button>
+	<div class="dropdown-content">
+	<a href="#">Profile</a>
+	<a href="#">Settings</a>
+	<a href="Convert.php">Convert STICoins</a>
+	<input type="submit" name="Nav_LogOut"  value="Log Out"/>
+	</div>
+</div>
+</form>';
 }
 else{
 	echo'<style> input[name="Nav_LogOut"]{display:none;}</style>';
@@ -75,7 +117,7 @@ exit();
 <form method="post">
 			<input type="submit" class="btn btn-white"   name="Nav_Login"  value="Login"/>
 			<input type="submit" class="btn btn-white"  name="Nav_SignUp"  value="SignUp"/>
-			<input type="submit" class="btn btn-white"    name="Nav_LogOut"  value="Log Out"/>
+			
 		</form>
 </nav>
 </div>
