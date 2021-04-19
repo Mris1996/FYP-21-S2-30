@@ -219,6 +219,7 @@ class StandardUser extends BaseUser
 		$this->AccountBalance  =  $data['sticoin'];
 		
 	}
+	
 }
 
 class Admin extends BaseUser 
