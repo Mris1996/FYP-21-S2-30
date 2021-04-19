@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 18, 2021 at 02:20 PM
+-- Generation Time: Apr 19, 2021 at 11:37 AM
 -- Server version: 10.4.17-MariaDB
 -- PHP Version: 8.0.0
 
@@ -75,17 +75,24 @@ CREATE TABLE `product` (
 CREATE TABLE `users` (
   `UserID` varchar(20) NOT NULL,
   `DisplayName` text NOT NULL,
-  `GanachePublicKey` text NOT NULL,
+  `PublicKey` text NOT NULL,
   `Password` text NOT NULL,
   `Email` text NOT NULL,
   `FirstName` text NOT NULL,
   `LastName` text NOT NULL,
-  `DateOfBirth` date NOT NULL,
+  `DateOfBirth` text NOT NULL,
   `ContactNumber` int(11) NOT NULL,
-  `AccountBalance` int(11) NOT NULL DEFAULT 0,
   `Address` text NOT NULL,
-  `AccountType` text NOT NULL DEFAULT 'Standard'
+  `AccountType` text NOT NULL DEFAULT 'Standard',
+  `PrivateKey` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`UserID`, `DisplayName`, `PublicKey`, `Password`, `Email`, `FirstName`, `LastName`, `DateOfBirth`, `ContactNumber`, `Address`, `AccountType`, `PrivateKey`) VALUES
+('TestUser1', 'TestUser1', '0x33963Ce1286F603579713E7e25e155f7a70085A0', '$2y$10$S9/RRT2aqOepNOYL3KGWouq6jPteamDgWrwm/uuMDvIf8JFvxHWRW', 'bob3@gmail.com', 'Bob', 'Alice', '13/04/2021', 96969696, '1 sim', 'Standard', '0x57a3514924454e34842ad22341003c057a5696a07fe401b2f1a465bc78bfae1f');
 
 --
 -- Indexes for dumped tables
@@ -95,10 +102,7 @@ CREATE TABLE `users` (
 -- Indexes for table `contracts`
 --
 ALTER TABLE `contracts`
-  ADD PRIMARY KEY (`TransactionID`),
-  ADD UNIQUE KEY `BuyerUserID` (`BuyerUserID`),
-  ADD UNIQUE KEY `ProductID` (`ProductID`),
-  ADD KEY `SellerUserID` (`SellerUserID`);
+  ADD PRIMARY KEY (`TransactionID`);
 
 --
 -- Indexes for table `negotiation`
@@ -145,13 +149,6 @@ ALTER TABLE `negotiation`
 ALTER TABLE `product`
   ADD CONSTRAINT `PID-contract` FOREIGN KEY (`ProductID`) REFERENCES `contracts` (`ProductID`),
   ADD CONSTRAINT `UID-product` FOREIGN KEY (`SellerUserID`) REFERENCES `users` (`UserID`);
-
---
--- Constraints for table `users`
---
-ALTER TABLE `users`
-  ADD CONSTRAINT `UID-Contract` FOREIGN KEY (`UserID`) REFERENCES `contracts` (`SellerUserID`),
-  ADD CONSTRAINT `UID-Contract2` FOREIGN KEY (`UserID`) REFERENCES `contracts` (`BuyerUserID`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
