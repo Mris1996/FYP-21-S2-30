@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 20, 2021 at 11:50 AM
+-- Generation Time: Apr 20, 2021 at 11:52 AM
 -- Server version: 10.4.17-MariaDB
 -- PHP Version: 8.0.0
 
@@ -134,23 +134,6 @@ ALTER TABLE `users`
 --
 ALTER TABLE `contracts`
   MODIFY `TransactionID` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `negotiation`
---
-ALTER TABLE `negotiation`
-  ADD CONSTRAINT `UID-negotiation` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`);
-
---
--- Constraints for table `product`
---
-ALTER TABLE `product`
-  ADD CONSTRAINT `PID-contract` FOREIGN KEY (`ProductID`) REFERENCES `contracts` (`ProductID`),
-  ADD CONSTRAINT `UID-product` FOREIGN KEY (`SellerUserID`) REFERENCES `users` (`UserID`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

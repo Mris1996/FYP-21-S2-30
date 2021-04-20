@@ -8,8 +8,6 @@ const solc = require('solc');
 const Web3 = require('web3');
 var myContract = require('./build/contracts/MetaCoin.json');//JSON FILE OF CONTRACT
 var Accounts = require('web3-eth-accounts');
-
-
 const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
 web3.eth.net.isListening().then(() => console.log('CONNECTED TO GANACHE')).catch(e => console.log('NOT CONNECTED TO GANACHE'));
 // Variables
@@ -214,8 +212,8 @@ const ConvertToSTICOIN_Response = async (TransactionName,Amount)=> {
 		}
 		sendFunc();
 });
-//let server =  app.listen(process.env.PORT || 3000);
-//setTimeout(function(){ server.close()}, 1000);
+let server =  app.listen(process.env.PORT || 3000);
+setTimeout(function(){ server.close()}, 1000);
 
 }
 const GetBalance_Response = async (TransactionName,AccountPublicKey)=> {

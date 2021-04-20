@@ -15,6 +15,8 @@ if(isset($_SESSION['ID'])){
 	echo '<script> location.replace("index.php")</script> ';
 }
 
+$submit = true;
+
 
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SignUpButton'])){
 	if(empty($_POST["SignUpFirstName"]))

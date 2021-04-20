@@ -49,11 +49,7 @@ $LoginLoginIDerror = $MainError = $PasswordPassworderror = "";
 if(isset($_SESSION['ID'])){
 	echo '<script> location.replace("index.php")</script> ';
 }
-$servername= "localhost";
-$username = "root";
-$password = "";
-$dbname = "music-to-go";
-$conn = new mysqli($servername, $username, $password, $dbname);
+
 $submit = true;
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['LoginButton'])){
 	if(empty($_POST["Login_LoginID"]))
