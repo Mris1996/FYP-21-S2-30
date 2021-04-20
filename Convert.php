@@ -21,12 +21,12 @@ if(!isset($_SESSION['ID'])){
   
    <label for="Convert_amount">Amount in Ethereum:</label><br>
   <input type="Number" id="Convert_amount" name="Convert_amount"><br><br>
-  <input type="submit" value="Submit">
+  <input type="submit" name="submit" value="Submit">
 </form> 
 <?php
 
 if(isset($_POST['submit'])){
-	echo "gi";
+
 $_SESSION['Object'] -> ConvertToSTICOIN($_POST['Convert_amount'],$_POST['Convert_publickey'],$_POST['Convert_privatekey']);
 echo'<script>history.pushState({}, "", "")</script>';
 

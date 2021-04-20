@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 19, 2021 at 11:37 AM
+-- Generation Time: Apr 20, 2021 at 11:50 AM
 -- Server version: 10.4.17-MariaDB
 -- PHP Version: 8.0.0
 
@@ -92,7 +92,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`UserID`, `DisplayName`, `PublicKey`, `Password`, `Email`, `FirstName`, `LastName`, `DateOfBirth`, `ContactNumber`, `Address`, `AccountType`, `PrivateKey`) VALUES
-('TestUser1', 'TestUser1', '0x33963Ce1286F603579713E7e25e155f7a70085A0', '$2y$10$S9/RRT2aqOepNOYL3KGWouq6jPteamDgWrwm/uuMDvIf8JFvxHWRW', 'bob3@gmail.com', 'Bob', 'Alice', '13/04/2021', 96969696, '1 sim', 'Standard', '0x57a3514924454e34842ad22341003c057a5696a07fe401b2f1a465bc78bfae1f');
+('TestUser1', 'TestUser1', '0x33963Ce1286F603579713E7e25e155f7a70085A0', '$2y$10$S9/RRT2aqOepNOYL3KGWouq6jPteamDgWrwm/uuMDvIf8JFvxHWRW', 'bob3@gmail.com', 'Bob', 'Alice', '13/04/2021', 96969696, '1 sim', 'Standard', '0x57a3514924454e34842ad22341003c057a5696a07fe401b2f1a465bc78bfae1f'),
+('TestUser6', 'Bobbbbbb', '0x2436e48CB544FF78FB29f93f01878DE7a9688DEa', '$2y$10$D0H/ngmgkrnnqSy9YYGny.1zJ3G9seGuY4yPazbAnOggW3elaZ.Ya', 'bob5@gmail.com', 'bob', 'bob', '01/04/2021', 66666666, 'asdasdas', 'Standard', '0xcd91d2eefde0fa3757b24a8fa80dc445264753d270b49c66c013430c0ee204c0'),
+('TestUser7', 'Bobbbbbbb', '0x87a45E8b751c8E2CFe63F909c204F8b32b81BEdF', '$2y$10$mfpEce4TTbzT3dUGiaxeD.wrW81PEjHvsjc4hLAN6n.tWrt9vFqUq', 'bob7@gmail.com', 'bob', 'bob', '01/04/2021', 66666666, 'asdasdas', 'Standard', '0xb2eaddd8afc0a10c42914e57a3b4c4fea3a9d5041d3423dad681d35ef33f9525');
 
 --
 -- Indexes for dumped tables

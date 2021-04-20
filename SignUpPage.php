@@ -14,12 +14,6 @@ $SignUpFirstNameError = $SignUpContactError = $SignUpLastNameError = $SignUpIDEr
 if(isset($_SESSION['ID'])){
 	echo '<script> location.replace("index.php")</script> ';
 }
-$servername= "localhost";
-$username = "root";
-$password = "";
-$dbname = "music-to-go";
-$conn = new mysqli($servername, $username, $password, $dbname);
-$submit = true;
 
 
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SignUpButton'])){
@@ -143,7 +137,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SignUpButton'])){
 			echo '<script> alert("Successfully Signed Up! Please login now")</script> ';
 			echo'<style> input[name="SignUp_GUI"]{display:none;}</style>';
 			echo '<b>This is your public key associated with your account:</b>';
-			echo $BaseUserOBJ->getGanachePubKey();
+			echo $BaseUserOBJ->getPubKey();
 		    echo '</br><b>This is your private key associated with your account,PLEASE DO NOT LOSE IT:</b>';
 			echo $BaseUserOBJ->getPrivate();
 			echo '<form action="LoginPage.php" method="post"> <input type="submit" value="Login Now"></form> ';
