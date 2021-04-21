@@ -69,7 +69,7 @@ class BaseUser
 		
 	}
 	public function GetAccountBalanceFromServer($PubKey){
-		$host    = "http://35.240.207.160/";
+		$host    = "localhost";
 		$port    = 8080;
 		$arr = array('REQUEST' => "get" , 'ACCOUNTPUBLICKEY' => $PubKey);
 		$message = json_encode($arr);
@@ -80,7 +80,7 @@ class BaseUser
 		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
 		}
 		socket_close($socket);
-		$raw_data = file_get_contents('https://35.240.207.160:3000/getBalance');
+		$raw_data = file_get_contents('https://localhost/getBalance');
 		$data = json_decode($raw_data, true);
 		return $data['sticoin_balance'];
 	}
