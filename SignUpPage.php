@@ -11,7 +11,7 @@ span{
 .centerBox {
 	margin: auto;
 	width: 40%;
-	/* border: 3px solid #73AD21; *
+	/* border: 3px solid #73AD21; */
 	padding: 10px;
 }
 
