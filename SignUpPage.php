@@ -7,6 +7,33 @@ span{
 .SignUpForm * {
   vertical-align: middle;
 }
+
+.centerBox {
+	margin: auto;
+	width: 40%;
+	/* border: 3px solid #73AD21; *
+	padding: 10px;
+}
+
+label, input, textarea {	
+	display: inline-block; /* In order to define widths */
+}
+
+label {
+	width: 30%;
+	text-align: right;    /* Positions the label text beside the input */
+}
+
+label+input+textarea {
+	width: 30%;
+	
+	/* Large margin-right to force the next element to the new-line
+    and margin-left to create a gutter between the label and input */
+		
+	/* Margin: 0% for top, 30% for right, 0% for bottom, 4% for left */
+	margin: 0 30% 0 4%;
+}
+
 </style>
 <?php 
 include("NavBar.php");
@@ -169,39 +196,56 @@ $_POST["SignUpConfirmPassword"]  = "";
 <div class="SignUp_GUI">
 <form class ="SignUpForm" method="post">
 <span class="error"></span><br /><br />
-<label>User ID:</label><input type="text" name="SignUpID" value = <?php echo $_POST["SignUpID"] ; ?>>
-<span class="error">&nbsp;&nbsp;<?php echo $SignUpIDError;?></span><br /><br />
 
-<label>Display Name:</label><input type="text" name="SignUpDisplayName" value = <?php echo $_POST["SignUpDisplayName"] ; ?>>
-<span class="error">&nbsp;&nbsp;<?php echo $SignUpDisplayNameError;?></span><br /><br />
+<div class="centerBox">
+	<label>User ID:</label>
+	<input type="text" name="SignUpID" value = <?php echo $_POST["SignUpID"] ; ?>>
+	<span class="error">&nbsp;&nbsp;<?php echo $SignUpIDError;?></span><br /><br />
 
-<label>First Name:</label><input type="text" name="SignUpFirstName" value = <?php echo $_POST["SignUpFirstName"] ; ?>>
-<span class="error">&nbsp;&nbsp;<?php echo $SignUpFirstNameError;?></span><br /><br />
+	<label>Display Name:</label>
+	<input type="text" name="SignUpDisplayName" value = <?php echo $_POST["SignUpDisplayName"] ; ?>>
+	<span class="error">&nbsp;&nbsp;<?php echo $SignUpDisplayNameError;?></span><br /><br />
 
-<label>Last Name:</label><input type="text" name="SignUpLastName" value = <?php echo $_POST["SignUpLastName"] ; ?>>
-<span class="error">&nbsp;&nbsp;<?php echo $SignUpLastNameError;?></span><br /><br />
+	<label>First Name:</label>
+	<input type="text" name="SignUpFirstName" value = <?php echo $_POST["SignUpFirstName"] ; ?>>
+	<span class="error">&nbsp;&nbsp;<?php echo $SignUpFirstNameError;?></span><br /><br />
 
-<label>Email:</label><input type="text" name="SignUpEmail" value = <?php echo $_POST["SignUpEmail"] ; ?>>
-<span class="error">&nbsp;&nbsp;<?php echo $SignUpEmailError;?></span><br /><br />
+	<label>Last Name:</label>
+	<input type="text" name="SignUpLastName" value = <?php echo $_POST["SignUpLastName"] ; ?>>
+	<span class="error">&nbsp;&nbsp;<?php echo $SignUpLastNameError;?></span><br /><br />
 
-<label>Contact Number:</label><input type="text" name="SignUpContact" value = <?php echo $_POST["SignUpContact"] ; ?>>
-<span class="error">&nbsp;&nbsp;<?php echo $SignUpContactError;?></span><br /><br />
+	<label>Email:</label>
+	<input type="text" name="SignUpEmail" value = <?php echo $_POST["SignUpEmail"] ; ?>>
+	<span class="error">&nbsp;&nbsp;<?php echo $SignUpEmailError;?></span><br /><br />
 
-<label>Address:</label><textarea rows="4" cols="50" name="SignUpAddress"><?php echo $_POST["SignUpAddress"] ; ?></textarea>
-<span class="error">&nbsp;&nbsp;<?php echo $SignUpAddressError;?></span><br /><br />
+	<label>Contact Number:</label>
+	<input type="text" name="SignUpContact" value = <?php echo $_POST["SignUpContact"] ; ?>>
+	<span class="error">&nbsp;&nbsp;<?php echo $SignUpContactError;?></span><br /><br />
 
-<label>Date Of Birth:</label><input type="date" name="SignUpDOB" value = <?php echo $_POST["SignUpDOB"] ; ?>>
-<span class="error">&nbsp;&nbsp;<?php echo $SignUpDOBError;?></span><br /><br />
+	<label>Address:</label>
+	<textarea rows="4" cols="50" name="SignUpAddress"><?php echo $_POST["SignUpAddress"] ; ?></textarea>
+	<span class="error">&nbsp;&nbsp;<?php echo $SignUpAddressError;?></span><br /><br />
 
-<label>Password:</label><input type="password" name="SignUpPassword" value = <?php echo $_POST["SignUpPassword"] ; ?>>
-<span class="error">&nbsp;&nbsp;<?php echo $SignUpPasswordError;?></span><br /><br />
+	<label>Date Of Birth:</label>
+	<input type="date" name="SignUpDOB" value = <?php echo $_POST["SignUpDOB"] ; ?>>
+	<span class="error">&nbsp;&nbsp;<?php echo $SignUpDOBError;?></span><br /><br />
 
-<label>Confirm Password:</label><input type="password" name="SignUpConfirmPassword"  value = <?php echo $_POST["SignUpConfirmPassword"] ; ?>>
-<span class="error">&nbsp;&nbsp;<?php echo $SignUpConfirmPasswordError;?></span><br /><br />
+	<label>Password:</label>
+	<input type="password" name="SignUpPassword" value = <?php echo $_POST["SignUpPassword"] ; ?>>
+	<span class="error">&nbsp;&nbsp;<?php echo $SignUpPasswordError;?></span><br /><br />
 
+	<label>Confirm Password:</label>
+	<input type="password" name="SignUpConfirmPassword"  value = <?php echo $_POST["SignUpConfirmPassword"] ; ?>>
+	<span class="error">&nbsp;&nbsp;<?php echo $SignUpConfirmPasswordError;?></span><br /><br />
 
+	<input type="Submit" name="SignUpButton" value="Sign Up" style="float:right;"/></br> 
+</div>
 
-<input type="Submit" name="SignUpButton" value="Sign Up"/></br>
 </form>
 </div>
 </html>
+
+<!--Links Used:-->
+<!--https://www.w3schools.com/css/css_align.asp-->
+<!--https://stackoverflow.com/questions/13204002/align-form-elements-in-css-->
+<!--https://www.w3schools.com/cssref/css_selectors.asp-->
