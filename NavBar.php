@@ -94,7 +94,7 @@ echo'
 	<div class="dropdown">
 	<button class="dropbtn"><h2>'.$_SESSION['ID'].'</h2></button>
 	<div class="dropdown-content">
-	<a href="#">Profile</a>
+	<a href="ProfilePage.php">Profile</a>
 	<a href="#">Settings</a>
 	<a href="Convert.php">Convert STICoins</a>
 	<input type="submit" name="Nav_LogOut"  value="Log Out"/>
@@ -116,8 +116,7 @@ exit();
 ?>	
 <form method="post">
 			<input type="submit" class="btn btn-white"   name="Nav_Login"  value="Login"/>
-			<input type="submit" class="btn btn-white"  name="Nav_SignUp"  value="SignUp"/>
-			
+			<input type="submit" class="btn btn-white"  name="Nav_SignUp"  value="SignUp"/>		
 		</form>
-</nav>
+	</nav>
 </div>
