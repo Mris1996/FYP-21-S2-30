@@ -130,7 +130,6 @@ class BaseUser
 		return "validated";
 	}
 	
-	// Accessor Methods
 	public function getUID(){
 		return 	$this->UID;
 	}
@@ -167,6 +166,7 @@ class BaseUser
 	public function getAccountBalance(){
 		return $this->AccountBalance;
 	}
+
 	public function connect(){
 		$servername= "localhost";
 		$username = "root";
@@ -176,7 +176,7 @@ class BaseUser
 		return $conn;
 		
 	}
-
+	
 
 	
 	
@@ -192,7 +192,7 @@ class StandardUser extends BaseUser
 	
 		$this->UID = $Object->getUID();
 		$this->DisplayName =  $Object->getDisplayName();
-		$this->PubKey =  $Object->getDisplayName();
+		$this->PubKey =  $Object->getPubKey();
 		$this->Email = $Object->getEmail();
 		$this->FirstName =  $Object->getFirstName();
 		$this->LastName =  $Object->getLastName();
@@ -202,11 +202,44 @@ class StandardUser extends BaseUser
 		$this->AccountType =  $Object->getAccountType();
 		$this->AccountBalance = $Object->getAccountBalance();
 		
-	}
+		}
+		public function getEscrow(){
+		$sql = "SELECT * FROM escrow" ;
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		while($row = $result->fetch_assoc())
+		{ 
+			return $row["PublicKey"];
+
+		}
+		}
+		public function checkAccountInNetwork($WalletPubKey){
+			$host    = "localhost";
+			$port    = 8080;
+			$arr = array('REQUEST' => "CheckAccount",'PUBKEY' =>$WalletPubKey);
+			$message = json_encode($arr);
+			$socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
+			$result = socket_connect($socket, $host, $port) or die("Could not connect to server\n");  
+			if($result) { 
+			socket_write($socket, $message, strlen($message)) or die("Could not send data to server\n");
+			$result = socket_read ($socket, 1024) or die("Could not read server response\n");
+			}
+			socket_close($socket);
+			$raw_data = file_get_contents('http://localhost:3000/CheckAccount');
+			$data = json_decode($raw_data, true);
+			if ($data['RESPONSE']){
+				return true;
+				
+			}
+			else{
+				return false;
+			}
+			
+			
+		}
 		public function ConvertToSTICOIN($amount,$WalletPubkey,$WalletPrivateKey){
 		$host    = "localhost";
 		$port    = 8080;
-		$arr = array('REQUEST' => "ConvertToSTICoin",'PUBKEY' =>$this->getPubKey(),'AMOUNT'=>$amount,'WALLETPUBKEY'=>$WalletPubkey,'WALLETPRIVATEKEY'=>$WalletPrivateKey);
+		$arr = array('REQUEST' => " ",'AMOUNT'=>$amount,'WALLETPUBKEY'=>$WalletPubkey,'WALLETPRIVATEKEY'=>$WalletPrivateKey,'ESCROWACCOUNT'=> $this->getEscrow(),'PUBKEY' =>$this->getPubKey());
 		$message = json_encode($arr);
 		$socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
 		$result = socket_connect($socket, $host, $port) or die("Could not connect to server\n");  
@@ -217,8 +250,13 @@ class StandardUser extends BaseUser
 		socket_close($socket);
 		$raw_data = file_get_contents('http://localhost:3000/ConvertToSTICoin');
 		$data = json_decode($raw_data, true);
-		$this->AccountBalance  =  $data['sticoin'];
-		
+		if($data['Transaction']== "Success"){
+			$this->AccountBalance  =  $data['sticoin'];
+			return "Success";
+		}
+		else{
+			return "Transaction failed";
+		}
 	}
 	
 }

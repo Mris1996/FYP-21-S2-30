@@ -143,8 +143,7 @@
 			<!--Account Balance Box -->
 			<input type="number" name="accountBalance" value= "<?php echo $accountBalance ?>" readonly><br><br>
 
-			<!--Edit Profile Button-->
-			<button class="profileButton">Edit Profile</button>
+			
 		</div>
 	</body>
 </html>
