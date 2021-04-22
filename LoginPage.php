@@ -67,15 +67,20 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['LoginButton'])){
 		
 		$BaseUserOBJ = new BaseUser("Login");
 		if($BaseUserOBJ->LoginValidate($_POST["Login_LoginID"],$_POST["Login_Password"])){
+			// Set SESSION variables here
 			$_SESSION['ID'] = $BaseUserOBJ->getUID();
 			$_SESSION['Type'] = $BaseUserOBJ->getAccountType();
 			echo'<script>history.pushState({}, "", "")</script>';
 			if($_SESSION['Type']=="Standard"){
+				// Downcasting to child class StandardUser
 				$UserObj = new StandardUser($BaseUserOBJ);
+				// Store UserObj to SESSION variable so it can be used on other pages
 				$_SESSION['Object'] = $UserObj;
 			}
 			if($_SESSION['Type']=="Administrator"){
+				// Downcasting to child class Admin
 				$AdminObj = new Admin($BaseUserOBJ);
+				// Store AdminObj to SESSION variable so it can be used on other pages
 				$_SESSION['Object'] = $AdminObj;
 			}
 			echo '<script> location.replace("index.php")</script> ';

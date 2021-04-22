@@ -130,6 +130,7 @@ class BaseUser
 		return "validated";
 	}
 	
+	// Accessor Methods
 	public function getUID(){
 		return 	$this->UID;
 	}
