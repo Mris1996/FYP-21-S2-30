@@ -100,7 +100,6 @@ class BaseUser
 		$raw_data = file_get_contents('http://10.148.0.3:3000/GetNewAccount');
 		$data = json_decode($raw_data, true);
 		$this->PubKey =  $data['pubkey'];
-		echo $this->PubKey;
 		$this->PrivateKey = $data['privatekey'];
 		
 	}
@@ -124,9 +123,9 @@ class BaseUser
 		$Type = "Standard";
 		
 	
-		//$sql = "INSERT INTO users (UserID,FirstName,LastName,Email,ContactNumber,Password,AccountType,DisplayName,Address,DateOfBirth,PublicKey,PrivateKey)VALUES('".$ID."','".$FName."','".$LName."','".$Email."' ,'".$ContactNumber."','".$HPass."','".$Type."','".$DispName."','".$Address."','".date('d/m/Y', strtotime($DOB))."','".$this->PubKey."','".$this->PrivateKey."' )";
-		//$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
-		//echo $this->connect()->error;
+		$sql = "INSERT INTO users (UserID,FirstName,LastName,Email,ContactNumber,Password,AccountType,DisplayName,Address,DateOfBirth,PublicKey,PrivateKey)VALUES('".$ID."','".$FName."','".$LName."','".$Email."' ,'".$ContactNumber."','".$HPass."','".$Type."','".$DispName."','".$Address."','".date('d/m/Y', strtotime($DOB))."','".$this->PubKey."','".$this->PrivateKey."' )";
+		$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
+		echo $this->connect()->error;
 		
 		return "validated";
 	}
