@@ -88,7 +88,7 @@ if(isset($_SESSION['ID'])){
 echo'<style> input[name="Nav_SignUp"]{display:none;}</style>';
 echo'<style> input[name="Nav_Login"]{display:none;}</style>';
 echo'<style> input[name="Nav_LogOut"]{display:visible;}</style>';
-echo '<h2>STICOIN BALANCE: '.$_SESSION['Object']->AccountBalance.'</h2>';
+echo '<h2>STICOIN BALANCE: '.$_SESSION['Object']->getAccountBalance().'</h2>';
 echo'
 <form method="post">
 	<div class="dropdown">
@@ -96,7 +96,8 @@ echo'
 	<div class="dropdown-content">
 	<a href="ProfilePage.php">Profile</a>
 	<a href="#">Settings</a>
-	<a href="Convert.php">Convert STICoins</a>
+	<a href="ConvertSC.php">Convert to STICoin</a>
+	<a href="ConvertETH.php">Convert to ETH</a>
 	<input type="submit" name="Nav_LogOut"  value="Log Out"/>
 	</div>
 </div>

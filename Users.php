@@ -212,6 +212,15 @@ class StandardUser extends BaseUser
 
 		}
 		}
+		public function getEscrowPrivate(){
+		$sql = "SELECT * FROM escrow" ;
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		while($row = $result->fetch_assoc())
+		{ 
+			return $row["PrivateKey"];
+
+		}
+		}
 		public function checkAccountInNetwork($WalletPubKey){
 			$host    = "localhost";
 			$port    = 8080;
@@ -239,7 +248,13 @@ class StandardUser extends BaseUser
 		public function ConvertToSTICOIN($amount,$WalletPubkey,$WalletPrivateKey){
 		$host    = "localhost";
 		$port    = 8080;
-		$arr = array('REQUEST' => " ",'AMOUNT'=>$amount,'WALLETPUBKEY'=>$WalletPubkey,'WALLETPRIVATEKEY'=>$WalletPrivateKey,'ESCROWACCOUNT'=> $this->getEscrow(),'PUBKEY' =>$this->getPubKey());
+		date_default_timezone_set('UTC');
+		$textToEncrypt = $WalletPrivateKey;
+		$encryptionMethod = "AES-256-CBC";
+		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
+		$iv = substr($secret, 0, 16);
+		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
+		$arr = array('REQUEST' => "ConvertToSTICoin",'AMOUNT'=>$amount,'WALLETPUBKEY'=>$WalletPubkey,'WALLETPRIVATEKEY'=>$encryptedMessage,'ESCROWACCOUNT'=> $this->getEscrow(),'PUBKEY' =>$this->getPubKey());
 		$message = json_encode($arr);
 		$socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
 		$result = socket_connect($socket, $host, $port) or die("Could not connect to server\n");  
@@ -251,11 +266,39 @@ class StandardUser extends BaseUser
 		$raw_data = file_get_contents('http://localhost:3000/ConvertToSTICoin');
 		$data = json_decode($raw_data, true);
 		if($data['Transaction']== "Success"){
-			$this->AccountBalance  =  $data['sticoin'];
-			return "Success";
+			$this->AccountBalance  = $data['sticoin'];
+			return $data['Transaction'];
 		}
 		else{
-			return "Transaction failed";
+			return $data['Transaction'];
+		}
+	}
+		public function ConvertToETH($amount,$WalletPubkey){
+		$host    = "localhost";
+		$port    = 8080;
+		date_default_timezone_set('UTC');
+		$textToEncrypt = $this->getEscrowPrivate();
+		$encryptionMethod = "AES-256-CBC";
+		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
+		$iv = substr($secret, 0, 16);
+		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
+		$arr = array('REQUEST' => "ConvertToETH",'AMOUNT'=>$amount,'WALLETPUBKEY'=>$WalletPubkey,'ESCROWPRIVATE'=> $encryptedMessage ,'PUBKEY' =>$this->getPubKey());
+		$message = json_encode($arr);
+		$socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
+		$result = socket_connect($socket, $host, $port) or die("Could not connect to server\n");  
+		if($result) { 
+		socket_write($socket, $message, strlen($message)) or die("Could not send data to server\n");
+		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
+		}
+		socket_close($socket);
+		$raw_data = file_get_contents('http://localhost:3000/ConvertToETH');
+		$data = json_decode($raw_data, true);
+		if($data['Transaction']== "Success"){
+			$this->AccountBalance  = $data['sticoin'];
+			return $data['Transaction'];
+		}
+		else{
+			return $data['Transaction'];
 		}
 	}
 	
