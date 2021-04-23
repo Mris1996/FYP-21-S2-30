@@ -2,11 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
 <style>
 
@@ -15,31 +14,50 @@ integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6J
 	height:100px;
 	color:black;
 	font-size:30px;
-	margin-bottom:100px;
+	
 }
-
 
 .dropdown-content {
+	width:100%;
   display: none;
   position: absolute;
-
   z-index: 1;
 }
-
-.dropdown-content a {
+.dropdown-content input {
+  width:100%;
   color: black;
   padding: 12px 16px;
   text-decoration: none;
   display: block;
+  background-color:white;
+   margin:auto;
 }
-
+.dropdown-content a {
+  width:100%;
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  background-color:white;
+   margin:auto;
+}
+.dropbtn{
+	width:300px;
+	
+}
 .dropdown-content a:hover {background-color: #ddd;}
 
 .dropdown:hover .dropdown-content {display: block;}
 
 .dropdown:hover .dropbtn {background-color: #3e8e41;}
-
+.SearchBar{
+	 display: block;
+  width: 500px;
+  margin: 10px auto;
+  padding: 3px;
+}
 </style>
+
 </head>
 <div class="topnavbg">
 	<nav class="navbar">
@@ -98,6 +116,7 @@ echo'
 	<a href="#">Settings</a>
 	<a href="ConvertSC.php">Convert to STICoin</a>
 	<a href="ConvertETH.php">Convert to ETH</a>
+	<a href="List.php">List a product</a>
 	<input type="submit" name="Nav_LogOut"  value="Log Out"/>
 	</div>
 </div>
@@ -120,4 +139,13 @@ exit();
 			<input type="submit" class="btn btn-white"  name="Nav_SignUp"  value="SignUp"/>		
 		</form>
 	</nav>
+
+
+<div class="SearchBar">
+	<form action="products.php" method="post">
+		<input type="text"   aria-label="Search" id="SearchBar" style="width:500px;height:100px;background:white;opacity:0.9; border-radius:5px;color:black" name="SearchBar" placeholder="Search">
+	<input type="hidden" name="searchfunction" value="">
+	</form>
+</div>
+	<hr>
 </div>

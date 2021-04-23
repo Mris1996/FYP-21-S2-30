@@ -176,8 +176,78 @@ class BaseUser
 		return $conn;
 		
 	}
+		public function ViewProduct($ProductID){
+		$ID = trim($ProductID);
+			$sql = "SELECT * FROM product WHERE ProductID='".$ProductID."'" ;
+			$result = $this->connect()->query($sql) or die($this->connect()->error); 
+			while($row = $result->fetch_assoc())
+			{ 
+				echo'
+					
+					<div class="card">
+					  <img src="'.$row["Image"].'" style="width:50%;margin:auto">
+					  <h2 style="text-align:center">'.$ID.'</h2>
+					  <hr>
+					  <p>Name: '.$row["ProductName"].'</p>
+					  <p>Category: '.$row["ProductCategory"].'</p>
+					  <p>Status: '.$row["Status"].'</p><hr>
+					  <p style="text-align:center">'.$row["ProductCaption"].'</p>
+					  <p style="text-align:center">Description:'.$row["ProductDescription"].'</p><hr>
+					  <h2 style="text-align:center">Initital Cost: '.$row["ProductInitialPrice"].'</h2></div>';
+					$Data = $row['Review'];
+		
+		
+		
+			}
+			echo 
+			'';
+			if($Data!=null){
+			$Data = json_decode($Data, true);
+			for($i =0;$i<sizeof($Data);$i++){
+			
+			echo'
+			<div class="media border p-3" style="margin-top:5px;width:40%;margin:auto;">
+			<div class="media-body">
+			<h4>'.$Data[$i]["User"].'<small>   <i>Posted on '.$Data[$i]["Date"].'</i></small></h4>
+			<p>'.$Data[$i]["Review"].'</p>
+			</div>
+			</div></br>';
+			}
+			}
+			else{
+			echo '
+			<div class="media border p-3" style="margin-top:5px;width:40%;margin:auto;">
+			<div class="media-body">
+			<b style="margin:auto;"> No Reviews Yet</b></div>
+			</div></br>';	
+			}
+	}
+	public function ViewAllProduct($sortby,$Order){
+		
 	
-
+			$sql = "SELECT * FROM product ORDER BY $sortby $Order" ;
+			$result = $this->connect()->query($sql) or die($this->connect()->error); 
+			while($row = $result->fetch_assoc())
+			{ 
+			echo'
+			<div class="container">
+			<img src="'.$row["Image"].'" class="image" style="width:100%">
+			<div class="middle">
+			<div class="text">Product Name:'.$row["ProductName"].'</div>
+			<div class="text">Category:'.$row["ProductCategory"].'</div>
+			<div class="text">Date Listed:<i>'.date('d-m-Y',strtotime($row["DateOfListing"])).'</i></div>
+			<div class="text">Initial Price:'.$row["ProductInitialPrice"].'</div>
+			<form action="Product.php?ID='.$row["ProductID"].'" method="post">
+			<input type="submit" value="Product Page"/>
+			</form>
+			</div>
+			</div>';
+		
+			}
+			
+		
+			
+	}
 	
 	
 
@@ -221,6 +291,21 @@ class StandardUser extends BaseUser
 
 		}
 		}
+		public function addNewReview($Reviw,$ProductID){
+		$sql = "SELECT * FROM product WHERE ProductID='".$ProductID."'" ;
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		while($row = $result->fetch_assoc())
+		{ 
+			$Data = $row['Review'];
+		}
+		$Data = json_decode($Data, true);
+		$NewData= array("Review"=>$Reviw, "ProductID"=>$ProductID, "User"=>$this->getUID());
+		array_push($Data,$NewData);
+		$JData = json_encode($Data);
+		$sql="UPDATE `product` SET `Review`='".$JData."' WHERE `ProductID`='".$ProductID."'";
+			$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		}
+		
 		public function checkAccountInNetwork($WalletPubKey){
 			$host    = "localhost";
 			$port    = 8080;
@@ -302,6 +387,23 @@ class StandardUser extends BaseUser
 		}
 	}
 	
+		public function ListProduct($Name,$Category,$Description,$Cost,$Caption,$File){
+			while(true){					
+					$ProductID = chr(rand(97,122)).chr(rand(97,122)).chr(rand(97,122)).str_pad(rand(0000,9999),4,0,STR_PAD_LEFT). substr(rand(0000,9999), 2, 4);
+					$result = $this->connect()->query("SELECT count(*) as 'c' FROM product WHERE ProductID='".$ProductID."'");
+					$count = $result->fetch_object()->c;
+					if ($count==0)
+					  {
+						break;
+					  }
+				}
+				
+				$sql = "INSERT INTO `product`(`ProductID`, `ProductCategory`, `ProductDescription`, `ProductCaption`, `ProductInitialPrice`, `Image`,  `ProductName`,`SellerUserID`) VALUES ('".$ProductID."','".$Category."','".$Description."','".$Caption."','".$Cost."','".$File."','".$Name."','".$this->getUID()."')";
+				$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
+	
+				return $ProductID;
+	}
+
 }
 
 class Admin extends BaseUser 
