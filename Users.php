@@ -80,7 +80,7 @@ class BaseUser
 		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
 		}
 		socket_close($socket);
-		$raw_data = file_get_contents('http://10.148.0.3:3000/getBalance');
+		$raw_data = file_get_contents('http://localhost:3000/getBalance');
 		$data = json_decode($raw_data, true);
 		return $data['sticoin_balance'];
 	}
@@ -97,7 +97,7 @@ class BaseUser
 		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
 		}
 		socket_close($socket);
-		$raw_data = file_get_contents('http://10.148.0.3:3000/GetNewAccount');
+		$raw_data = file_get_contents('http://localhost:3000/GetNewAccount');
 		$data = json_decode($raw_data, true);
 		$this->PubKey =  $data['pubkey'];
 		$this->PrivateKey = $data['privatekey'];
@@ -318,7 +318,7 @@ class StandardUser extends BaseUser
 			$result = socket_read ($socket, 1024) or die("Could not read server response\n");
 			}
 			socket_close($socket);
-			$raw_data = file_get_contents('http://10.148.0.3:3000/CheckAccount');
+			$raw_data = file_get_contents('http://localhost:3000/CheckAccount');
 			$data = json_decode($raw_data, true);
 			if ($data['RESPONSE']){
 				return true;
@@ -348,7 +348,7 @@ class StandardUser extends BaseUser
 		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
 		}
 		socket_close($socket);
-		$raw_data = file_get_contents('http://10.148.0.3:3000/ConvertToSTICoin');
+		$raw_data = file_get_contents('http://localhost:3000/ConvertToSTICoin');
 		$data = json_decode($raw_data, true);
 		if($data['Transaction']== "Success"){
 			$this->AccountBalance  = $data['sticoin'];
@@ -376,7 +376,7 @@ class StandardUser extends BaseUser
 		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
 		}
 		socket_close($socket);
-		$raw_data = file_get_contents('http://10.148.0.3:3000/ConvertToETH');
+		$raw_data = file_get_contents('http://localhost:3000/ConvertToETH');
 		$data = json_decode($raw_data, true);
 		if($data['Transaction']== "Success"){
 			$this->AccountBalance  = $data['sticoin'];
