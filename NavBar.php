@@ -98,6 +98,7 @@ echo'
 	<a href="#">Settings</a>
 	<a href="ConvertSC.php">Convert to STICoin</a>
 	<a href="ConvertETH.php">Convert to ETH</a>
+	<a href="Negotiations.php">Chat page</a>
 	<input type="submit" name="Nav_LogOut"  value="Log Out"/>
 	</div>
 </div>
