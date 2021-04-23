@@ -100,6 +100,7 @@ class BaseUser
 		$raw_data = file_get_contents('http://10.148.0.3:3000/GetNewAccount');
 		$data = json_decode($raw_data, true);
 		$this->PubKey =  $data['pubkey'];
+		echo $this->PubKey;
 		$this->PrivateKey = $data['privatekey'];
 		
 	}
