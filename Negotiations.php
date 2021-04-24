@@ -135,7 +135,19 @@
 			
 			// Populate Variables with data
 			$userObj = $_SESSION['Object']; // Copying an instance of the user object
-			$username = $userObj -> getDisplayName();
+			$username = stripslashes(htmlspecialchars($userObj -> getDisplayName()));
+			// The above prevents XSS from happening by removing special characters
+			
+			// Will use code from SignUpPage and users.php to send and retrieve 
+			// data from the database
+			if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitmsg'])){
+				echo 'Hello World!';
+				echo $_POST["usermsg"];
+			}
+			
+			
+			
+			
 		?>
 	</head>
 	<body>
@@ -147,19 +159,27 @@
             </div>
  
 			<!--Chatbox -->
-            <div id="chatbox"></div>
+            <div id="chatbox">
+			<?php 
+				// Request for chats in SQL database.
+			
+			?>
+			
+			</div>
  
 			<!--Message Input -->
-            <form name="message" action="">
+			<!-- <form class ="SignUpForm" method="post"> -->
+            <form name="message" method="post">
                 <input name="usermsg" type="text" id="usermsg" />
                 <input name="submitmsg" type="submit" id="submitmsg" value="Send" />
             </form>
         </div>
 		
+		<!--Will remove this part once the functionality is working -->
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script type="text/javascript">
-            // jQuery Document
-          //  $(document).ready(function () {});
+            // jQuery 
+            $(document).ready(function () {});
         </script>
 	</body>
 
@@ -178,6 +198,7 @@
 <!--https://www.w3schools.com/tags/att_meta_charset.asp -->
 <!--https://www.w3schools.com/css/css_howto.asp -->
 <!--https://www.w3schools.com/howto/howto_js_popup_chat.asp -->
+<!--https://stackoverflow.com/questions/15447041/what-is-the-difference-between-jquery-and-node-js -->
 
 
 
