@@ -163,9 +163,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SignUpButton'])){
 		require_once("Users.php");
 		$BaseUserOBJ = new BaseUser("SignUp");
 		if($BaseUserOBJ->SignUpValidate($_POST["SignUpID"],$_POST["SignUpEmail"],$_POST["SignUpPassword"],$_POST["SignUpFirstName"],$_POST["SignUpLastName"],$_POST["SignUpContact"],$_POST["SignUpDisplayName"],$_POST["SignUpDOB"],$_POST["SignUpAddress"])=="validated"){
-			//echo '<script> alert("Successfully Signed Up! Please login now")</script> ';
-			//echo '<script> location.replace("LoginPage.php")</script> ';
-			//exit();
+			echo '<script> alert("Successfully Signed Up! Please login now")</script> ';
+			echo '<script> location.replace("LoginPage.php")</script> ';
+			exit();
 		}
 		else if($BaseUserOBJ->SignUpValidate($_POST["SignUpID"],$_POST["SignUpEmail"],$_POST["SignUpPassword"],$_POST["SignUpFirstName"],$_POST["SignUpLastName"],$_POST["SignUpContact"],$_POST["SignUpDisplayName"],$_POST["SignUpDOB"],$_POST["SignUpAddress"])=="UserID error"){
 			$SignUpIDError = "UserID already exists";

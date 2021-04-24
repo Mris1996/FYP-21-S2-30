@@ -2,7 +2,7 @@
 ?> 
 <style>
 .Carousel{
-	width:90%;
+	width:80%;
 	margin-left:auto;
 	margin-right:auto;
 }
@@ -116,6 +116,7 @@
 
   </div>
 </div>
+<hr>
 <div class="sorter">
 <form method="post" style="margin-top:20px">
 <Label>Sort By:</Label></br>
@@ -126,22 +127,23 @@
 <input type="submit" name="SortDate" value="Date">
 </form>
 </div>
+<hr>
 <?php
 
 if(isset($_POST['SortDate'])){
 $BaseUserOBJ = new BaseUser("index page");	
-$BaseUserOBJ->ViewAllProduct("DateOfListing",$_POST['Order']);
+$BaseUserOBJ->ViewAllProduct("DateOfListing",$_POST['Order'],"All");
 }
 if(isset($_POST['SortPrice'])){
 $BaseUserOBJ = new BaseUser("index page");	
-$BaseUserOBJ->ViewAllProduct("ProductInitialPrice",$_POST['Order']);
+$BaseUserOBJ->ViewAllProduct("ProductInitialPrice",$_POST['Order'],"All");
 }
 if(isset($_POST['SortCat'])){
 $BaseUserOBJ = new BaseUser("index page");	
-$BaseUserOBJ->ViewAllProduct("ProductCategory",$_POST['Order']);
+$BaseUserOBJ->ViewAllProduct("ProductCategory",$_POST['Order'],"All");
 }
 if(!isset($_POST['SortCat'])&&!isset($_POST['SortPrice'])&&!isset($_POST['SortDate'])){
 $BaseUserOBJ = new BaseUser("index page");	
-$BaseUserOBJ->ViewAllProduct("DateOfListing","ASC");	
+$BaseUserOBJ->ViewAllProduct("DateOfListing","ASC","All");	
 }
 ?>

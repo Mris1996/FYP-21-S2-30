@@ -14,6 +14,7 @@ class BaseUser
 	public $AccountType;
 	public $AccountBalance;
 	private $PrivateKey;
+	public $Rating;
 	public function __construct($Operation)
 	{
 		if($Operation == "SignUp"){
@@ -44,22 +45,8 @@ class BaseUser
 			
 			if($validated)
 			{	
-				$sql = "SELECT * FROM users WHERE UserID='".$ID."'" ;
-				$result = $this->connect()->query($sql) or die($this->connect()->error); 
-				while($row = $result->fetch_assoc())
-				{ 
-					$this->UID = $row["UserID"];
-					$this->DisplayName = $row["DisplayName"];
-					$this->PubKey = $row["PublicKey"];
-					$this->Email = $row["Email"];
-					$this->FirstName = $row["FirstName"];
-					$this->LastName = $row["LastName"];
-					$this->DOB = $row["DateOfBirth"];
-					$this->ContactNumber = $row["ContactNumber"];
-					$this->Address = $row["Address"];
-					$this->AccountType = $row["AccountType"];
-					$this->AccountBalance = $this->GetAccountBalanceFromServer($this->PubKey);
-				}
+				$this->setUID($ID);
+				
 				return true;
 			}
 			else{
@@ -123,15 +110,42 @@ class BaseUser
 		$Type = "Standard";
 		
 	
-		//$sql = "INSERT INTO users (UserID,FirstName,LastName,Email,ContactNumber,Password,AccountType,DisplayName,Address,DateOfBirth,PublicKey,PrivateKey)VALUES('".$ID."','".$FName."','".$LName."','".$Email."' ,'".$ContactNumber."','".$HPass."','".$Type."','".$DispName."','".$Address."','".date('d/m/Y', strtotime($DOB))."','".$this->PubKey."','".$this->PrivateKey."' )";
-		//$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
-		//echo $this->connect()->error;
+		$sql = "INSERT INTO users (UserID,FirstName,LastName,Email,ContactNumber,Password,AccountType,DisplayName,Address,DateOfBirth,PublicKey,PrivateKey)VALUES('".$ID."','".$FName."','".$LName."','".$Email."' ,'".$ContactNumber."','".$HPass."','".$Type."','".$DispName."','".$Address."','".date('d/m/Y', strtotime($DOB))."','".$this->PubKey."','".$this->PrivateKey."' )";
+		$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
+		echo $this->connect()->error;
 		
 		return "validated";
 	}
 	
 	public function getUID(){
 		return 	$this->UID;
+	}
+	public function setUID($UID){
+		$sql = "SELECT * FROM users WHERE UserID='".$UID."'" ;
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		if ($result->num_rows == 0) 
+			{
+				return false;
+
+			}	
+		while($row = $result->fetch_assoc())
+		{ 	
+			$this->UID = $row["UserID"];
+			$this->DisplayName = $row["DisplayName"];
+			$this->PubKey = $row["PublicKey"];
+			$this->Email = $row["Email"];
+			$this->FirstName = $row["FirstName"];
+			$this->LastName = $row["LastName"];
+			$this->DOB = $row["DateOfBirth"];
+			$this->ContactNumber = $row["ContactNumber"];
+			$this->Address = $row["Address"];
+			$this->AccountType = $row["AccountType"];
+			$this->AccountBalance = $this->GetAccountBalanceFromServer($this->PubKey);
+			$this->Rating = json_decode($row["Rating"],true);
+
+	}
+	return true;
+		
 	}
 	public function getPrivate(){
 		return 	$this->PrivateKey;
@@ -176,8 +190,8 @@ class BaseUser
 		return $conn;
 		
 	}
-		public function ViewProduct($ProductID){
-		$ID = trim($ProductID);
+	public function ViewProduct($ProductID){
+			$ID = trim($ProductID);
 			$sql = "SELECT * FROM product WHERE ProductID='".$ProductID."'" ;
 			$result = $this->connect()->query($sql) or die($this->connect()->error); 
 			while($row = $result->fetch_assoc())
@@ -187,26 +201,51 @@ class BaseUser
 					<div class="card">
 					  <img src="'.$row["Image"].'" style="width:50%;margin:auto">
 					  <h2 style="text-align:center">'.$ID.'</h2>
-					  <hr>
+					  <hr style="background-color:white">
+					  <p>Seller:<a href="ProfilePage.php?ID='.$row["SellerUserID"].'">'.$row["SellerUserID"].'</a></p>
 					  <p>Name: '.$row["ProductName"].'</p>
 					  <p>Category: '.$row["ProductCategory"].'</p>
-					  <p>Status: '.$row["Status"].'</p><hr>
+					  <p>Status: '.$row["Status"].'</p>
+					  <hr style="background-color:white">
 					  <p style="text-align:center">'.$row["ProductCaption"].'</p>
 					  <p style="text-align:center">Description:'.$row["ProductDescription"].'</p><hr>
 					  <h2 style="text-align:center">Initital Cost: '.$row["ProductInitialPrice"].'</h2></div>';
-					$Data = $row['Review'];
-		
-		
 		
 			}
-			echo 
-			'';
+	}
+	public function getProductOwner($ProductID){
+			$ID = trim($ProductID);
+			$sql = "SELECT * FROM product WHERE ProductID='".$ProductID."'" ;
+			$result = $this->connect()->query($sql) or die($this->connect()->error); 
+			while($row = $result->fetch_assoc())
+			{ 
+				return $row["SellerUserID"];
+			}
+	}
+	public function viewReview($ID,$Type){
+		if($Type=="User"){
+			$ID = trim($ID);
+			$sql = "SELECT * FROM users WHERE UserID='".$ID."'" ;
+			
+		}
+		if($Type=="Product"){
+			$ID = trim($ID);
+			$sql = "SELECT * FROM product WHERE ProductID='".$ID."'" ;
+			
+		}
+
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+			while($row = $result->fetch_assoc())
+			{ 
+				$Data = $row['Review'];
+			}
 			if($Data!=null){
 			$Data = json_decode($Data, true);
 			for($i =0;$i<sizeof($Data);$i++){
 			
 			echo'
-			<div class="media border p-3" style="margin-top:5px;width:40%;margin:auto;">
+	
+			<div class="media border p-3" style="width:40%;margin:auto;margin-top:5px;">
 			<div class="media-body">
 			<h4>'.$Data[$i]["User"].'<small>   <i>Posted on '.$Data[$i]["Date"].'</i></small></h4>
 			<p>'.$Data[$i]["Review"].'</p>
@@ -222,13 +261,58 @@ class BaseUser
 			</div></br>';	
 			}
 	}
-	public function ViewAllProduct($sortby,$Order){
+	public function ViewAllProduct($sortby,$Order,$Category){
 		
-	
-			$sql = "SELECT * FROM product ORDER BY $sortby $Order" ;
+			if($Category=="All"){
+					$sql = "SELECT * FROM product ORDER BY $sortby $Order" ;
+			}
+			else{
+					$sql = "SELECT * FROM product WHERE ProductCategory = '".$Category."' ORDER BY $sortby $Order" ;
+			}
 			$result = $this->connect()->query($sql) or die($this->connect()->error); 
+			if ($result->num_rows == 0) 
+			{
+				echo'
+					<b>No products in this category</b>';
+
+			}	
 			while($row = $result->fetch_assoc())
 			{ 
+
+			echo'
+			<div class="container">
+			<img src="'.$row["Image"].'" class="image" style="width:100%">
+			<div class="middle">
+			<div class="text">Seller:<a href="ProfilePage.php?ID='.$row["SellerUserID"].'">'.$row["SellerUserID"].'</a></div>
+			<div class="text">Product Name:'.$row["ProductName"].'</div>
+			<div class="text">Category:'.$row["ProductCategory"].'</div>
+			<div class="text">Date Listed:<i>'.date('d-m-Y',strtotime($row["DateOfListing"])).'</i></div>
+			<div class="text">Initial Price:'.$row["ProductInitialPrice"].'</div>
+			<form action="ProductPage.php?ID='.$row["ProductID"].'" method="post"></br>
+			<input type="submit" value="Product Page"/>
+			</form>
+			</div>
+			</div>';
+		
+			}	
+			
+		
+			
+	}
+	public function ViewAllUserProduct($sortby,$Order,$UID){
+			
+			$sql = "SELECT * FROM product WHERE SellerUserID = '$UID' ORDER BY $sortby $Order" ;
+			
+			$result = $this->connect()->query($sql) or die($this->connect()->error); 
+			if ($result->num_rows == 0) 
+			{
+				echo'
+					<b>This user has not listed any products</b>';
+
+			}	
+			while($row = $result->fetch_assoc())
+			{ 
+
 			echo'
 			<div class="container">
 			<img src="'.$row["Image"].'" class="image" style="width:100%">
@@ -237,21 +321,25 @@ class BaseUser
 			<div class="text">Category:'.$row["ProductCategory"].'</div>
 			<div class="text">Date Listed:<i>'.date('d-m-Y',strtotime($row["DateOfListing"])).'</i></div>
 			<div class="text">Initial Price:'.$row["ProductInitialPrice"].'</div>
-			<form action="Product.php?ID='.$row["ProductID"].'" method="post">
+			<form action="ProductPage.php?ID='.$row["ProductID"].'" method="post"></br>
 			<input type="submit" value="Product Page"/>
 			</form>
 			</div>
 			</div>';
 		
-			}
+			}	
+			
+		
+	}
+			
+			
 			
 		
 			
 	}
 	
-	
 
-}
+
 
 
 class StandardUser extends BaseUser 
@@ -291,21 +379,137 @@ class StandardUser extends BaseUser
 
 		}
 		}
-		public function addNewReview($Reviw,$ProductID){
-		$sql = "SELECT * FROM product WHERE ProductID='".$ProductID."'" ;
-		$result = $this->connect()->query($sql) or die($this->connect()->error); 
-		while($row = $result->fetch_assoc())
-		{ 
-			$Data = $row['Review'];
-		}
-		$Data = json_decode($Data, true);
-		$NewData= array("Review"=>$Reviw, "ProductID"=>$ProductID, "User"=>$this->getUID());
-		array_push($Data,$NewData);
-		$JData = json_encode($Data);
-		$sql="UPDATE `product` SET `Review`='".$JData."' WHERE `ProductID`='".$ProductID."'";
+			public function addNewReview($Reviw,$ProductID){
+			$sql = "SELECT * FROM product WHERE ProductID='".$ProductID."'" ;
+			$result = $this->connect()->query($sql) or die($this->connect()->error); 
+			while($row = $result->fetch_assoc())
+			{ 
+				$Data = $row['Review'];
+			}
+			$Data = json_decode($Data, true);
+			$NewData= array("Review"=>$Reviw, "ProductID"=>$ProductID, "User"=>$this->getUID());
+			array_push($Data,$NewData);
+			$JData = json_encode($Data);
+			$sql="UPDATE `product` SET `Review`='".$JData."' WHERE `ProductID`='".$ProductID."'";
 			$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		}
-		
+		public function RemoveProduct($ProductID){
+			
+			$sql="DELETE FROM product WHERE ProductID='$ProductID'";
+			$result = $this->connect()->query($sql) or die($this->connect()->error);  
+		}
+		public function EditProduct($ProductID){
+			$NameErr = $CategoryErr = $CaptionErr = $DescriptionErr = $CostErr = $FileErr= "";
+			$submit = true;
+
+			if(isset($_POST['Edit'])){
+
+			if (empty($_POST["Category"])){
+			$CategoryErr= "Category is required";	
+			$submit = false;
+			}
+
+			if (empty($_POST["ProductCaption"])){
+			$CaptionErr= "Caption is required";	
+			$submit = false;
+			}
+
+
+			if (empty($_POST["ProductName"])){
+			$NameErr= "Name is required";	
+			$submit = false;
+			}
+
+
+
+			if (empty($_POST["Description"])){
+			$DescriptionErr= "Description is required";	
+			$submit = false;
+			}
+
+			if (empty($_POST["Cost"])){
+			$CostErr= "Initial cost is required";	
+			$submit = false;
+			}
+
+
+
+			if (empty($_POST["file"])){
+				$file = $_FILES['file'];
+				
+				$File = $_FILES['file']['name'];
+				$fileTmpName = $_FILES['file']['tmp_name'];
+				$fileSize = $_FILES['file']['size'];
+				$FileError = $_FILES['file']['error'];
+				$fileType = $_FILES['file']['type'];
+				
+				$fileExt = explode('.',$File);
+				$fileActualExt = strtolower(end($fileExt));
+				$allowed = array('jpg','jpeg','png','pdf');
+				
+				if(in_array($fileActualExt, $allowed)){
+				
+					if($FileError == 0){
+							
+						if($fileSize < 50000){	//if file size less then 50mb
+							$FileNew = uniqid('', true).".".$fileActualExt;
+							$submit = true;
+
+						} else {
+							
+							$FileErr= "The file is too big!";
+							$submit = false;
+						}
+					} else {
+						
+						$FileErr= "There was an error uploading the file!";
+						$submit = false;
+					}
+					
+				} else {
+					if($fileSize==0){
+						
+						$FileErr= "Upload a file";
+						$submit = false;
+					}
+					else{	
+						$FileErr= "You cannot upload files of this type!";
+						$submit = false;
+					}
+				
+				}
+			}	
+			}
+			$ID = trim($ProductID);
+			$sql = "SELECT * FROM product WHERE ProductID='".$ProductID."'" ;
+			$result = $this->connect()->query($sql) or die($this->connect()->error); 
+			while($row = $result->fetch_assoc())
+			{ 
+				echo'
+				<div class="card">
+				<img src="'.$row["Image"].'" style="width:50%;margin:auto">
+				<input type="file" name="file"/>
+				<span class="error"><?php echo $FileErr;?></span><br />
+				<h2 style="text-align:center">'.$ID.'</h2>
+				<hr style="background-color:white">
+				<p>Seller:<a href="ProfilePage.php?ID='.$row["SellerUserID"].'">'.$row["SellerUserID"].'</a></p>
+				<p>Name:<input type="text" name="ProductName" value="'.$row["ProductName"].'"> </p>
+				<p>Category: '.$row["ProductCategory"].'</p>
+				<p>Status:'.$row["Status"].'</p>
+				<hr style="background-color:white">
+				<p style="text-align:left"><label style=" vertical-align: middle;">Caption:</label><input type="text" name="ProductCaption" value="'.$row["ProductCaption"].'"></p>
+				<span class="error">'.$CaptionErr.'</span><br />
+				<p style="text-align:left;"><label style=" vertical-align: middle;">Description:</label><textarea style=" vertical-align: middle;" rows="4" cols="50" name="ProductDescription">'.$row["ProductDescription"].'</textarea></p><hr>
+				<span class="error">'.$DescriptionErr.'</span><br />
+				<h2 style="text-align:center">Initital Cost: <input type="number" name="ProductInitialPrice" value="'.$row["ProductInitialPrice"].'"></h2>
+				<form method="post" >
+				<input type="submit" name="Confirmation" value="Edit">
+				<input type="submit" name="Confirmation" value="Cancel"></div>
+				</form>
+					  ';
+					
+			}
+		}
 		public function checkAccountInNetwork($WalletPubKey){
 			$host    = "localhost";
 			$port    = 8080;
@@ -387,7 +591,7 @@ class StandardUser extends BaseUser
 		}
 	}
 	
-		public function ListProduct($Name,$Category,$Description,$Cost,$Caption,$File){
+	public function ListProduct($Name,$Category,$Description,$Cost,$Caption,$File){
 			while(true){					
 					$ProductID = chr(rand(97,122)).chr(rand(97,122)).chr(rand(97,122)).str_pad(rand(0000,9999),4,0,STR_PAD_LEFT). substr(rand(0000,9999), 2, 4);
 					$result = $this->connect()->query("SELECT count(*) as 'c' FROM product WHERE ProductID='".$ProductID."'");

@@ -1,169 +1,131 @@
-<html>
-	<head>
-		<style>
-			.profileButton {
-				background-color: #008CBA; /* Blue */
-				border: none;
-				color: white;
-				padding: 15px 32px;
-				text-align: center;
-				text-decoration: none;
-				display: inline-block;
-				font-size: 16px;
-				margin: 4px 2px;
-				cursor: pointer;
-				
-				/* Adjust position of button on screen */
-				position: relative;
-				top: 50%;
-				left: 50%;
-				transform: translate(-50%, -50%);
-			}
-			.centerBox {
-				margin: auto;
-				width: 40%;
-				padding: 10px;
-			}
+<?php require_once("NavBar.php");
+$ID = $_GET['ID'];
+if(!isset($ID)){
+echo '<script> location.replace("index.php")</script> ';	
+}
 
-			label, input, button{	
-				display: inline-block; /* In order to define widths */
-			}
+$BaseUserObj = new BaseUser("Profile");
+if(!$BaseUserObj->setUID($ID)){
+echo '<script> location.replace("index.php")</script> ';	
+}
+?> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-			label {
-				width: 30%;
-				text-align: right;    /* Positions the label text beside the input */
-			}
-
-			label+input+button{
-				width: 30%;
-				/* Large margin-right to force the next element to the new-line
-				and margin-left to create a gutter between the label and input */
-					
-				/* Margin: 0% for top, 30% for right, 0% for bottom, 4% for left */
-				margin: 0 30% 0 4%;
-			}
-			
-			
-		</style>
-		<?php 
-			// Include the navigation bar
-			include("NavBar.php"); 
-			
-			// Check if Session ID is set. If Not, then redirect to index.php
-			if(!isset($_SESSION['ID'])){  
-				echo '<script> location.replace("index.php")</script> ';
-			}
-			
-			// Initialise Variables
-			$userObj = "";  // Used to hold a copy of the user object
-			$uid            = "";
-			$username       = "";
-			$pubKey         = "";			
-			$email          = "";
-			$fname          = "";
-			$lname          = "";
-			$dob            = "";
-			$contactNo      = "";
-			$address        = "";
-			$accountType    = "";
-			$accountBalance = "";
-			
-			// Populate Variables with data
-			// Accessing the user Object stored in Session variable
-			$userObj = $_SESSION['Object']; // Copying an instance of the user object
-			$uid            = $userObj -> getUID();
-			$username       = $userObj -> getDisplayName();
-			$pubKey         = $userObj -> getPubKey();
-			$email          = $userObj -> getEmail();
-			$fname          = $userObj -> getFirstName();
-			$lname          = $userObj -> getLastName();
-			$dob            = $userObj -> getDOB();
-			$contactNo      = $userObj -> getContactNumber();
-			$address        = $userObj -> getAddress();
-			$accountType    = $userObj -> getAccountType();
-			$accountBalance = $userObj -> getAccountBalance();
-		?>
-	</head>
-	<body>
-		<div class="centerBox">
-			<!--User ID Label -->
-			<label>User ID:</label>
-			<!--User ID Box -->
-			<input type="text" name="userID" value= "<?php echo $uid ?>" readonly><br><br>
-		
-			<!--Username Label-->
-			<label>Username:</label>
-			<!--Username Box-->
-			<input type="text" name="username" value= "<?php echo $username ?>" readonly><br><br>
-			
-			<!--Public Key Label -->
-			<label>Public Key:</label>
-			<!--Public Key Box -->
-			<input type="text" name="pubKey" value= "<?php echo $pubKey ?>" readonly><br><br>
-			<!--Public Key "COPY"  button? -->
-			
-			<!--Email Label-->
-			<label>Email:</label>
-			<!--Email Box-->
-			<input type="email" name="email" value="<?php echo $email ?>" readonly><br><br>
-			
-			<!--First Name Label -->
-			<label>First Name:</label>
-			<!--First Name Box -->
-			<input type="text" name="firstName" value= "<?php echo $fname ?>" readonly><br><br>
-			
-			<!--Last Name Label -->
-			<label>Last Name:</label>
-			<!--Last Name Box -->
-			<input type="text" name="lastName" value= "<?php echo $lname ?>" readonly><br><br>
-			
-			<!--DOB Label -->
-			<label>Date Of Birth:</label>
-			<!--DOB Box -->
-			<input type="text" name="DOB" value = <?php echo $dob ?> readonly><br><br>
-			<!--Cannot use "type=date" here as it does not display properly -->
-			
-			<!--Contact Number Label-->
-			<label>Contact Number:</label>
-			<!--Contact Number Box-->
-			<input type="contact" name="contact" value="<?php echo $contactNo ?>" readonly><br><br>
-
-			<!--Address Label -->
-			<label>Address:</label>
-			<!--Address Box -->
-			<textarea rows="4" cols="50" name="address" readonly><?php echo $address ?></textarea>
-
-			<!--Account Type Label -->
-			<label>Account Type:</label>
-			<!--Account Type Box -->
-			<input type="text" name="accountType" value= "<?php echo $accountType ?>" readonly><br><br>
-			
-			<!--Account Balance Label -->
-			<label>Account Balance:</label>
-			<!--Account Balance Box -->
-			<input type="number" name="accountBalance" value= "<?php echo $accountBalance ?>" readonly><br><br>
-
-			
-		</div>
-	</body>
-</html>
-
-<!--Links used:-->
-<!--https://www.w3schools.com/howto/howto_css_social_login.asp -->
-<!--https://www.w3schools.com/howto/howto_css_login_form_navbar.asp -->
-<!--https://www.w3schools.com/howto/howto_css_login_form.asp -->
-<!--https://www.w3schools.com/tags/att_readonly.asp -->
-<!--https://www.w3schools.com/tags/tag_br.asp -->
-<!--https://www.w3schools.com/tags/att_input_type_email.asp -->
-<!--https://www.w3schools.com/tags/att_input_type_tel.asp -->
-<!--https://css-tricks.com/quick-css-trick-how-to-center-an-object-exactly-in-the-center/ -->
-<!--https://www.w3schools.com/css/css3_buttons.asp -->
-<!--https://stackoverflow.com/questions/12957384/how-to-use-an-instantiated-object-across-different-php-files -->
-<!--https://www.w3schools.com/php/php_sessions.asp -->
-<!--https://www.edureka.co/blog/upcasting-and-downcasting-in-java/ -->
-<!--https://www.c-sharpcorner.com/UploadFile/d9da8a/deference-between-deep-copy-and-shallow-copy-in-php/ -->
-<!--https://www.w3schools.com/tags/att_input_type_date.asp -->
-<!--https://www.w3schools.com/tags/tag_textarea.asp -->
-<!--https://www.w3schools.com/tags/att_input_type_number.asp -->
+<style>
 
 
+.card 
+{
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+	width: 500px;
+	margin-left: auto;
+	float:left;
+	text-align: center;
+	font-family: arial;
+}
+
+a 
+{
+	text-decoration: none;
+	font-size: 22px;
+	color: black;
+}
+.fa {
+  font-size: 25px;
+}
+
+.container {
+  position: relative;
+  width: 20%;
+  float:left;
+  margin-top:20px;
+}
+
+.image {
+  opacity: 1;
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: .5s ease;
+  backface-visibility: hidden;
+}
+
+.middle {
+  transition: .5s ease;
+  opacity: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.container:hover .image {
+  opacity: 0.3;
+}
+
+.container:hover .middle {
+  opacity: 1;
+}
+
+.text {
+
+  background-color: black;
+  color: white;
+  font-size: 16px;
+  padding: 20px 0px;
+  width:200px;
+  margin:auto;
+}
+</style>
+<?php 
+
+echo'<div class="card" style="margin-top:200px;">
+		<h1>'.$BaseUserObj->getDisplayName().'</h1>
+		<div class="w3-panel w3-black">';
+		for($i=0;$i<intval($BaseUserObj->Rating['Rating']);$i++){
+			echo'<span class="fa fa-star checked"></span>';
+
+		}
+		echo'
+		<h2 style="font-weight:bold">Rating:'.$BaseUserObj->Rating['Rating'].'('.$BaseUserObj->Rating['NumOfReviewers'].')</h2>
+		</div> 
+		<p style="font-weight:bold"> Name:'.$BaseUserObj->getFirstName().' '.$BaseUserObj->getLastName().'</p>
+		<p style="font-weight:bold">Email:'.$BaseUserObj->getEmail().'</p>
+		</div>';
+			
+echo'
+<div class="sorter">
+<form method="post" style="margin-top:20px">
+<Label>Sort By:</Label></br>
+<input type="radio" id="ASC" name="Order" checked="checked" value="ASC"><label for="ASC">Ascending</label><br>
+<input type="radio" id="DESC" name="Order" value="DESC"><label for="DESC">Descending</label><br>
+<input type="submit" name="SortCat" value="Category">
+<input type="submit" name="SortPrice" value="Price">
+<input type="submit" name="SortDate" value="Date">
+</form>
+</div>';
+
+
+
+
+if(isset($_POST['SortDate'])){
+$BaseUserObj->ViewAllUserProduct("DateOfListing",$_POST['Order'],$ID);
+}
+if(isset($_POST['SortPrice'])){
+$BaseUserObj->ViewAllUserProduct("ProductInitialPrice",$_POST['Order'],$ID);
+}
+if(isset($_POST['SortCat'])){	
+$BaseUserObj->ViewAllUserProduct("ProductCategory",$_POST['Order'],$ID);
+}
+if(!isset($_POST['SortCat'])&&!isset($_POST['SortPrice'])&&!isset($_POST['SortDate'])){
+$BaseUserObj->ViewAllUserProduct("DateOfListing","ASC",$ID);	
+}
+
+?>
+<div style="float:left;width:100%">
+<hr>
+<h1>Reviews</h1>
+<?php $BaseUserObj->viewReview($ID,"User");?>
+</div>

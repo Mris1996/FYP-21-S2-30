@@ -72,7 +72,7 @@ if (!file_exists('Categories.txt'))
 $myfile = fopen("Categories.txt", "r") or die("Unable to open file!");
 while(($line = fgets($myfile)) !== false) {
 echo 
-"<form method='post' action='".$line.".php'>
+"<form method='post' action='CategoryPage.php?Category=".$line."'>
 <input type='submit' class='btn btn-white' id='Main'  value='".$line."'/>
 </form>";
 }
@@ -108,20 +108,28 @@ echo'<style> input[name="Nav_Login"]{display:none;}</style>';
 echo'<style> input[name="Nav_LogOut"]{display:visible;}</style>';
 echo '<h2>STICOIN BALANCE: '.$_SESSION['Object']->getAccountBalance().'</h2>';
 echo'
+<form action="ListPage.php">
+<input type="submit" value="List a product"/>
+</form>';
+echo'
+<form action="NegotiationsPage.php">
+<input type="submit" value="Chats"/>
+</form>';
+echo'
 <form method="post">
 	<div class="dropdown">
 	<button class="dropbtn"><h2>'.$_SESSION['ID'].'</h2></button>
 	<div class="dropdown-content">
-	<a href="ProfilePage.php">Profile</a>
+	<a href="ProfilePage.php?ID='.$_SESSION['ID'].'">Profile</a>
 	<a href="#">Settings</a>
-	<a href="Negotiations.php">Chat page</a>
-	<a href="ConvertSC.php">Convert to STICoin</a>
-	<a href="ConvertETH.php">Convert to ETH</a>
-	<a href="List.php">List a product</a>
+	<a href="ConvertSCPage.php">Convert to STICoin</a>
+	<a href="ConvertETHPage.php">Convert to ETH</a>
+	<a href="ContractsPage.php">My Contracts</a>
 	<input type="submit" name="Nav_LogOut"  value="Log Out"/>
 	</div>
 </div>
 </form>';
+
 }
 else{
 	echo'<style> input[name="Nav_LogOut"]{display:none;}</style>';
