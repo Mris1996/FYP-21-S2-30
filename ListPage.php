@@ -235,7 +235,7 @@ if(isset($_POST['submit'])&& $submit){
 			<label>Product ID:</label>'.$ProductID.'</br>
 			<label>Name:</label>'.$Name.'</br>
 			<center style="color:red">Head over to it\'s page now!</center>
-			<a href="Product.php?ID='.$ProductID.'">Product.php?ID='.$ProductID.'</a>
+			<a href="ProductPage.php?ID='.$ProductID.'">Product.php?ID='.$ProductID.'</a>
 		</div>';
 	echo'<script>history.pushState({}, "", "")</script>';
 	exit();

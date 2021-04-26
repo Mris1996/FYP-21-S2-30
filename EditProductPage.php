@@ -3,10 +3,16 @@
 if(!isset($_SESSION['ID'])){
 	echo '<script> location.replace("index.php")</script> ';
 }
+$BaseUserOBJ = new BaseUser("Edit Product");
 $NameErr = $CategoryErr = $CaptionErr = $DescriptionErr = $CostErr = $FileErr= "";
+if($_SESSION['ID'] == $BaseUserOBJ->getProductOwner($_GET['ID'])){
+$ProductObj = new Products();
+$ProductObj->InitialiseProduct($_GET['ID']);
 
-
-
+}
+else{
+	echo '<script> location.replace("index.php")</script> ';
+}
 
 
 $submit = true;
@@ -48,7 +54,7 @@ if (empty($_POST["Cost"])){
 
 
 
-if (empty($_POST["file"])){
+if (!empty($_POST["file"])){
 		$file = $_FILES['file'];
 		
 		$File = $_FILES['file']['name'];
@@ -81,15 +87,10 @@ if (empty($_POST["file"])){
 			}
 			
 		} else {
-			if($fileSize==0){
 				
-				$FileErr= "Upload a file";
-				$submit = false;
-			}
-			else{	
 				$FileErr= "You cannot upload files of this type!";
 				$submit = false;
-			}
+			
 		
 		}
 	}	
@@ -175,13 +176,13 @@ input[type="text"]{
     <form method="post" enctype="multipart/form-data">  
 	
 	<h2>Basic Product Information</h2>
-	
-		<label>Upload File</label>
-		<input type="file" name="file" value="<?php echo $Name;?>"/>
+		<image src="<?php echo $ProductObj->Image;?>" width="300" height="300">
+		<label>Upload File:</label>
+		<input type="file" name="file" value="<?php echo $ProductObj->Image;?>"/>
 		<span class="error"><?php echo $FileErr;?></span><br />
 	
 		<label>Name:</label>
-		<input type="text" name="Name" value="<?php echo $Name;?>">
+		<input type="text" name="Name" value="<?php echo $ProductObj->ProductName;?>">
 		<span class="error"><?php echo $NameErr;?></span><br />
 		
 		<label>Category:</label>
@@ -189,56 +190,73 @@ input[type="text"]{
 			<?php
 			$myfile = fopen("Categories.txt", "r") or die("Unable to open file!");
 			while(($line = fgets($myfile)) !== false) {
+			if($line==$ProductObj->ProductCategory){
+							echo 
+			"<option style='background-color:black;color:white;' value=".$line." selected>".$line."</option>";
+			}
+			else{
 			echo 
 			"<option style='background-color:black;color:white;' value=".$line.">".$line."</option>";
-			}fclose($myfile);
+			
+			}}fclose($myfile);
 			?>
 		  </select><br />
 	<hr>
 	<h2>Description of product</h2>  
 	
 		<label>Product Caption:</label>
-		<textarea id="Caption" name="Caption" rows="1" cols="50" value=""><?php echo $Caption;?></textarea>
+		<textarea id="Caption" name="Caption" rows="1" cols="50" value=""><?php echo $ProductObj->ProductCaption;?></textarea>
 		<span class="error"><?php echo $CaptionErr;?></span><br />
 	
 		<label style=" vertical-align: middle;">Product Description:</label>
-		<textarea style=" vertical-align: middle;" id="Description" name="Description" rows="4" cols="50" value=""><?php echo $Description;?></textarea>
+		<textarea style=" vertical-align: middle;" id="Description" name="Description" rows="4" cols="50" value=""><?php echo $ProductObj->ProductDescription?></textarea>
 		<span class="error"><?php echo $DescriptionErr;?></span><br /><br />
 		
 		<label>Initial Cost(STICoins):</label>
 
-		<input type="number" id="Cost" name="Cost" min="0.00" step="any" value="<?php echo $Cost;?>">
+		<input type="number" id="Cost" name="Cost" min="0.00" step="any" value="<?php echo $ProductObj->ProductInitialPrice;?>">
 				<br /><label>Cost will be rounded up to whole number</label>
 		<span class="error"><?php echo $CostErr;?></span><br />
 		<br />
 		
 		
-		<input type="submit" name="submit" value="Submit">
+		<input type="submit" name="submit" value="Done">
     </form>
 </div>
 
 <?php
 
 if(isset($_POST['submit'])&& $submit){
-	
+	$File = $ProductObj->Image;
+	if (!empty($_POST["file"])){
 	$fileDestination = 'images/'.$FileNew;
 	move_uploaded_file($fileTmpName, $fileDestination);
 	$File = $fileDestination;
+	}
+	
 	echo'<style> .List_GUI{display:none;}</style>';
-	$ProductID = $_SESSION['Object']->ListProduct($Name,$Category,$Description,round($Cost, 0),$Caption,$File);
+	if($Name==$ProductObj->ProductName && $Category==$ProductObj->ProductCategory && $Description==$ProductObj->ProductDescription && $Cost==$ProductObj->ProductInitialPrice&& $Caption==$ProductObj->ProductCaption&& $File==$ProductObj->Image){
+	echo'<script>history.pushState({}, "", "")</script>';
+	echo'<div class="Post_Insert_GUI">
+	</br>
+	<center>No changes were made</center>
+	<center style="color:red">Click the link below to return to product page</center>
+	<a href="ProductPage.php?ID='.$_GET['ID'].'">Product.php?ID='.$_GET['ID'].'</a>
+	</div>';
+	echo'<script>history.pushState({}, "", "")</script>';
+	exit();
+	}
+	if($_SESSION['Object']->UpdateProduct($_GET['ID'],$Name,$Category,$Description,round($Cost, 0),$Caption,$File)){
 	echo'<script>history.pushState({}, "", "")</script>';
 	echo'<div class="Post_Insert_GUI">
 			</br>
-			<center>Successfully Listed product!</center>
-			<center>Product Confirmation</center>
-			<img src="'.$File.'" width="500" height="600">
-			<label>Product ID:</label>'.$ProductID.'</br>
-			<label>Name:</label>'.$Name.'</br>
+			<center>Successfully Updated product!</center>
 			<center style="color:red">Head over to it\'s page now!</center>
-			<a href="Product.php?ID='.$ProductID.'">Product.php?ID='.$ProductID.'</a>
+			<a href="ProductPage.php?ID='.$_GET['ID'].'">Product.php?ID='.$_GET['ID'].'</a>
 		</div>';
 	echo'<script>history.pushState({}, "", "")</script>';
 	exit();
+	}
 	
 	
 

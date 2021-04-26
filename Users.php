@@ -21,7 +21,7 @@ class BaseUser
 			$this->createEthereumAccount();
 		}
 	}
-
+	
 	public function LoginValidate($ID,$Pass)
 	{	$ID = filter_var($ID, FILTER_SANITIZE_STRING);
 		$Pass = filter_var($Pass, FILTER_SANITIZE_STRING);
@@ -239,7 +239,8 @@ class BaseUser
 			{ 
 				$Data = $row['Review'];
 			}
-			if($Data!=null){
+
+			if($Data!=null&&sizeof(json_decode($Data))!=0){
 			$Data = json_decode($Data, true);
 			for($i =0;$i<sizeof($Data);$i++){
 			
@@ -344,8 +345,34 @@ class BaseUser
 
 class StandardUser extends BaseUser 
 {
+	
+   public function insertChat ($Message) 
+    {
+        // Will obtain UID implicitly from "this" class and not pass it in as parameter as its dangerous
+        // Need to have code to strip message of funny values to protect from XSS
 
+        // Check that UID is valid before inserting
+        $sql = "SELECT * FROM users WHERE UserID='".$this->UID."'" ;
+        $result = $this->connect()->query($sql) or die($this->connect()->error);
+        if ($result->num_rows == 1) 
+        {
+            echo 'Im in here!';
+            echo $Message;
+            $sql2 = "INSERT INTO negotiation(UserID, Message) VALUES ('".$this->UID."','".$Message."')";
+            $result = $this->connect()->query($sql2) or die( $this->connect()->error); 	
+			echo $this->connect()->error;
+			
+            if (!$mysqli -> query("INSERT INTO negotiation(UserID, Message) VALUES ('".$this->UID."','".$Message."')")) {
+                echo("Error description: " . $mysqli -> error);
+            }
 
+            echo 'Also here!';
+            //echo("Error description: " . $mysqli -> error);
+
+            return "UserID error";
+
+        }
+    }
 	public function __construct($Object){
 	
 		$this->UID = $Object->getUID();
@@ -370,6 +397,7 @@ class StandardUser extends BaseUser
 
 		}
 		}
+		
 		public function getEscrowPrivate(){
 		$sql = "SELECT * FROM escrow" ;
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
@@ -379,7 +407,7 @@ class StandardUser extends BaseUser
 
 		}
 		}
-			public function addNewReview($Reviw,$ProductID){
+		public function addNewReview($Reviw,$ProductID){
 			$sql = "SELECT * FROM product WHERE ProductID='".$ProductID."'" ;
 			$result = $this->connect()->query($sql) or die($this->connect()->error); 
 			while($row = $result->fetch_assoc())
@@ -398,118 +426,7 @@ class StandardUser extends BaseUser
 			$sql="DELETE FROM product WHERE ProductID='$ProductID'";
 			$result = $this->connect()->query($sql) or die($this->connect()->error);  
 		}
-		public function EditProduct($ProductID){
-			$NameErr = $CategoryErr = $CaptionErr = $DescriptionErr = $CostErr = $FileErr= "";
-			$submit = true;
-
-			if(isset($_POST['Edit'])){
-
-			if (empty($_POST["Category"])){
-			$CategoryErr= "Category is required";	
-			$submit = false;
-			}
-
-			if (empty($_POST["ProductCaption"])){
-			$CaptionErr= "Caption is required";	
-			$submit = false;
-			}
-
-
-			if (empty($_POST["ProductName"])){
-			$NameErr= "Name is required";	
-			$submit = false;
-			}
-
-
-
-			if (empty($_POST["Description"])){
-			$DescriptionErr= "Description is required";	
-			$submit = false;
-			}
-
-			if (empty($_POST["Cost"])){
-			$CostErr= "Initial cost is required";	
-			$submit = false;
-			}
-
-
-
-			if (empty($_POST["file"])){
-				$file = $_FILES['file'];
-				
-				$File = $_FILES['file']['name'];
-				$fileTmpName = $_FILES['file']['tmp_name'];
-				$fileSize = $_FILES['file']['size'];
-				$FileError = $_FILES['file']['error'];
-				$fileType = $_FILES['file']['type'];
-				
-				$fileExt = explode('.',$File);
-				$fileActualExt = strtolower(end($fileExt));
-				$allowed = array('jpg','jpeg','png','pdf');
-				
-				if(in_array($fileActualExt, $allowed)){
-				
-					if($FileError == 0){
-							
-						if($fileSize < 50000){	//if file size less then 50mb
-							$FileNew = uniqid('', true).".".$fileActualExt;
-							$submit = true;
-
-						} else {
-							
-							$FileErr= "The file is too big!";
-							$submit = false;
-						}
-					} else {
-						
-						$FileErr= "There was an error uploading the file!";
-						$submit = false;
-					}
-					
-				} else {
-					if($fileSize==0){
-						
-						$FileErr= "Upload a file";
-						$submit = false;
-					}
-					else{	
-						$FileErr= "You cannot upload files of this type!";
-						$submit = false;
-					}
-				
-				}
-			}	
-			}
-			$ID = trim($ProductID);
-			$sql = "SELECT * FROM product WHERE ProductID='".$ProductID."'" ;
-			$result = $this->connect()->query($sql) or die($this->connect()->error); 
-			while($row = $result->fetch_assoc())
-			{ 
-				echo'
-				<div class="card">
-				<img src="'.$row["Image"].'" style="width:50%;margin:auto">
-				<input type="file" name="file"/>
-				<span class="error"><?php echo $FileErr;?></span><br />
-				<h2 style="text-align:center">'.$ID.'</h2>
-				<hr style="background-color:white">
-				<p>Seller:<a href="ProfilePage.php?ID='.$row["SellerUserID"].'">'.$row["SellerUserID"].'</a></p>
-				<p>Name:<input type="text" name="ProductName" value="'.$row["ProductName"].'"> </p>
-				<p>Category: '.$row["ProductCategory"].'</p>
-				<p>Status:'.$row["Status"].'</p>
-				<hr style="background-color:white">
-				<p style="text-align:left"><label style=" vertical-align: middle;">Caption:</label><input type="text" name="ProductCaption" value="'.$row["ProductCaption"].'"></p>
-				<span class="error">'.$CaptionErr.'</span><br />
-				<p style="text-align:left;"><label style=" vertical-align: middle;">Description:</label><textarea style=" vertical-align: middle;" rows="4" cols="50" name="ProductDescription">'.$row["ProductDescription"].'</textarea></p><hr>
-				<span class="error">'.$DescriptionErr.'</span><br />
-				<h2 style="text-align:center">Initital Cost: <input type="number" name="ProductInitialPrice" value="'.$row["ProductInitialPrice"].'"></h2>
-				<form method="post" >
-				<input type="submit" name="Confirmation" value="Edit">
-				<input type="submit" name="Confirmation" value="Cancel"></div>
-				</form>
-					  ';
-					
-			}
-		}
+	
 		public function checkAccountInNetwork($WalletPubKey){
 			$host    = "localhost";
 			$port    = 8080;
@@ -606,6 +523,13 @@ class StandardUser extends BaseUser
 				$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
 	
 				return $ProductID;
+	}
+	public function UpdateProduct($ProductID,$Name,$Category,$Description,$Cost,$Caption,$File){
+			
+				$sql = "UPDATE `product` SET `ProductName`= '$Name',`ProductCategory`='$Category',`ProductDescription`='$Description',`ProductCaption`='$Caption',`ProductInitialPrice`='$Cost',`Image`='$File' WHERE `ProductID` = '$ProductID'";
+				$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
+			
+				return true;
 	}
 
 }

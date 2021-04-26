@@ -87,6 +87,7 @@ fclose($myfile);
 
 date_default_timezone_set("Singapore");
 require_once("Users.php");
+require_once("Products.php");
 session_start();
 if(isset($_POST['Nav_Main'])){
 header("Location:index.php");
