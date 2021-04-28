@@ -15,6 +15,8 @@ class BaseUser
 	public $AccountBalance;
 	private $PrivateKey;
 	public $Rating;
+	public $Status;
+	public $results_per_page = 10;  
 	public function __construct($Operation)
 	{
 		if($Operation == "SignUp"){
@@ -55,6 +57,7 @@ class BaseUser
 		}
 		
 	}
+	
 	public function GetAccountBalanceFromServer($PubKey){
 		$host    = "localhost";
 		$port    = 8080;
@@ -142,6 +145,7 @@ class BaseUser
 			$this->AccountType = $row["AccountType"];
 			$this->AccountBalance = $this->GetAccountBalanceFromServer($this->PubKey);
 			$this->Rating = json_decode($row["Rating"],true);
+			$this->Status = $row["Status"];
 
 	}
 	return true;
@@ -180,7 +184,9 @@ class BaseUser
 	public function getAccountBalance(){
 		return $this->AccountBalance;
 	}
-
+	public function getStatus(){
+		return $this->Status;
+	}
 	public function connect(){
 		$servername= "localhost";
 		$username = "root";
@@ -213,6 +219,7 @@ class BaseUser
 		
 			}
 	}
+
 	public function getProductOwner($ProductID){
 			$ID = trim($ProductID);
 			$sql = "SELECT * FROM product WHERE ProductID='".$ProductID."'" ;
@@ -262,8 +269,8 @@ class BaseUser
 			</div></br>';	
 			}
 	}
-	public function ViewAllProduct($sortby,$Order,$Category){
-		
+	public function ViewAllProduct($sortby,$Order,$Category,$page){
+			
 			if($Category=="All"){
 					$sql = "SELECT * FROM product ORDER BY $sortby $Order" ;
 			}
@@ -271,12 +278,81 @@ class BaseUser
 					$sql = "SELECT * FROM product WHERE ProductCategory = '".$Category."' ORDER BY $sortby $Order" ;
 			}
 			$result = $this->connect()->query($sql) or die($this->connect()->error); 
-			if ($result->num_rows == 0) 
+			$number_of_result = mysqli_num_rows($result);  
+			$number_of_page = ceil ($number_of_result / $this->results_per_page);  
+			if($page>$number_of_page){
+				$page = 1;
+			}
+			$page_first_result = ($page-1) * $this->results_per_page;  
+			if ($number_of_result == 0) 
 			{
 				echo'
 					<b>No products in this category</b>';
+				return;
+			}
+			if($Category=="All"){
+					$sql = "SELECT * FROM product ORDER BY $sortby $Order LIMIT " . $page_first_result . ',' . $this->results_per_page; 
+			}
+			else{
+					$sql = "SELECT * FROM product WHERE ProductCategory = '".$Category."' ORDER BY $sortby $Order LIMIT " . $page_first_result . ',' . $this->results_per_page; 
+			}
+			$result = mysqli_query($this->connect(), $sql);  
+			while($row = $result->fetch_assoc())
+			{ 
 
-			}	
+			echo'
+			<div class="container">
+			<img src="'.$row["Image"].'" class="image" style="width:100%">
+			<div class="middle">
+			<div class="text">Seller:<a href="ProfilePage.php?ID='.$row["SellerUserID"].'">'.$row["SellerUserID"].'</a></div>
+			<div class="text">Product Name:'.$row["ProductName"].'</div>
+			<div class="text">Category:'.$row["ProductCategory"].'</div>
+			<div class="text">Date Listed:<i>'.date('d-m-Y',strtotime($row["DateOfListing"])).'</i></div>
+			<div class="text">Initial Price:'.$row["ProductInitialPrice"].'</div>
+			<form action="ProductPage.php?ID='.$row["ProductID"].'" method="post"></br>
+			<input type="submit" value="Product Page"/>
+			</form>
+			</div>
+			</div>';
+		
+			}
+			echo'<div style="margin-top:10px;width:1000px;margin-left:auto;margin-right:auto;text-align:center">';			
+			echo'<b style="bottom: 20;">Page</b></BR>';
+			echo '<a href = "index.php?page=1">First </a>'; 
+			for($page = 1; $page<= $number_of_page; $page++) { 
+				if($page==1){
+
+				echo '<a href = "index.php?page=' . $page . '">' . $page . ' </a>';  
+				
+				}
+				else{
+				echo '<a href = "index.php?page=' . $page . '">' . $page . ' </a>';  
+				}
+			} 
+			echo '<a href = "index.php?page=' . $number_of_page . '">Last </a>';  
+			echo'</div>';
+		
+			
+			}
+		public function ViewSearchProduct($sortby,$Order,$Query,$page){
+			
+			$sql = "SELECT * FROM product WHERE ProductName LIKE '%$Query%' or ProductCategory LIKE '%$Query' or SellerUserID LIKE '%$Query%' ORDER BY $sortby $Order" ;
+			$result = $this->connect()->query($sql) or die($this->connect()->error); 
+			$number_of_result = mysqli_num_rows($result);  
+			$number_of_page = ceil ($number_of_result / $this->results_per_page); 
+			if($page>$number_of_page){
+				$page = 1;
+			}			
+			$page_first_result = ($page-1) * $this->results_per_page;  
+			if ($result->num_rows == 0) 
+			{
+				echo'
+					<b>No search result found</b>';
+
+			}
+
+			$sql = "SELECT * FROM product WHERE ProductName LIKE '%$Query%' or ProductCategory LIKE '%$Query' or SellerUserID LIKE '%$Query%' ORDER BY $sortby $Order LIMIT " . $page_first_result . ',' . $this->results_per_page; 
+			$result = mysqli_query($this->connect(), $sql);  
 			while($row = $result->fetch_assoc())
 			{ 
 
@@ -296,10 +372,25 @@ class BaseUser
 			</div>';
 		
 			}	
-			
+			echo'<div style="margin-top:10px;width:1000px;margin-left:auto;margin-right:auto;text-align:center">';			
+			echo'<b style="bottom: 20;">Page</b></BR>';
+			echo '<a href = "index.php?page=1">First </a>'; 
+			for($page = 1; $page<= $number_of_page; $page++) { 
+				if($page==1){
+
+				echo '<a href = "index.php?page=' . $page . '">' . $page . ' </a>';  
+				
+				}
+				else{
+				echo '<a href = "index.php?page=' . $page . '">' . $page . ' </a>';  
+				}
+			} 
+			echo '<a href = "index.php?page=' . $number_of_page . '">Last </a>';  
+			echo'</div>';
 		
 			
 	}
+		
 	public function ViewAllUserProduct($sortby,$Order,$UID){
 			
 			$sql = "SELECT * FROM product WHERE SellerUserID = '$UID' ORDER BY $sortby $Order" ;
@@ -531,10 +622,49 @@ class StandardUser extends BaseUser
 			
 				return true;
 	}
-
+	public function EditProfileValidate($Email,$FName,$LName,$ContactNumber,$DispName,$Address){
+	
+		$sql = "SELECT * FROM users WHERE Email='".$Email."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		if ($result->num_rows > 1) 
+		{
+			return "Email error";
+			
+		}
+		$ID = $this->getUID();
+		$sql = "UPDATE `users` SET `DisplayName`= '$DispName',`Email`= '$Email',`FirstName`= '$FName',`LastName`='$LName',`ContactNumber`='$ContactNumber',`Address`= '$Address' WHERE `UserID` = '$ID' ";
+		$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
+		echo $this->connect()->error;
+		
+		return "validated";
+	}
+	
+	public function ChangePasswordValidate($Pass,$NewPass){
+			$sql = "SELECT Password FROM users WHERE UserID='".$this->getUID()."'" ;
+			$result = $this->connect()->query($sql) or die($this->connect()->error); 
+			$validated = false;
+			while($row = $result->fetch_assoc()){ 
+				if(Password_verify($Pass,$row["Password"]))
+				{	$validated = true;
+					
+				}
+				
+			}	
+			if($validated)
+			{		
+				$Hpass = password_hash($Pass, PASSWORD_DEFAULT);
+				$ID = $this->getUID();
+				$sql = "UPDATE `users` SET `Password`= '$Hpass' WHERE `UserID` = '$ID' ";
+				$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
+				return "Validated";
+			}
+			else{
+				return "Wrong Password";
+			}
+	}
 }
 
-class Admin extends BaseUser 
+class Admin extends StandardUser 
 {
 	
 	
@@ -553,16 +683,39 @@ class Admin extends BaseUser
 		$this->AccountBalance = $Object->getAccountBalance();
 	
 	}
-	
-	public function connect(){
-		$servername= "localhost";
-		$username = "root";
-		$password = "";
-		$dbname = "music-to-go";
-		$conn = new mysqli($servername, $username, $password, $dbname);
-		return $conn;
+	public function ListOfUsers(){
+		$sql = "SELECT * FROM users where AccountType != 'Administrator'";
+		$usersarray = array();
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		while($row = $result->fetch_assoc())
+		{ 	
+			array_push($usersarray,$row['UserID']);
+		}
 		
+		return $usersarray;
 	}
-
+	public function suspendUser($ID,$SuspensionDate){
+		$data = array('Suspended',$SuspensionDate);
+		$data = json_encode($data);
+		$sql = "UPDATE `users` SET `Status`= '$data' WHERE `UserID` = '$ID' ";
+		$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
+	}
+	public function Removestatus($ID){
+		$data = array('Normal','');
+		$data = json_encode($data);
+		$sql = "UPDATE `users` SET `Status`= '$data' WHERE `UserID` = '$ID' ";
+		$result = $this->connect()->query($sql) or die( $this->connect()->error);
+	}
+	public function Ban($ID){
+		$data = array('Banned','');
+		$data = json_encode($data);
+		$sql = "UPDATE `users` SET `Status`= '$data' WHERE `UserID` = '$ID' ";
+		$result = $this->connect()->query($sql) or die( $this->connect()->error);
+	}
+	public function MakeAdmin($ID){
+		$sql = "UPDATE `users` SET `AccountType`='Administrator' WHERE `UserID` = '$ID' ";
+		$result = $this->connect()->query($sql) or die( $this->connect()->error);
+	}
+	
 	
 }

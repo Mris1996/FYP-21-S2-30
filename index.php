@@ -1,5 +1,4 @@
-<?php require_once("NavBar.php");
-?> 
+<?php require_once("NavBar.php");?> 
 <style>
 .Carousel{
 	width:80%;
@@ -129,21 +128,30 @@
 </div>
 <hr>
 <?php
-
-if(isset($_POST['SortDate'])){
+if (!isset ($_GET['page']) ) {  
+	$page = 1;  
+} else {  
+	$page = $_GET['page'];  
+}
 $BaseUserOBJ = new BaseUser("index page");	
-$BaseUserOBJ->ViewAllProduct("DateOfListing",$_POST['Order'],"All");
+if(isset($_POST['SortDate'])){
+
+$BaseUserOBJ->ViewAllProduct("DateOfListing",$_POST['Order'],"All",$page);
 }
 if(isset($_POST['SortPrice'])){
-$BaseUserOBJ = new BaseUser("index page");	
-$BaseUserOBJ->ViewAllProduct("ProductInitialPrice",$_POST['Order'],"All");
+	
+$BaseUserOBJ->ViewAllProduct("ProductInitialPrice",$_POST['Order'],"All",$page);
 }
 if(isset($_POST['SortCat'])){
-$BaseUserOBJ = new BaseUser("index page");	
-$BaseUserOBJ->ViewAllProduct("ProductCategory",$_POST['Order'],"All");
+	
+$BaseUserOBJ->ViewAllProduct("ProductCategory",$_POST['Order'],"All",$page);
 }
 if(!isset($_POST['SortCat'])&&!isset($_POST['SortPrice'])&&!isset($_POST['SortDate'])){
-$BaseUserOBJ = new BaseUser("index page");	
-$BaseUserOBJ->ViewAllProduct("DateOfListing","ASC","All");	
+
+$BaseUserOBJ->ViewAllProduct("DateOfListing","ASC","All",$page);	
 }
+  
+
+   
 ?>
+<?php require_once("Footer.php");?> 

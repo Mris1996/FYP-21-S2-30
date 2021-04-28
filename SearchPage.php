@@ -1,27 +1,17 @@
 <?php require_once("NavBar.php");
-$Category = $_GET['Category'];
+if(isset($_POST['searchfunction'])){
+    if(empty($_POST['SearchBar'])){
 
-if(!isset($Category)){
-echo '<script> location.replace("index.php")</script> ';	
-}
-if (!file_exists('Categories.txt')) 
-{
-	fopen("Categories.txt", "w");
-}
-$count = 0;
-$myfile = fopen("Categories.txt", "r") or die("Unable to open file!");
-while(($line = fgets($myfile)) !== false) {
-if(trim($Category)==trim($line)){
-	$count++;
-}
-}
-fclose($myfile);
-if($count==0){
-echo '<script> location.replace("index.php")</script> ';	
-}
+        echo "<h3> Enter a search query </h3>";
+    }else{
+
+       echo "<h1>Search results for :".$_POST['SearchBar']."</h1>";
+    
+
+
 ?> 
-
 <style>
+
 .container {
   position: relative;
   width: 20%;
@@ -84,22 +74,23 @@ if (!isset ($_GET['page']) ) {
 } else {  
 	$page = $_GET['page'];  
 }
-$BaseUserOBJ = new BaseUser("Category page");	
+$BaseUserOBJ = new BaseUser("Search page");	
 if(isset($_POST['SortDate'])){
 
-$BaseUserOBJ->ViewAllProduct("DateOfListing",$_POST['Order'],$Category,$page);
+$BaseUserOBJ->ViewSearchProduct("DateOfListing",$_POST['Order'],$_POST['SearchBar'],$page);
 }
 if(isset($_POST['SortPrice'])){
-	
-$BaseUserOBJ->ViewAllProduct("ProductInitialPrice",$_POST['Order'],$Category,$page);
+
+$BaseUserOBJ->ViewSearchProduct("ProductInitialPrice",$_POST['Order'],$_POST['SearchBar'],$page);
 }
 if(isset($_POST['SortCat'])){
 
-$BaseUserOBJ->ViewAllProduct("ProductCategory",$_POST['Order'],$Category,$page);
+$BaseUserOBJ->ViewSearchProduct("ProductCategory",$_POST['Order'],$_POST['SearchBar'],$page);
 }
 if(!isset($_POST['SortCat'])&&!isset($_POST['SortPrice'])&&!isset($_POST['SortDate'])){
-	
-$BaseUserOBJ->ViewAllProduct("DateOfListing","ASC",$Category,$page);	
+
+$BaseUserOBJ->ViewSearchProduct("DateOfListing","ASC",$_POST['SearchBar'],$page);	
+}
+}
 }
 ?>
-<?php require_once("Footer.php");?> 

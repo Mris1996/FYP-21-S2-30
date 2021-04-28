@@ -56,6 +56,7 @@
   margin: 10px auto;
   padding: 3px;
 }
+
 </style>
 
 </head>
@@ -122,10 +123,14 @@ echo'
 	<button class="dropbtn"><h2>'.$_SESSION['ID'].'</h2></button>
 	<div class="dropdown-content">
 	<a href="ProfilePage.php?ID='.$_SESSION['ID'].'">Profile</a>
-	<a href="#">Settings</a>
+	<a href="SettingsPage.php">Settings</a>
 	<a href="ConvertSCPage.php">Convert to STICoin</a>
 	<a href="ConvertETHPage.php">Convert to ETH</a>
-	<a href="ContractsPage.php">My Contracts</a>
+	<a href="ContractsPage.php">My Contracts</a>';
+if($_SESSION['Object']->getAccountType()=="Administrator"){
+	echo'<a href="AdministratorPage.php">Manage accounts</a>';
+}
+echo'
 	<input type="submit" name="Nav_LogOut"  value="Log Out"/>
 	</div>
 </div>
@@ -152,8 +157,8 @@ exit();
 
 
 <div class="SearchBar">
-	<form action="products.php" method="post">
-		<input type="text"   aria-label="Search" id="SearchBar" style="width:500px;height:100px;background:white;opacity:0.9; border-radius:5px;color:black" name="SearchBar" placeholder="Search">
+	<form action="SearchPage.php" method="post">
+		<input type="text"   aria-label="Search" id="SearchBar" style="width:500px;height:50px;background:white;opacity:0.9; border-radius:5px;color:black" name="SearchBar" placeholder="Search">
 	<input type="hidden" name="searchfunction" value="">
 	</form>
 </div>

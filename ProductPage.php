@@ -115,3 +115,4 @@ echo '<script> location.replace("index.php")</script> ';
 }
 
 ?>
+<?php require_once("Footer.php");?> 
