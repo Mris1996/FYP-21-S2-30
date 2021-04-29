@@ -23,12 +23,14 @@ echo '<script> location.replace("index.php")</script> ';
 
 <style>
 .container {
-  position: relative;
-  width: 20%;
-  float:left;
-  margin-top:20px;
+	position: initial;
+	width: 20%;
+	height:500px;
+	float:left;
+	margin-left:200px;
+ 
+  
 }
-
 .image {
   opacity: 1;
   display: block;
@@ -41,11 +43,11 @@ echo '<script> location.replace("index.php")</script> ';
 .middle {
   transition: .5s ease;
   opacity: 0;
-  position: absolute;
-  top: 50%;
+  position: relative;
+  
   left: 50%;
-  transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
+  transform: translate(-30%,-100%);
+  -ms-transform: translate(-30%, -30%);
   text-align: center;
 }
 
@@ -56,7 +58,6 @@ echo '<script> location.replace("index.php")</script> ';
 .container:hover .middle {
   opacity: 1;
 }
-
 .text {
 
   background-color: black;
@@ -87,19 +88,19 @@ if (!isset ($_GET['page']) ) {
 $BaseUserOBJ = new BaseUser("Category page");	
 if(isset($_POST['SortDate'])){
 
-$BaseUserOBJ->ViewAllProduct("DateOfListing",$_POST['Order'],$Category,$page);
+$BaseUserOBJ->ViewAllProduct("DateOfListing",$_POST['Order'],$Category,$page,"CategoryPage.php");
 }
 if(isset($_POST['SortPrice'])){
 	
-$BaseUserOBJ->ViewAllProduct("ProductInitialPrice",$_POST['Order'],$Category,$page);
+$BaseUserOBJ->ViewAllProduct("ProductInitialPrice",$_POST['Order'],$Category,$page,"CategoryPage.php");
 }
 if(isset($_POST['SortCat'])){
 
-$BaseUserOBJ->ViewAllProduct("ProductCategory",$_POST['Order'],$Category,$page);
+$BaseUserOBJ->ViewAllProduct("ProductCategory",$_POST['Order'],$Category,$page,"CategoryPage.php");
 }
 if(!isset($_POST['SortCat'])&&!isset($_POST['SortPrice'])&&!isset($_POST['SortDate'])){
 	
-$BaseUserOBJ->ViewAllProduct("DateOfListing","ASC",$Category,$page);	
+$BaseUserOBJ->ViewAllProduct("DateOfListing","ASC",$Category,$page,"CategoryPage.php");	
 }
 ?>
 <?php require_once("Footer.php");?> 

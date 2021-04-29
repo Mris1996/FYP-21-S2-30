@@ -56,7 +56,20 @@
   margin: 10px auto;
   padding: 3px;
 }
-
+.pagination{
+	clear: both;
+    position: relative;
+    height:10px;
+    margin-top: 300px;
+	width:0px;
+	margin:auto;
+	text-align:center;
+}
+.pagination a{
+	
+	margin-left:10px;
+	
+}
 </style>
 
 </head>

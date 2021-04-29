@@ -16,7 +16,7 @@ class BaseUser
 	private $PrivateKey;
 	public $Rating;
 	public $Status;
-	public $results_per_page = 10;  
+	public $results_per_page = 12;  
 	public function __construct($Operation)
 	{
 		if($Operation == "SignUp"){
@@ -57,7 +57,23 @@ class BaseUser
 		}
 		
 	}
-	
+	public function ForgetPassword ($Email){
+		$sql = "SELECT * FROM users WHERE Email='".$Email."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);  
+		$ID = chr(rand(97,122)).chr(rand(97,122)).chr(rand(97,122)).chr(rand(97,122)).chr(rand(97,122)).chr(rand(97,122)).str_pad(rand(0000,9999),4,0,STR_PAD_LEFT). substr(rand(0000,9999), 2, 4);
+						
+		if ($result->num_rows == 0) 
+		{
+			return "Email error";
+			
+		}
+		 $header = "From:fyp21s230@gmail.com \r\n";
+         $header .= "MIME-Version: 1.0\r\n";
+         $header .= "Content-type: text/html\r\n";
+		$msg = "You have 5 minutes to reset your password before the link expires.Click on the link below to reset your password\n <a href ='http://localhost/STIC/ResetPassword.php?ID=".$ID."'>www.example.com</a>";
+		$msg = wordwrap($msg,70);
+		mail($Email,"Reset Password",$msg,$header);
+	}
 	public function GetAccountBalanceFromServer($PubKey){
 		$host    = "localhost";
 		$port    = 8080;
@@ -269,7 +285,7 @@ class BaseUser
 			</div></br>';	
 			}
 	}
-	public function ViewAllProduct($sortby,$Order,$Category,$page){
+	public function ViewAllProduct($sortby,$Order,$Category,$page,$pagename){
 			
 			if($Category=="All"){
 					$sql = "SELECT * FROM product ORDER BY $sortby $Order" ;
@@ -302,7 +318,7 @@ class BaseUser
 
 			echo'
 			<div class="container">
-			<img src="'.$row["Image"].'" class="image" style="width:100%">
+			<img src="'.$row["Image"].'" class="image" style="width:500px;height:400px">
 			<div class="middle">
 			<div class="text">Seller:<a href="ProfilePage.php?ID='.$row["SellerUserID"].'">'.$row["SellerUserID"].'</a></div>
 			<div class="text">Product Name:'.$row["ProductName"].'</div>
@@ -313,23 +329,23 @@ class BaseUser
 			<input type="submit" value="Product Page"/>
 			</form>
 			</div>
-			</div>';
+			</div></div>';
 		
 			}
-			echo'<div style="margin-top:10px;width:1000px;margin-left:auto;margin-right:auto;text-align:center">';			
-			echo'<b style="bottom: 20;">Page</b></BR>';
-			echo '<a href = "index.php?page=1">First </a>'; 
+			echo'<div class = "pagination" >';			
+			echo'<b style="bottom: 20;">Page</b></BR></BR>';
+			echo '<a href = "'.$pagename.'?page=1">First </a>'; 
 			for($page = 1; $page<= $number_of_page; $page++) { 
 				if($page==1){
 
-				echo '<a href = "index.php?page=' . $page . '">' . $page . ' </a>';  
+				echo '<a href = "'.$pagename.'?page=' . $page . '">' . $page . ' </a>';  
 				
 				}
 				else{
-				echo '<a href = "index.php?page=' . $page . '">' . $page . ' </a>';  
+				echo '<a href = "'.$pagename.'?page=' . $page . '">' . $page . ' </a>';  
 				}
 			} 
-			echo '<a href = "index.php?page=' . $number_of_page . '">Last </a>';  
+			echo '<a href = "'.$pagename.'?page=' . $number_of_page . '">Last </a>';  
 			echo'</div>';
 		
 			
@@ -358,7 +374,7 @@ class BaseUser
 
 			echo'
 			<div class="container">
-			<img src="'.$row["Image"].'" class="image" style="width:100%">
+			<img src="'.$row["Image"].'" class="image" style="width:500px;height:400px">
 			<div class="middle">
 			<div class="text">Seller:<a href="ProfilePage.php?ID='.$row["SellerUserID"].'">'.$row["SellerUserID"].'</a></div>
 			<div class="text">Product Name:'.$row["ProductName"].'</div>
@@ -372,20 +388,20 @@ class BaseUser
 			</div>';
 		
 			}	
-			echo'<div style="margin-top:10px;width:1000px;margin-left:auto;margin-right:auto;text-align:center">';			
+			echo'<div class = "pagination" >';	
 			echo'<b style="bottom: 20;">Page</b></BR>';
-			echo '<a href = "index.php?page=1">First </a>'; 
+			echo '<a href = "SearchPage.php?page=1">First </a>'; 
 			for($page = 1; $page<= $number_of_page; $page++) { 
 				if($page==1){
 
-				echo '<a href = "index.php?page=' . $page . '">' . $page . ' </a>';  
+				echo '<a href = "SearchPage.php?page=' . $page . '">' . $page . ' </a>';  
 				
 				}
 				else{
-				echo '<a href = "index.php?page=' . $page . '">' . $page . ' </a>';  
+				echo '<a href = "SearchPage.php?page=' . $page . '">' . $page . ' </a>';  
 				}
 			} 
-			echo '<a href = "index.php?page=' . $number_of_page . '">Last </a>';  
+			echo '<a href = "SearchPage.php?page=' . $number_of_page . '">Last </a>';  
 			echo'</div>';
 		
 			
@@ -407,7 +423,7 @@ class BaseUser
 
 			echo'
 			<div class="container">
-			<img src="'.$row["Image"].'" class="image" style="width:100%">
+			<img src="'.$row["Image"].'" class="image" style="width:500px;height:400px">
 			<div class="middle">
 			<div class="text">Product Name:'.$row["ProductName"].'</div>
 			<div class="text">Category:'.$row["ProductCategory"].'</div>
@@ -609,10 +625,16 @@ class StandardUser extends BaseUser
 						break;
 					  }
 				}
-				
-				$sql = "INSERT INTO `product`(`ProductID`, `ProductCategory`, `ProductDescription`, `ProductCaption`, `ProductInitialPrice`, `Image`,  `ProductName`,`SellerUserID`) VALUES ('".$ProductID."','".$Category."','".$Description."','".$Caption."','".$Cost."','".$File."','".$Name."','".$this->getUID()."')";
-				$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
 	
+				$sql = "SELECT * FROM `users`ORDER BY RAND()  LIMIT 1  ";
+				$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
+					while($row = $result->fetch_assoc())
+				{ 
+					$User = $row['UserID'];
+				}
+				
+			 mysqli_query($this->connect(),"INSERT INTO `product` (`ProductID`, `ProductCategory`, `ProductDescription`, `ProductCaption`, `ProductInitialPrice`, `ProductName`,`SellerUserID`,`Image` ) VALUES ('".$ProductID."','".$Category."','".$Description."','".$Caption."','".$Cost."','".$Name."','".$User."','".$File."')") or die(mysqli_error($this->connect()));
+	 	
 				return $ProductID;
 	}
 	public function UpdateProduct($ProductID,$Name,$Category,$Description,$Cost,$Caption,$File){

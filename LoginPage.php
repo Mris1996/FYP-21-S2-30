@@ -5,10 +5,7 @@
 	margin-right:auto;
 	width:500px;
 	height:400px;
-	background-color:black;
-	text-align:center;
-	opacity:0.8;
-	border-radius: 100px;
+	
 	font-size:20px;
 	
 }
@@ -110,7 +107,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['LoginButton'])){
 <span class="error"><?php echo $LoginLoginIDerror;?></span><br /><br />
 <label>Password:</label><input type="password" name="Login_Password">
 <span class="error"><?php echo $PasswordPassworderror;?></span><br /><br />
-<input type="Submit" name="LoginButton" value="Login"/>
+<input type="Submit" name="LoginButton" value="Login"/><br />
+<a href="ForgetPassword.php">Forgot password?</a>
 </form>
 <form action="SignUpPage.php" method="post">
 <input type = "Submit" name="SignupButotn" value ="Sign Up"/>

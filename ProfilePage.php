@@ -35,12 +35,14 @@ a
 }
 
 .container {
-  position: relative;
-  width: 20%;
-  float:left;
-  margin-top:20px;
+	position: initial;
+	width: 20%;
+	height:500px;
+	float:left;
+	margin-left:200px;
+ 
+  
 }
-
 .image {
   opacity: 1;
   display: block;
@@ -53,11 +55,11 @@ a
 .middle {
   transition: .5s ease;
   opacity: 0;
-  position: absolute;
-  top: 50%;
+  position: relative;
+  
   left: 50%;
-  transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
+  transform: translate(-30%,-100%);
+  -ms-transform: translate(-30%, -30%);
   text-align: center;
 }
 

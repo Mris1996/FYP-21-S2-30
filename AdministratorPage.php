@@ -48,7 +48,7 @@ if (!isset ($_GET['page']) ) {
 } else {  
 	$page = $_GET['page'];  
 }
-$Data_per_page = 2;
+$Data_per_page = 10;
 $number_of_page = ceil(sizeof($ArrayOfUsers)/$Data_per_page) ;
 if(round($number_of_page) == 0){
 	
