@@ -67,7 +67,7 @@ if (empty($_POST["file"])){
 					
 				if($fileSize < 500000){	//if file size less then 50mb
 					$FileNew = uniqid('', true).".".$fileActualExt;
-					$submit = true;
+					
 
 				} else {
 					
