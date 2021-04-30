@@ -406,7 +406,7 @@ class BaseUser
 		
 			
 	}
-		
+	
 	public function ViewAllUserProduct($sortby,$Order,$UID){
 			
 			$sql = "SELECT * FROM product WHERE SellerUserID = '$UID' ORDER BY $sortby $Order" ;
@@ -453,33 +453,24 @@ class BaseUser
 class StandardUser extends BaseUser 
 {
 	
-   public function insertChat ($Message) 
-    {
-        // Will obtain UID implicitly from "this" class and not pass it in as parameter as its dangerous
-        // Need to have code to strip message of funny values to protect from XSS
+	public function RetrieveChat(){
+	
+		$sql = "SELECT * FROM (
+		SELECT name, message, time FROM chat_messages ORDER BY time DESC LIMIT 20
+	) tmp ORDER BY time ASC";
 
-        // Check that UID is valid before inserting
-        $sql = "SELECT * FROM users WHERE UserID='".$this->UID."'" ;
-        $result = $this->connect()->query($sql) or die($this->connect()->error);
-        if ($result->num_rows == 1) 
-        {
-            echo 'Im in here!';
-            echo $Message;
-            $sql2 = "INSERT INTO negotiation(UserID, Message) VALUES ('".$this->UID."','".$Message."')";
-            $result = $this->connect()->query($sql2) or die( $this->connect()->error); 	
-			echo $this->connect()->error;
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+
+		while($row = $result->fetch_assoc())
+		{
 			
-            if (!$mysqli -> query("INSERT INTO negotiation(UserID, Message) VALUES ('".$this->UID."','".$Message."')")) {
-                echo("Error description: " . $mysqli -> error);
-            }
+			echo'	<span class="author">'.$row['name'].':</span>
+				<span class="messsage-text">'.$row['message'].'</span></br>';
+				
+		}
 
-            echo 'Also here!';
-            //echo("Error description: " . $mysqli -> error);
+	}
 
-            return "UserID error";
-
-        }
-    }
 	public function __construct($Object){
 	
 		$this->UID = $Object->getUID();
