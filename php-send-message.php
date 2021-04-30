@@ -1,5 +1,7 @@
 <?php
-
+require_once("Users.php");
+require_once("Products.php");
+session_start();
 
 // get the input
 $name = trim(htmlspecialchars($_POST['name'] ?? ''));
@@ -7,18 +9,13 @@ $message = trim(htmlspecialchars($_POST['message'] ?? ''));
 
 if (!$name || !$message)
 	die;
-//$_SESSION['Object']->InsertChat($name,$message,'DemoUser2');
-$mysqli = new mysqli('localhost', 'root', '', 'sticdb');
 
-// insert into the database
-$stmt = $mysqli -> prepare('INSERT INTO chat_messages (name, time, message) VALUES (?,?,?)');
-$time = time();
-$stmt -> bind_param('sis', $name, $time, $message);
-$stmt -> execute();
+$_SESSION['Object']->InsertChat($name,$_SESSION['OtherUser'],$message);
+
 	
 // Send the HTTP request to the websockets server (it runs both  HTTP and Websockets)
 // (change the URL accordingly)
-$ch = curl_init('http://localhost:8008');
+$ch = curl_init('http://localhost:3030');
 // It's POST
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 

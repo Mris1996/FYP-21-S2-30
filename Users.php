@@ -455,22 +455,51 @@ class StandardUser extends BaseUser
 	
 	public function RetrieveChat(){
 	
-		$sql = "SELECT * FROM (
-		SELECT name, message, time FROM chat_messages ORDER BY time DESC LIMIT 20
-	) tmp ORDER BY time ASC";
+		$sql = "SELECT * FROM negotiation LIMIT 20 ";
 
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 
 		while($row = $result->fetch_assoc())
 		{
+			$Msg = json_decode($row['Message'],true);
 			
-			echo'	<span class="author">'.$row['name'].':</span>
-				<span class="messsage-text">'.$row['message'].'</span></br>';
 				
 		}
 
-	}
+		if(sizeof($Msg)>0){
+			for($x = 0; $x<sizeof($Msg);$x++){
+				echo'	<span class="author">'.	$Msg [$x]['User'].':</span>
+				<span class="messsage-text">'.$Msg [$x]['Message'].'</span></br>';
 
+			}
+		}
+		
+	}
+	public function InsertChat($User1,$User2,$Message){
+
+		$Message = array("Message"=>$Message , "User"=>$User1 , "Time"=>Time());
+		$sql = "SELECT * FROM negotiation WHERE UserID='".$User1."' AND UserID2='".$User2."' OR UserID='".$User2."' AND UserID2='".$User1."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		if ($result->num_rows == 0) 
+		{
+			$FullMessageArray = array($Message);
+			$JSONdata = Json_encode($FullMessageArray);
+			$sql = "INSERT INTO `negotiation`(`UserID`, `Message`, `UserID2`) VALUES ('".$User1."','".$JSONdata."','".$User2 ."')";
+			$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		}
+		else{
+			while($row = $result->fetch_assoc())
+			{ 
+			
+				$FullMessageArray = Json_decode( $row["Message"],true);
+
+			}
+			array_push($FullMessageArray,$Message);
+			$JSONdata = Json_encode($FullMessageArray);
+			$sql = "UPDATE `negotiation` SET `Message`='".$JSONdata."' WHERE  UserID='".$User1."' AND UserID2='".$User2."' OR UserID='".$User2."' AND UserID2='".$User1."'";
+			$result = $this->connect()->query($sql) or die($this->connect()->error);  
+		}               
+	}
 	public function __construct($Object){
 	
 		$this->UID = $Object->getUID();

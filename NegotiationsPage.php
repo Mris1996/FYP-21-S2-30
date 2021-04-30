@@ -1,5 +1,11 @@
 <?php
 require_once("NavBar.php");
+if($_SESSION['ID'] == 'DemoUser0'){
+	$_SESSION['OtherUser'] = 'DemoUser1';
+}
+else{
+$_SESSION['OtherUser'] = 'DemoUser0';	
+}
 
 ?>
 
@@ -74,7 +80,7 @@ function sendMessage() {
 // web sockets
 window.WebSocket = window.WebSocket || window.MozWebSocket;
 
-var connection = new WebSocket('ws://localhost:8008');
+var connection = new WebSocket('ws://localhost:3030');
 var connectingSpan = document.getElementById("connecting");
 connection.onopen = function () {
 	

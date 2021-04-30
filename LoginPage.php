@@ -65,6 +65,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['LoginButton'])){
 		$BaseUserOBJ = new BaseUser("Login");
 		if($BaseUserOBJ->LoginValidate($_POST["Login_LoginID"],$_POST["Login_Password"])){
 			if(json_decode($BaseUserOBJ->Status)[0]=="Suspended"){
+				
 				$MainError = "Account has been suspended till ".date("d/m/Y",strtotime(json_decode($BaseUserOBJ->Status)[1]))."";
 			}
 			else if(json_decode($BaseUserOBJ->Status)[0]=="Banned"){
