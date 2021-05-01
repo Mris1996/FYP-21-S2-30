@@ -701,14 +701,8 @@ class StandardUser extends BaseUser
 					  }
 				}
 	
-				$sql = "SELECT * FROM `users`ORDER BY RAND()  LIMIT 1  ";
-				$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
-					while($row = $result->fetch_assoc())
-				{ 
-					$User = $row['UserID'];
-				}
-				
-			 mysqli_query($this->connect(),"INSERT INTO `product` (`ProductID`, `ProductCategory`, `ProductDescription`, `ProductCaption`, `ProductInitialPrice`, `ProductName`,`SellerUserID`,`Image` ) VALUES ('".$ProductID."','".$Category."','".$Description."','".$Caption."','".$Cost."','".$Name."','".$User."','".$File."')") or die(mysqli_error($this->connect()));
+	
+			 mysqli_query($this->connect(),"INSERT INTO `product` (`ProductID`, `ProductCategory`, `ProductDescription`, `ProductCaption`, `ProductInitialPrice`, `ProductName`,`SellerUserID`,`Image` ) VALUES ('".$ProductID."','".$Category."','".$Description."','".$Caption."','".$Cost."','".$Name."','".$this->getDisplayName()."','".$File."')") or die(mysqli_error($this->connect()));
 	 	
 				return $ProductID;
 	}
