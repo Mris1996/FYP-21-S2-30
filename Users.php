@@ -453,9 +453,9 @@ class BaseUser
 class StandardUser extends BaseUser 
 {
 	
-	public function RetrieveChat(){
+	public function RetrieveChat($User1,$User2){
 	
-		$sql = "SELECT * FROM negotiation LIMIT 20 ";
+		$sql = "SELECT * FROM negotiation WHERE UserID='".$User1."' AND UserID2='".$User2."' OR UserID='".$User2."' AND UserID2='".$User1."'";
 
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 
@@ -468,9 +468,16 @@ class StandardUser extends BaseUser
 
 		if(sizeof($Msg)>0){
 			for($x = 0; $x<sizeof($Msg);$x++){
-				echo'	<span class="author">'.	$Msg [$x]['User'].':</span>
+				if($Msg [$x]['User']==$this->getUID()){
+					echo'<div id="User1">';
+				}
+				else{
+					echo'<div id="User2">';
+				}
+				echo'<span class="author">'.$Msg [$x]['User'].':</span>
 				<span class="messsage-text">'.$Msg [$x]['Message'].'</span></br>';
-
+		
+				echo'</div>';
 			}
 		}
 		
