@@ -52,15 +52,16 @@ label,span{
 $ProductID = $_GET['ID'] ;
 $BaseUserOBJ = new BaseUser("View Product");	
 if(isset($_SESSION['ID'])){
-
+$Owner = $_SESSION['Object']->getProductOwner($ProductID);
 echo'
-<div class="ProductPage">
+<div class="ProductPage" >
 <div class="buttons">
-<form method="post">
-<input type="submit" value="Chat">
+<form method="post" >
+<input type="submit" name="Chat" value="Chat">
 </form>';
 
-if($_SESSION['ID'] == $BaseUserOBJ->getProductOwner($ProductID)){
+if($_SESSION['ID'] == $Owner){
+
 echo'
 <form method="post" action="EditProductPage.php?ID='.$ProductID.'">
 <input type="submit" name="Edit" value="Edit">
@@ -113,6 +114,11 @@ if(isset($_POST['Confirmation'])&&$_POST['Confirmation']=="Yes"){
 $_SESSION['Object']->RemoveProduct($ProductID);
 echo '<script> location.replace("index.php")</script> ';		
 }
+if(isset($_POST['Chat'])){
+$_SESSION['Object']->Chat($Owner);
+$_SESSION['Temp_Chat']=$Owner;
+echo '<script> location.replace("NegotiationsPage.php")</script> ';	
 
+}
 ?>
 <?php require_once("Footer.php");?> 

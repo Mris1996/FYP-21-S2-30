@@ -482,6 +482,54 @@ class StandardUser extends BaseUser
 		}
 		
 	}
+	public function Chat($UserID){
+	
+		$sql = "SELECT * FROM negotiation WHERE UserID='".$UserID."' AND UserID2='".$this->getUID()."' OR UserID='".$this->getUID()."' AND UserID2='".$UserID."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		if ($result->num_rows == 0) 
+		{	
+			
+			$FullMessageArray = array();
+			$JSONdata = Json_encode($FullMessageArray);
+			$sql = "INSERT INTO `negotiation`(`UserID`, `Message`, `UserID2`) VALUES ('".$this->getUID()."','".$JSONdata."','".$UserID ."')";
+			$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		}
+		
+	}
+	public function DeleteChat($UserID){
+		
+		$sql = "DELETE FROM negotiation WHERE UserID='".$UserID."' AND UserID2='".$this->getUID()."' OR UserID='".$this->getUID()."' AND UserID2='".$UserID."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		
+	}
+	public function AllChatsArray(){
+	
+		$sql = "SELECT * FROM negotiation WHERE UserID='".$this->getUID()."' OR UserID2='".$this->getUID()."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		
+		if ($result->num_rows == 0) 
+		{
+			echo'<b>You have no chats currently</b>';
+		}
+		else{
+			echo'<form method="post">';
+			while($row = $result->fetch_assoc())
+			{
+					
+					if($row['UserID']!=$this->getUID()){
+					echo'<input type="submit" name ="Chat_with" value="'.$row['UserID'].'"></br>';
+					
+					}
+					else{
+					echo'<input type="submit" name ="Chat_with" value="'.$row['UserID2'].'"></br>';	
+					}
+					
+					
+			}
+			echo'</form>';
+		}
+			
+	}
 	public function InsertChat($User1,$User2,$Message){
 
 		$Message = array("Message"=>$Message , "User"=>$User1 , "Time"=>Time());

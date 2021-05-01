@@ -1,12 +1,9 @@
 <?php
 require_once("NavBar.php");
+if(!isset($_SESSION['ID'])){
+	echo '<script> location.replace("index.php")</script> ';
+}
 
-if($_SESSION['ID'] == 'DemoUser0'){
-	$OtherUser = 'DemoUser1';
-}
-else{
-	$OtherUser = 'DemoUser0';	
-}
 
 ?>
 
@@ -19,6 +16,7 @@ else{
 		width:600px;
 		max-width:100%;
 		margin:30px auto;
+		display:none;
 		background-color:#fafafa;
 	
 	}
@@ -53,13 +51,37 @@ else{
 
 </head>
 <body>
+<?php 
+$_SESSION['Object']->AllChatsArray();
+if(isset($_SESSION['Temp_Chat'])){
+	$_POST["Chat_with"] = $_SESSION['Temp_Chat'];
+	unset($_SESSION['Temp_Chat']);
+}
+if (isset($_POST["Chat_with"])){
+
+	$_SESSION['OtherUser'] = $_POST["Chat_with"];
+	echo'<style> #content{display:block;}</style>';
+}
+if(isset($_POST['DeleteChat'])){
+
+	$_SESSION['Object']->DeleteChat($_SESSION['OtherUser']);
+	echo '<script> location.replace("NegotiationsPage.php")</script> ';	
+}
+
+
+?>
 <div id="content">
+	<h1>Chatting with:<?php echo $_SESSION['OtherUser']?></h1>
+	<form method="post">
+		<input type="submit" name="DeleteChat"  value = "Delete Chat">
+	</form>
 	<div id="message-box">
-		<?php $_SESSION['Object']->RetrieveChat($_SESSION['ID'],$OtherUser)?>	
+		<?php 
+		$_SESSION['Object']->RetrieveChat($_SESSION['ID'],$_SESSION['OtherUser'])?>	
 	</div>
 	<div id="connecting">Connecting to web sockets server...</div>
 	<input type="hidden" class="text-box" id="User1-input"  value = "<?php echo $_SESSION['ID']?>">
-	<input type="hidden" class="text-box" id="User2-input"  value = "<?php echo $OtherUser?>">
+	<input type="hidden" class="text-box" id="User2-input"  value = "<?php echo $_SESSION['OtherUser']?>">
 	<input type="text" class="text-box" id="message-input" placeholder="Your Message" onkeyup="handleKeyUp(event)">
 	<p>Press enter to send message</p>
 </div>
@@ -102,31 +124,34 @@ connection.onerror = function (error) {
 	connectingSpan.innerHTML = "Error occured";
 };
 connection.onmessage = function (message) {
-	
 	var data = JSON.parse(message.data);
 	console.log(data.User2);
-	var div = document.createElement("div");
-	var author = document.createElement("span");
-	author.className = "author";
-	author.innerHTML = data.User1+":";
-	var message = document.createElement("span");
-	message.className = "messsage-text";
-	message.innerHTML = data.message;
-	if(data.User1 == User1Input.value.trim()){
-		div.setAttribute("id", "User1");
-		
-	}	
-	else{
-		div.setAttribute("id", "User2");
-		
+	console.log(data.User1);
+	if(data.User2==User1Input.value.trim()||data.User1==User1Input.value.trim()){
+		if(data.User2==User2Input.value.trim()||data.User1==User2Input.value.trim()){
+			var div = document.createElement("div");
+			var author = document.createElement("span");
+			author.className = "author";
+			author.innerHTML = data.User1+":";
+			var message = document.createElement("span");
+			message.className = "messsage-text";
+			message.innerHTML = data.message;
+			if(data.User1 == User1Input.value.trim()){
+				div.setAttribute("id", "User1");
+				
+			}	
+			else{
+				div.setAttribute("id", "User2");
+				
+			}
+			div.appendChild(author);
+			div.appendChild(message);
+			
+			var objDiv = document.getElementById("message-box");
+			objDiv.scrollTop = objDiv.scrollHeight;
+			document.getElementById("message-box").appendChild(div);
+		}
 	}
-	div.appendChild(author);
-	div.appendChild(message);
-	
-	var objDiv = document.getElementById("message-box");
-	objDiv.scrollTop = objDiv.scrollHeight;
-	document.getElementById("message-box").appendChild(div);
-
 }
 	var objDiv = document.getElementById("message-box");
 objDiv.scrollTop = objDiv.scrollHeight;
