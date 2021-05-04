@@ -102,6 +102,7 @@ fclose($myfile);
 date_default_timezone_set("Singapore");
 require_once("Users.php");
 require_once("Products.php");
+require_once("Contracts.php");
 session_start();
 if(isset($_POST['Nav_Main'])){
 header("Location:index.php");
@@ -117,18 +118,18 @@ exit;
 }
 
 if(isset($_SESSION['ID'])){
-
+$_SESSION["Object"]->UpdateBalance();
 echo'<style> input[name="Nav_SignUp"]{display:none;}</style>';
 echo'<style> input[name="Nav_Login"]{display:none;}</style>';
 echo'<style> input[name="Nav_LogOut"]{display:visible;}</style>';
-echo '<h2>STICOIN BALANCE: '.$_SESSION['Object']->GetAccountBalance($_SESSION['Object']->getPubKey()).'</h2>';
+echo '<h2>STICOIN BALANCE: '.$_SESSION['Object']->GetAccountBalance().'</h2>';
 echo'
 <form action="ListPage.php">
 <input type="submit" value="List a product"/>
 </form>';
 echo'
-<form action="NegotiationsPage.php">
-<input type="submit" value="Chats"/>
+<form action="MyContractsPage.php">
+<input type="submit" value="My Contracts"/>
 </form>';
 echo'
 <form method="post">
@@ -138,11 +139,11 @@ echo'
 	<a href="ProfilePage.php?ID='.$_SESSION['ID'].'">Profile</a>
 	<a href="SettingsPage.php">Settings</a>
 	<a href="ConvertSCPage.php">Convert to STICoin</a>
-	<a href="ConvertETHPage.php">Convert to ETH</a>
-	<a href="ContractsPage.php">My Contracts</a>';
+	<a href="ConvertETHPage.php">Convert to ETH</a>';
 if($_SESSION['Object']->getAccountType()=="Administrator"){
 	echo'<a href="AdministratorPage.php">Manage accounts</a>';
 }
+
 echo'
 	<input type="submit" name="Nav_LogOut"  value="Log Out"/>
 	</div>

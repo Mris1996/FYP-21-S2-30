@@ -52,7 +52,7 @@ echo'<style> .ETHGUI{display:none;}</style>';
 }
 if($message!="Success"){
 	echo'
-	<form method="post" action="ConvertETH.php">
+	<form method="post" action="ConvertETHPage.php">
 	<h1>Transaction Summary</h1>
 	<b>Operation:'.$Operation.'</b></br>
 	<b>Initial Amount :'.$_POST["Convert_amount"].'</b></br>

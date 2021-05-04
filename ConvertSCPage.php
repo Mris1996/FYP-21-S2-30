@@ -59,7 +59,7 @@ echo'<style> .STICGUI{display:none;}</style>';
 
 if($message!="Success"){
 	echo'
-	<form method="post" action="ConvertSC.php">
+	<form method="post" action="ConvertSCPage.php">
 	<h1>Transaction Summary</h1>
 	<b>Operation:'.$Operation.'</b></br>
 	<b>Initial Amount :'.$_POST["Convert_amount"].'</b></br>

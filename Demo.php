@@ -1,5 +1,5 @@
 <?php require_once("NavBar.php");
-
+/*
 for($x = 1;$x<50;$x++){
 
 if($x<10){
@@ -20,6 +20,8 @@ if($x>=40&&$x<50){
 $_SESSION['Object']->ListProduct('Product'.$x,'Electronics','Sample Description',round(1000, 0),'Sample caption','/images/sample.jpg');
 }
 }
+*/
 
+ $_SESSION['Object']->TransferAmount('625651521064jtr140897','50')
 
 ?>

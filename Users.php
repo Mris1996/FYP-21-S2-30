@@ -86,7 +86,10 @@ class BaseUser
 		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
 		}
 		socket_close($socket);
-		$raw_data = file_get_contents('http://localhost:3000/getBalance');
+		$raw_data = file_get_contents('http://localhost:4001/getBalance');
+		if($raw_data==null){
+			$raw_data = file_get_contents('http://localhost:4000/getBalance');
+		}
 		$data = json_decode($raw_data, true);
 		return $data['sticoin_balance'];
 	}
@@ -200,6 +203,10 @@ class BaseUser
 	public function getAccountBalance(){
 		return $this->AccountBalance;
 	}
+	public function updateBalance(){
+	 $this->AccountBalance=$this->GetAccountBalanceFromServer($this->PubKey);
+		
+	}
 	public function getStatus(){
 		return $this->Status;
 	}
@@ -212,30 +219,14 @@ class BaseUser
 		return $conn;
 		
 	}
-	public function ViewProduct($ProductID){
-			$ID = trim($ProductID);
-			$sql = "SELECT * FROM product WHERE ProductID='".$ProductID."'" ;
-			$result = $this->connect()->query($sql) or die($this->connect()->error); 
-			while($row = $result->fetch_assoc())
-			{ 
-				echo'
-					
-					<div class="card">
-					  <img src="'.$row["Image"].'" style="width:50%;margin:auto">
-					  <h2 style="text-align:center">'.$ID.'</h2>
-					  <hr style="background-color:white">
-					  <p>Seller:<a href="ProfilePage.php?ID='.$row["SellerUserID"].'">'.$row["SellerUserID"].'</a></p>
-					  <p>Name: '.$row["ProductName"].'</p>
-					  <p>Category: '.$row["ProductCategory"].'</p>
-					  <p>Status: '.$row["Status"].'</p>
-					  <hr style="background-color:white">
-					  <p style="text-align:center">'.$row["ProductCaption"].'</p>
-					  <p style="text-align:center">Description:'.$row["ProductDescription"].'</p><hr>
-					  <h2 style="text-align:center">Initital Cost: '.$row["ProductInitialPrice"].'</h2></div>';
-		
-			}
+	public function getUserDisplayName($UID){
+		$sql = "SELECT * FROM users WHERE UserID='".$UID."'" ;
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		while($row = $result->fetch_assoc())
+		{ 
+			return $row["DisplayName"];
+		}
 	}
-
 	public function getProductOwner($ProductID){
 			$ID = trim($ProductID);
 			$sql = "SELECT * FROM product WHERE ProductID='".$ProductID."'" ;
@@ -452,13 +443,66 @@ class BaseUser
 
 class StandardUser extends BaseUser 
 {
+	public function __construct($Object){
 	
+		$this->UID = $Object->getUID();
+		$this->DisplayName =  $Object->getDisplayName();
+		$this->PubKey =  $Object->getPubKey();
+		$this->Email = $Object->getEmail();
+		$this->FirstName =  $Object->getFirstName();
+		$this->LastName =  $Object->getLastName();
+		$this->DOB =  $Object->getDOB();
+		$this->ContactNumber =  $Object->getContactNumber();
+		$this->Address =  $Object->getAddress();
+		$this->AccountType =  $Object->getAccountType();
+		$this->AccountBalance = $Object->getAccountBalance();
+		
+		}
+	public function NewOffer($Offer,$DateRequired,$SellerID,$ProductID,$InitialOffer){
+		while(true){					
+					$ContractID = str_pad(rand(0000,9999),4,0,STR_PAD_LEFT).str_pad(rand(0000,9999),4,0,STR_PAD_LEFT).str_pad(rand(0000,9999),4,0,STR_PAD_LEFT).chr(rand(97,122)).chr(rand(97,122)).chr(rand(97,122)).str_pad(rand(0000,9999),4,0,STR_PAD_LEFT). substr(rand(0000,9999), 2, 4);
+					$result = $this->connect()->query("SELECT count(*) as 'c' FROM contracts WHERE ContractID='".$ContractID."'");
+					$count = $result->fetch_object()->c;
+					if ($count==0)
+					  {
+						break;
+					  }
+				}
+		$sql = "INSERT INTO `contracts`(`ContractID`,`InitialOffer`,`NewOffer`,`DateRequired`, `BuyerUserID`, `SellerUserID`, `ProductID`) VALUES ('".$ContractID."','".$InitialOffer."','".$Offer."','".$DateRequired."','".$this->getUID()."','".$SellerID."','".$ProductID."')";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		return $ContractID;
+	}
+	public function ListOfContracts($ContractType){
+		if($ContractType=="All"){
+		$sql = "SELECT * FROM contracts WHERE SellerUserID ='".$this->getUID()."' OR BuyerUserID ='".$this->getUID()."' ORDER BY TransactionOpenDate" ;
+		}
+		if($ContractType=="Seller"){
+		$sql = "SELECT * FROM contracts WHERE SellerUserID ='".$this->getUID()."' ORDER BY TransactionOpenDate" ;
+		}
+		if($ContractType=="Buyer"){
+		$sql = "SELECT * FROM contracts WHERE BuyerUserID ='".$this->getUID()."' ORDER BY TransactionOpenDate" ;
+		}
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		if ($result->num_rows == 0) 
+			{
+				return false;
+
+			}
+		$ArrayOfContracts = array();
+		while($row = $result->fetch_assoc())
+		{
+			array_push($ArrayOfContracts,$row['ContractID']);
+			
+				
+		}
+		return $ArrayOfContracts;
+	}
 	public function RetrieveChat($User1,$User2){
 	
 		$sql = "SELECT * FROM negotiation WHERE UserID='".$User1."' AND UserID2='".$User2."' OR UserID='".$User2."' AND UserID2='".$User1."'";
 
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
-
+		$Msg = array();
 		while($row = $result->fetch_assoc())
 		{
 			$Msg = json_decode($row['Message'],true);
@@ -481,6 +525,179 @@ class StandardUser extends BaseUser
 			}
 		}
 		
+	}
+	public function UpdateContract($offer,$daterequired,$paymentmode,$ContractID,$Type){
+
+		$sql = " UPDATE `contracts` SET `Status`= '".$Type." has updated',`NewOffer`='".$offer."',`DateRequired`= '".$daterequired."',`Payment Mode`= '".$paymentmode."',`TotalAccepted`=  `TotalAccepted` -1 WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		$sql = " UPDATE `contracts` SET `TotalAccepted`=  0 WHERE `TotalAccepted`<0 ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+	}
+	public function AcceptContract($ContractID,$Type){
+
+		$sql = " UPDATE `contracts` SET `Status`= '".$Type." has accepted', `TotalAccepted`=  `TotalAccepted` +1 WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		
+	}
+	public function AcceptService($ContractID,$Type){
+
+		$sql = " UPDATE `contracts` SET `Status`= '".$Type." has accepted service', `TotalAccepted`=  `TotalAccepted` +1 WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		
+		
+	}
+	public function RejectContract($ContractID){
+
+		$sql = " UPDATE `contracts` SET `Status`= 'Rejected', `TotalAccepted`= 0 WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		
+	}
+	public function RequestRefund($ContractID){
+
+		$sql = " UPDATE `contracts` SET `Status`= 'Requested Refund', `TotalAccepted`= 0 WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		
+	}
+	public function CheckAccepted($ContractID){
+		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		while($row = $result->fetch_assoc())
+		{
+			
+			$NumOfAccepted = $row['TotalAccepted'];
+		}
+		if($NumOfAccepted==2){
+			$sql = " UPDATE `contracts` SET `Status`= 'Deal' , `Transaction` = 'On-Going' WHERE `ContractID`= '".$ContractID."' ";
+			$result = $this->connect()->query($sql) or die($this->connect()->error);
+		}
+		return $NumOfAccepted ;
+	}
+	public function CheckServiceAccepted($ContractID){
+		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		while($row = $result->fetch_assoc())
+		{
+			
+			$NumOfAccepted = $row['TotalAccepted'];
+		}
+		if($NumOfAccepted==2){
+			$sql = " UPDATE `contracts` SET `Status`= 'Transaction Complete' , `Transaction` = 'Complete' WHERE `ContractID`= '".$ContractID."' ";
+			$result = $this->connect()->query($sql) or die($this->connect()->error);
+		}
+		return $NumOfAccepted ;
+	}
+	
+	public function ToTransfer($ContractID){
+		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		while($row = $result->fetch_assoc())
+		{
+			$Type = $row['Payment Mode'];
+			$TransactionMessage = $row['Transaction'];
+		}
+		if($Type == "Half-STICoins")
+		{
+			return True;
+		}
+		if($Type == "Full-STICoins"&& $TransactionMessage == "On-Going"){
+			return True;
+		}
+		if($Type == "Full-STICoins_Later" && $TransactionMessage == "Complete"){
+				return True;
+		}
+		else{
+			return False;
+		}
+		
+		
+	}
+	public function AmountToTransfer($ContractID){
+		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		while($row = $result->fetch_assoc())
+		{
+			
+			$Amount = $row['NewOffer'];
+			$Type = $row['Payment Mode'];
+		}
+		if($Type == "Half-STICoins"){
+			$Amount= $Amount/2;
+		}
+		if($Type == "Full-STICoins" || $Type == "Full-STICoins_Later"){
+			$Amount= $Amount;
+		}
+		return $Amount;
+	}
+	public function TransferAmount($ContractID,$Amount){
+	
+		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		$Transferfrom = '';
+		$Transferto = '';
+		while($row = $result->fetch_assoc())
+		{
+			$Transferto = $row['SellerUserID'];
+			$Transferfrom = $row['BuyerUserID'];
+		}
+		if($this->getUID()==$Transferfrom){
+	
+		
+			$this->TransferAmount($Transferto,$Transferfrom,$Amount,$ContractID);
+		
+		
+		$sql = "SELECT * FROM users WHERE UserID ='".$Transferto."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		while($row = $result->fetch_assoc())
+		{
+			$TransfertoPubkey = $row['PublicKey'];
+			
+		}
+		$sql = "SELECT * FROM users WHERE UserID ='".$Transferfrom."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		while($row = $result->fetch_assoc())
+		{
+			
+			$TransferfromPubkey = $row['PublicKey'];
+			
+		}
+		$host    = "localhost";
+		$port    = 8080;
+
+		date_default_timezone_set('UTC');
+		$textToEncrypt = $this->getEscrowPrivate();;
+		$encryptionMethod = "AES-256-CBC";
+		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
+		$iv = substr($secret, 0, 16);
+		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
+		$arr = array('REQUEST' => "TransferSTICoins",'AMOUNT'=>$Amount,'BUYERPUBLICKEY'=>$TransferfromPubkey,'SELLERPUBLICKEY'=> $TransfertoPubkey ,'ESCROWPRIVATE'=>$encryptedMessage);
+		$message = json_encode($arr);
+		$socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
+		$result = socket_connect($socket, $host, $port) or die("Could not connect to server\n");  
+		if($result) { 
+		socket_write($socket, $message, strlen($message)) or die("Could not send data to server\n");
+		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
+		}
+		socket_close($socket);
+		$raw_data = file_get_contents('http://localhost:3000/TransferAmount');
+		$data = json_decode($raw_data, true);
+		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		while($row = $result->fetch_assoc())
+		{ 
+			$TransactionData = $row['TransactionID'];
+		}
+		$TransactionData = json_decode($TransactionData, true);
+		$NewData= array($data['TransactionHash']);
+		array_push($TransactionData,$NewData);
+		$JData = json_encode($TransactionData);
+		$sql = " UPDATE `contracts` SET `TransactionID`= '".$JData ."' WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		}
+		else{
+			sleep(4);
+			
+		}
+		return;
 	}
 	public function Chat($UserID){
 	
@@ -555,21 +772,7 @@ class StandardUser extends BaseUser
 			$result = $this->connect()->query($sql) or die($this->connect()->error);  
 		}               
 	}
-	public function __construct($Object){
 	
-		$this->UID = $Object->getUID();
-		$this->DisplayName =  $Object->getDisplayName();
-		$this->PubKey =  $Object->getPubKey();
-		$this->Email = $Object->getEmail();
-		$this->FirstName =  $Object->getFirstName();
-		$this->LastName =  $Object->getLastName();
-		$this->DOB =  $Object->getDOB();
-		$this->ContactNumber =  $Object->getContactNumber();
-		$this->Address =  $Object->getAddress();
-		$this->AccountType =  $Object->getAccountType();
-		$this->AccountBalance = $Object->getAccountBalance();
-		
-		}
 		public function getEscrow(){
 		$sql = "SELECT * FROM escrow" ;
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
@@ -589,7 +792,7 @@ class StandardUser extends BaseUser
 
 		}
 		}
-		public function addNewReview($Reviw,$ProductID){
+		public function addNewReview($Review,$ProductID){
 			$sql = "SELECT * FROM product WHERE ProductID='".$ProductID."'" ;
 			$result = $this->connect()->query($sql) or die($this->connect()->error); 
 			while($row = $result->fetch_assoc())
@@ -597,7 +800,7 @@ class StandardUser extends BaseUser
 				$Data = $row['Review'];
 			}
 			$Data = json_decode($Data, true);
-			$NewData= array("Review"=>$Reviw, "ProductID"=>$ProductID, "User"=>$this->getUID());
+			$NewData= array("Review"=>$Review, "ProductID"=>$ProductID, "User"=>$this->getUID());
 			array_push($Data,$NewData);
 			$JData = json_encode($Data);
 			$sql="UPDATE `product` SET `Review`='".$JData."' WHERE `ProductID`='".$ProductID."'";

@@ -1,63 +1,24 @@
 <?php require_once("NavBar.php");?>
 
 <style>
-.buttons{
-	width:100px;
-	margin:auto;
-	margin-top:50px;
-}
-.buttons input{
-	width:90px;
-	
-}
-.card {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  max-width: 1000PX;
-  margin-bottom:10px;
-  margin: auto;
 
-  color:white;
-  font-size: 20px;
-   background-color: black;
-   opacity:0.9;
-}
-
-.price {
-  color: grey;
-  font-size: 22px;
-}
-
-.card input[type="submit"] {
-  padding: 12px;
-  color: black;
-  background-color: white;
-  text-align: center;
-  cursor: pointer;
-  width: 100%;
-  font-size: 20px;
-}
-
-.card input:hover {
-  transform: scale(1);
-}
-label,span{
-	display:inline-block;
-	width:200px;
-	margin-right:5px;
-	text-align:center;
-}
 </style>
 <?php
 
 $ProductID = $_GET['ID'] ;
 $BaseUserOBJ = new BaseUser("View Product");	
+$ProductObj = new Products();
+
+if(!$ProductObj->InitialiseProduct($ProductID)){
+	echo '<script> location.replace("index.php")</script> ';
+}
 if(isset($_SESSION['ID'])){
 $Owner = $_SESSION['Object']->getProductOwner($ProductID);
 echo'
 <div class="ProductPage" >
 <div class="buttons">
 <form method="post" >
-<input type="submit" name="Chat" value="Chat">
+<input type="submit" name="SendOffer" value="Send Offer">
 </form>';
 
 if($_SESSION['ID'] == $Owner){
@@ -65,7 +26,7 @@ if($_SESSION['ID'] == $Owner){
 echo'
 <form method="post" action="EditProductPage.php?ID='.$ProductID.'">
 <input type="submit" name="Edit" value="Edit">
-</form
+</form>
 <form method="post">
 <input type="submit" name="Remove" value="Remove">
 </form>';
@@ -73,10 +34,22 @@ echo'
 }
 }
 
-echo '</form></div>';
+
+echo'
+<div class="card">
+<img src="'.$ProductObj->Image.'" style="width:50%;margin:auto">
+<h2 style="text-align:center">'.$ProductObj->ProductID.'</h2>
+<hr style="background-color:white">
+<p>Seller:<a href="ProfilePage.php?ID='.$ProductObj->SellerUserID.'">'.$BaseUserOBJ->getUserDisplayName($ProductObj->SellerUserID).'</a></p>
+<p>Name: '.$ProductObj->ProductName.'</p>
+<p>Category: '.$ProductObj->ProductCategory.'</p>
+<p>Status: '.$ProductObj->Status.'</p>
+<hr style="background-color:white">
+<p style="text-align:center">'.$ProductObj->ProductCaption.'</p>
+<p style="text-align:center">Description:'.$ProductObj->ProductDescription.'</p><hr>
+<h2 style="text-align:center">Initital Cost: '.$ProductObj->ProductInitialPrice.'</h2></div>';
 
 
-$BaseUserOBJ->ViewProduct($ProductID);
 
 ?>
 
@@ -90,6 +63,7 @@ $BaseUserOBJ->ViewProduct($ProductID);
 
 
 if(isset($_POST['Remove'])){
+
 	echo'<style> .ProductPage{display:none;}</style>';
 	echo'
 	<form method="post" >
@@ -105,19 +79,14 @@ if(isset($_POST['Confirmation'])&& $_POST['Confirmation']=="No"){
 exit();
 header("Refresh:0");
 }
-if(isset($_POST['Confirmation'])&& $_POST['Confirmation']=="Cancel"){
-exit();
-header("Refresh:0");
-}
 if(isset($_POST['Confirmation'])&&$_POST['Confirmation']=="Yes"){
 
 $_SESSION['Object']->RemoveProduct($ProductID);
 echo '<script> location.replace("index.php")</script> ';		
 }
-if(isset($_POST['Chat'])){
-$_SESSION['Object']->Chat($Owner);
-$_SESSION['Temp_Chat']=$Owner;
-echo '<script> location.replace("NegotiationsPage.php")</script> ';	
+if(isset($_POST['SendOffer'])){
+$_SESSION['Temp_Product']=$_GET['ID'];
+echo '<script> location.replace("OfferPage.php")</script> ';	
 
 }
 ?>
