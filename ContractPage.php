@@ -114,13 +114,13 @@ $ProductObj->InitialiseProduct($ProductID);
 <?php
 		if($Type == "Buyer"){
 		echo'
-		<label>Date product is required by:</label>
-		<input type="date"  id ="DateRequired" name="DateRequired" oninput="formsyncfunction()" value="'.$ContractObj->DateRequired.'" required>';
+			<label>Date product is required by:</label>
+			<input type="date"  id ="DateRequired" name="DateRequired" oninput="formsyncfunction()" value="'.$ContractObj->DateRequired.'" required>';
 		}
 		if($Type == "Seller"){
 		echo'
-		<label>Date product is required by:</label>
-		<input type="date" id ="DateRequired" name="DateRequired" oninput="formsyncfunction()" value="'.$ContractObj->DateRequired.'" readonly>';
+			<label>Date product is required by:</label>
+			<input type="date" id ="DateRequired" name="DateRequired" oninput="formsyncfunction()" value="'.$ContractObj->DateRequired.'" readonly>';
 		}
 ?>
 	
@@ -138,8 +138,8 @@ $ProductObj->InitialiseProduct($ProductID);
 		<label for="Half">Half-STICoins now:</label><br>
 		<input type="radio"  id="PaymentMode2" onclick="formsyncfunction()" name="PaymentMode" value="Full-STICoins">
 		<label for="female">Full-STICoins now:</label><br>
-		<input type="radio" id="PaymentMode3" onclick="formsyncfunction()" name="PaymentMode" value="Cash">
-		<label for="Cash">Cash on delivery:</label><br><br>';
+		<input type="radio" id="PaymentMode3" onclick="formsyncfunction()" name="PaymentMode" value="Full-STICoins_Later">
+		<label for="FullLater">Full-STICoins later :</label><br><br>';
 		}
 		if($Type == "Seller"){
 			echo'
@@ -154,26 +154,28 @@ $ProductObj->InitialiseProduct($ProductID);
 			
 		}
 		echo'</br>';
-		if($Type=="Seller" && $ContractObj->Status == "Buyer has accepted service" || $Type=="Buyer" && $ContractObj->Status == "Seller has accepted service" ){
+		if($Type=="Seller" && $ContractObj->Status == "Buyer has accepted service" || $Type=="Buyer" && $ContractObj->Status == "Seller has accepted service"|| $ContractObj->Status == "Deal"){
 			echo'<input type="button" name="service" id="service" onclick="AcceptService()" value="Service fullfilled">';
-		}
-		if($ContractObj->Status == "Deal"){
-			echo'</br><input type="button" name="service" id="service" onclick="AcceptService()" value="Service fullfilled">';	
-			if($Type == "Buyer" && $ContractObj->PaymentMode=="Half-STICoins" || $ContractObj->PaymentMode=="Full-STICoins"  ||$ContractObj->Status == "Transaction Complete"){
-				echo'</br><input type="button" name="refund" id="refund" onclick="RequestRefund()" value="Request Refund">';
-			}
-			else{
-				echo'</br><input type="button" name="Cancel" value="Cancel Order">';
-			}
-			
 		}
 		if($Type == "Buyer" && $ContractObj->Status == "Transaction Complete"){
 			echo'</br><input type="button" name="refund" id="refund" onclick="RequestRefund()" value="Request Refund">';
 		}
+		if($Type == "Buyer" && $ContractObj->Transaction == "On-Going"){
+				if($ContractObj->PaymentMode=="Half-STICoins" || $ContractObj->PaymentMode=="Full-STICoins"){
+				echo'</br><input type="button" name="refund" id="refund" onclick="RequestRefund()" value="Request Refund">';
+			}
+				
+		}
+		if($Type == "Seller" && $ContractObj->Transaction == "On-Going" && $ContractObj->Status != "Order Cancelled"){
+				
+				echo'</br><input type="button" name="cancel" id="cancel" onclick="CancelOrder()" value="Cancel Order">';
+			
+				
+		}
 		
 ?>
-<button id="Accept" name="Accept" value="Accept" onclick="accept()">Accept</button>
-<button id="Reject" name="Reject" value="Reject" onclick="reject()">Reject</button>
+<button id="Accept" name="Accept" value="Accept" onclick="Accept()">Accept</button>
+<button id="Reject" name="Reject" value="Reject" onclick="Reject()">Reject</button>
 <h1 id="statusmessage">Status:<?php 
 if($ContractObj->Status == "Deal"){
 	
@@ -181,7 +183,7 @@ echo 'Contract agreed upon, awaiting for product to be transferred';
 
 }
 else if($ContractObj->Status == "Requested Refund"){
- echo 'Buyer has requested refund for product';	
+ echo 'Buyer refunded,await Admin assistance';	
 } 
 else if($ContractObj->Status == "Buyer has accepted service"){
 	echo 'Buyer has accepted service';	
@@ -197,6 +199,9 @@ else if($ContractObj->Status == "Seller has accepted"){
 }
 else if($ContractObj->Status == "Transaction Complete"){
 	echo 'Transaction Complete';	
+}
+else if($ContractObj->Status == "Order Cancelled"){
+	echo 'Seller has cancelled the order, sorry for any inconvenience caused,STICoins will be returned to the buyer , as soon as possible.';	
 }
 else{
 echo 'Terms are being negotiated';	
@@ -223,7 +228,7 @@ echo 'Terms are being negotiated';
 	<p>Press enter to send message</p>
 </div>
 <?php
-if($ContractObj->Status == "Buyer has accepted" && $Type == "Buyer" || $ContractObj->Status == "Rejected" || $ContractObj->Status ==  "Requested Refund" || $ContractObj->Status == "Deal" ||$ContractObj->Status == "Buyer has accepted service" || $ContractObj->Status == "Seller has accepted service"){
+if($ContractObj->Status == "Buyer has accepted" && $Type == "Buyer" || $ContractObj->Status == "Rejected" ||  $ContractObj->Status == "Order Cancelled" || $ContractObj->Status ==  "Requested Refund" || $ContractObj->Status == "Deal" ||$ContractObj->Status == "Buyer has accepted service" || $ContractObj->Status == "Seller has accepted service"){
 
 ?>
 <script>
@@ -236,7 +241,7 @@ if($ContractObj->Status == "Buyer has accepted" && $Type == "Buyer" || $Contract
 </script>
 <?php
 }
-if($ContractObj->Status == "Rejected" || $ContractObj->Status ==  "Requested Refund" || $ContractObj->Status == "Deal" || $ContractObj->Status == "Seller has accepted service" || $ContractObj->Status == "Buyer has accepted service" || $ContractObj->Status == "Transaction Complete" ){
+if($ContractObj->Status == "Rejected" || $ContractObj->Status ==  "Requested Refund" ||$ContractObj->Status == "Order Cancelled" ||  $ContractObj->Status == "Deal" || $ContractObj->Status == "Seller has accepted service" || $ContractObj->Status == "Buyer has accepted service" || $ContractObj->Status == "Transaction Complete" ){
 ?>
 <script>
 	document.getElementById('Reject').disabled = true;
@@ -268,7 +273,7 @@ function checkaccepted(){
 </script>
 <?php	
 }
-if($ContractObj->Transaction == "On-Going"){
+else if($ContractObj->Transaction == "On-Going"){
 ?>
 <script>
 var Intervals2 = setInterval(checkserviceaccepted,3000);
@@ -315,8 +320,9 @@ if (document.getElementById('PaymentMode3').value == document.getElementById("Pa
 var User1Input = document.getElementById("User1-input"),
 	User2Input = document.getElementById("User2-input"),
 	ContractID =  document.getElementById("contractid").value.trim(),
-	messageInput = document.getElementById("message-input");
-
+	Balance = document.getElementById("Balance").value,
+	messageInput = document.getElementById("message-input"),
+    UserType =  document.getElementById("usertype").value.trim();
 function handleKeyUp(e) {
 	
 	if (e.keyCode === 13) {
@@ -336,24 +342,52 @@ function sendMessage() {
 	messageInput.value = "";
 }
 
-function accept(){
-	document.getElementById('Accept').disabled = true;
-	document.getElementById("Offer").disabled = true;
-	document.getElementById("DateRequired").disabled = true;
-	document.getElementById('PaymentMode3').disabled = true;
-	document.getElementById('PaymentMode2').disabled = true;
-	document.getElementById('PaymentMode1').disabled = true;
-	var UserType =  document.getElementById("usertype").value.trim(),
-		User1 = User1Input.value.trim(),
-		User2 = User2Input.value.trim();
-	var ajax = new XMLHttpRequest();
-	ajax.open("POST", "php-send-message.php", true);
-	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	ajax.send("Accept=" + User1 + "&contractid=" + ContractID + "&usertype=" + UserType + "&User1=" + User1 +  "&User2=" + User2 + "&message=" + " has accepted the offer");
-	console.log(ajax);
+function Accept(){
+
+	if(document.getElementById('PaymentMode2').checked && UserType =="Buyer"){
+		if(Balance < document.getElementById("Offer").value){
+			alert("You have insufficient balance,please top up STICoins");
+		}
+		else{
+			SendAccept();
+			
+		}
+	}
+	else if(document.getElementById('PaymentMode1').checked && UserType =="Buyer"){
+
+		if(Balance < (document.getElementById("Offer").value/2)){
+			
+			alert("You have insufficient balance,please top up STICoins");
+		}
+		else{
+			SendAccept();
+			
+		}
+	}
+	else{
+		SendAccept();	
+	}
+}
+	
+function SendAccept(){
+document.getElementById('Accept').disabled = true;
+document.getElementById("Offer").disabled = true;
+document.getElementById("DateRequired").disabled = true;
+document.getElementById('PaymentMode3').disabled = true;
+document.getElementById('PaymentMode2').disabled = true;
+document.getElementById('PaymentMode1').disabled = true;
+var UserType =  document.getElementById("usertype").value.trim(),
+User1 = User1Input.value.trim(),
+User2 = User2Input.value.trim();
+var ajax = new XMLHttpRequest();
+
+ajax.open("POST", "php-send-message.php", true);
+ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+ajax.send("Accept=" + User1 + "&contractid=" + ContractID + "&usertype=" + UserType + "&User1=" + User1 +  "&User2=" + User2 + "&message=" + " has accepted the offer");
+console.log(ajax);
 	
 }
-function reject(){
+function Reject(){
 	document.getElementById('Accept').disabled = true;
 	document.getElementById("Offer").disabled = true;
 	document.getElementById("Reject").disabled = true;
@@ -380,8 +414,33 @@ function reject(){
 	
 }
 function AcceptService(){
-	var UserType =  document.getElementById("usertype").value.trim(),
-		User1 = User1Input.value.trim(),
+if(document.getElementById('PaymentMode3').checked && UserType =="Buyer"){
+	if(Balance < document.getElementById("Offer").value){
+		alert("You have insufficient balance,please top up STICoins");
+	}
+	else{
+		SendAcceptService();
+		
+	}
+}
+else if(document.getElementById('PaymentMode1').checked && UserType =="Buyer"){
+
+	if(Balance < (document.getElementById("Offer").value/2)){
+		
+		alert("You have insufficient balance,please top up STICoins");
+	}
+	else{
+		SendAcceptService();
+		
+	}
+}
+else{
+	SendAcceptService();	
+}
+}
+function SendAcceptService(){
+	
+	var User1 = User1Input.value.trim(),
 		User2 = User2Input.value.trim();
 	var ajax = new XMLHttpRequest();
 	ajax.open("POST", "php-send-message.php", true);
@@ -399,8 +458,8 @@ function formsyncfunction(){
 	var User1 = User1Input.value.trim(),
 	User2 = User2Input.value.trim(),
 	Offer =  document.getElementById("Offer").value.trim();
-	DateRequired =  document.getElementById("DateRequired").value.trim(),
-	UserType =  document.getElementById("usertype").value.trim();
+	DateRequired =  document.getElementById("DateRequired").value.trim();
+	
 	if (document.getElementById('PaymentMode1').checked) {
 	  PaymentMode = document.getElementById('PaymentMode1').value;
 	 
@@ -428,8 +487,7 @@ function formsyncfunction(){
 	
 }
 function RequestRefund(){
-	var UserType =  document.getElementById("usertype").value.trim(),
-	User1 = User1Input.value.trim(),
+	var User1 = User1Input.value.trim(),
 	User2 = User2Input.value.trim();
 	var ajax = new XMLHttpRequest();
 	ajax.open("POST", "php-send-message.php", true);
@@ -441,8 +499,47 @@ function RequestRefund(){
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("message=" + " has requested refund" + "&contractid=" + ContractID + "&usertype=" + UserType + "&User1=" + User1 +  "&User2=" + User2 );
 	console.log(ajax);
+	location.reload();
 	
-	
+}
+function CancelOrder(){
+	if(document.getElementById('PaymentMode2').checked && UserType =="Seller"){
+	if(Balance < document.getElementById("Offer").value){
+		alert("You have insufficient balance,please top up STICoins");
+	}
+	else{
+		SendCancelOrder();
+		
+	}
+}
+else if(document.getElementById('PaymentMode1').checked && UserType =="Seller"){
+
+	if(Balance < (document.getElementById("Offer").value/2)){
+		
+		alert("You have insufficient balance,please top up STICoins");
+	}
+	else{
+		SendCancelOrder();
+		
+	}
+}
+else{
+	SendCancelOrder();	
+}
+}
+function SendCancelOrder(){
+	var User1 = User1Input.value.trim(),
+	User2 = User2Input.value.trim();
+	var ajax = new XMLHttpRequest();
+	ajax.open("POST", "php-send-message.php", true);
+	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	ajax.send("Cancel=" + User1 + "&contractid=" + ContractID + "&usertype=" + UserType + "&User1=" + User1 +  "&User2=" + User2 );
+	console.log(ajax);
+	var ajax = new XMLHttpRequest();
+	ajax.open("POST", "php-send-message.php", true);
+	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	ajax.send("message=" + " has cancelled order.Sorry for the inconvenience,your STICoins will return to you shortly." + "&contractid=" + ContractID + "&usertype=" + UserType + "&User1=" + User1 +  "&User2=" + User2 );
+	console.log(ajax);
 }
 // web sockets
 window.WebSocket = window.WebSocket || window.MozWebSocket;
@@ -505,49 +602,50 @@ connection.onmessage = function (message) {
 				}
 
 			}
-			if (typeof data.Deal != 'undefined') {
-				if(data.Deal=="set"){
-					clearInterval(Intervals);
-					var ajax = new XMLHttpRequest();
-					ajax.open("POST", "php-send-message.php", true);
-					ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-					ajax.send("Transfer=" + ContractID);
-					console.log(ajax);
-				var delayInMilliseconds = 1000; //1 second
+			
+			
+			if (typeof data.REPLY != 'undefined') {
+				if (data.REPLY == 'CheckAccepted') 
+				{
+					if(data.Deal=="set")
+					{
+						clearInterval(Intervals);
+						var ajax = new XMLHttpRequest();
+						ajax.open("POST", "php-send-message.php", true);
+						ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+						ajax.send("Transfer=" + ContractID);
+						console.log(ajax);
+						var delayInMilliseconds = 1000; //1 second
 
-				setTimeout(function() {
-				  //your code to be executed after 1 second
-				}, delayInMilliseconds);
-					location.reload();	
-					
+						setTimeout(function() {
+						//your code to be executed after 1 second
+						}, delayInMilliseconds);
+						location.replace("MyContractsPage.php");
+
+					}
 				}
-				
-			}
-				if (typeof data.DealComplete != 'undefined') {
-				 
+				if (data.REPLY == 'CheckServiceAccepted') {
+
 				if(data.DealComplete=="set"){
-					
+
 					clearInterval(Intervals2);
 					var ajax = new XMLHttpRequest();
 					ajax.open("POST", "php-send-message.php", true);
 					ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 					ajax.send("Transfer=" + ContractID);
 					console.log(ajax);
-				var delayInMilliseconds = 2000; //1 second
+					var delayInMilliseconds = 2000; //1 second
 
-				setTimeout(function() {
-				  //your code to be executed after 1 second
-				}, delayInMilliseconds);
-					location.reload();	
-					
+					setTimeout(function() {
+					//your code to be executed after 1 second
+					}, delayInMilliseconds);
+					location.replace("MyContractsPage.php");
+
 				}
-		
-				
-				
-			}
-			if (typeof data.Declined != 'undefined') {
-				
-				if(data.Declined=="set"){
+
+
+				}
+				if(data.REPLY=="Reject"){
 					document.getElementById('Accept').disabled = true;
 					document.getElementById('Reject').disabled = true;
 					document.getElementById("Offer").disabled = true;
@@ -556,10 +654,31 @@ connection.onmessage = function (message) {
 					document.getElementById('PaymentMode2').disabled = true;
 					document.getElementById('PaymentMode1').disabled = true;
 					document.getElementById('statusmessage').innerHTML = "Status:Offer Rejected, Transaction declined.";
+					location.replace("MyContractsPage.php");
+				}
+				
+				if(data.REPLY=='Cancel'){
+					document.getElementById('Accept').disabled = true;
+					document.getElementById('Reject').disabled = true;
+					document.getElementById("Offer").disabled = true;
+					document.getElementById("DateRequired").disabled = true;
+					document.getElementById('PaymentMode3').disabled = true;
+					document.getElementById('PaymentMode2').disabled = true;
+					document.getElementById('PaymentMode1').disabled = true;
+					document.getElementById('statusmessage').innerHTML = "Status:Seller has cancelled the order, sorry for any inconvenience caused,STICoins will be returned to the buyer , as soon as possible.";
+					location.replace("MyContractsPage.php");
+				}
+					if(data.REPLY=='Refund'){
+					document.getElementById('Accept').disabled = true;
+					document.getElementById('Reject').disabled = true;
+					document.getElementById("Offer").disabled = true;
+					document.getElementById("DateRequired").disabled = true;
+					document.getElementById('PaymentMode3').disabled = true;
+					document.getElementById('PaymentMode2').disabled = true;
+					document.getElementById('PaymentMode1').disabled = true;
+					document.getElementById('statusmessage').innerHTML = "Status:Buyer refunded,await Admin assistance.";
 					
 				}
-			}
-			if (typeof data.REPLY != 'undefined') {
 				if (data.REPLY == 'AcceptService') {
 					document.getElementById('statusmessage').innerHTML = "Status:"+ data.Type + " has accepted service";
 				}

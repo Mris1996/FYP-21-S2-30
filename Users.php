@@ -85,13 +85,21 @@ class BaseUser
 		socket_write($socket, $message, strlen($message)) or die("Could not send data to server\n");
 		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
 		}
+		
 		socket_close($socket);
-		$raw_data = file_get_contents('http://localhost:4001/getBalance');
-		if($raw_data==null){
-			$raw_data = file_get_contents('http://localhost:4000/getBalance');
-		}
-		$data = json_decode($raw_data, true);
-		return $data['sticoin_balance'];
+				$x = 4000;
+				$raw_data =	file_get_contents('http://localhost:'.$x.'/getBalance');
+				if($raw_data==null){
+					$x=$x+1;
+					$raw_data =	file_get_contents('http://localhost:'.$x.'/getBalance');	
+				
+				}
+				
+		
+				
+				$data = json_decode($raw_data, true);
+			
+				return $data['sticoin_balance'];
 	}
 	public function createEthereumAccount(){
 		
@@ -554,8 +562,85 @@ class StandardUser extends BaseUser
 	}
 	public function RequestRefund($ContractID){
 
-		$sql = " UPDATE `contracts` SET `Status`= 'Requested Refund', `TotalAccepted`= 0 WHERE `ContractID`= '".$ContractID."' ";
+		$sql = " UPDATE `contracts` SET `Status`= 'Requested Refund', `TotalAccepted`= 0 ,`Transaction` = 'Transaction Declined' WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		
+	}
+	public function CancelOrder($ContractID){
+
+		$sql = " UPDATE `contracts` SET `Status`= 'Order Cancelled', `TotalAccepted`= 0,`Transaction` = 'Transaction Declined'  WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+			$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		while($row = $result->fetch_assoc())
+		{	
+			$Transferfrom = $row['SellerUserID'];
+			$Transferto = $row['BuyerUserID'];
+			$Amount = $row['NewOffer'];
+			$Type = $row['Payment Mode'];
+			$TransactionMessage = $row['Transaction'];
+		}
+		if($Type == "Half-STICoins")
+		{
+			$Amount = $Amount/2;
+		}
+		if($Type == "Full-STICoins"&& $TransactionMessage == "On-Going"){
+			$Amount = $Amount;
+		}
+		$sql = "SELECT * FROM users WHERE UserID ='".$Transferto."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		while($row = $result->fetch_assoc())
+		{
+			$TransfertoPubkey = $row['PublicKey'];
+			
+		}
+		$sql = "SELECT * FROM users WHERE UserID ='".$Transferfrom."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		while($row = $result->fetch_assoc())
+		{
+			
+			$TransferfromPubkey = $row['PublicKey'];
+			
+		}
+		$host    = "localhost";
+		$port    = 8080;
+		if($this->getUID()==$Transferfrom){
+		date_default_timezone_set('UTC');
+		$textToEncrypt = $this->getEscrowPrivate();;
+		$encryptionMethod = "AES-256-CBC";
+		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
+		$iv = substr($secret, 0, 16);
+		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
+		$arr = array('REQUEST' => "TransferSTICoins",'AMOUNT'=>$Amount,'BUYERPUBLICKEY'=>$TransferfromPubkey,'SELLERPUBLICKEY'=> $TransfertoPubkey ,'ESCROWPRIVATE'=>$encryptedMessage);
+		$message = json_encode($arr);
+		$socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
+		$result = socket_connect($socket, $host, $port) or die("Could not connect to server\n");  
+		if($result) { 
+		socket_write($socket, $message, strlen($message)) or die("Could not send data to server\n");
+		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
+		}
+		socket_close($socket);
+		$raw_data = file_get_contents('http://localhost:3000/TransferAmount');
+		$data = json_decode($raw_data, true);
+		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		while($row = $result->fetch_assoc())
+		{ 
+			$TransactionData = $row['TransactionID'];
+		}
+		$TransactionData = json_decode($TransactionData, true);
+		$NewData= array($data['TransactionHash']);
+		array_push($TransactionData,$NewData);
+		$JData = json_encode($TransactionData);
+		$sql = " UPDATE `contracts` SET `TransactionID`= '".$JData ."' WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		}
+		else{
+			sleep(4);
+			
+		}
+		return;
+			
 		
 	}
 	public function CheckAccepted($ContractID){
@@ -567,7 +652,7 @@ class StandardUser extends BaseUser
 			$NumOfAccepted = $row['TotalAccepted'];
 		}
 		if($NumOfAccepted==2){
-			$sql = " UPDATE `contracts` SET `Status`= 'Deal' , `Transaction` = 'On-Going' WHERE `ContractID`= '".$ContractID."' ";
+			$sql = " UPDATE `contracts` SET `Status`= 'Deal' , `Transaction` = 'On-Going', `TotalAccepted`= 0 WHERE `ContractID`= '".$ContractID."' ";
 			$result = $this->connect()->query($sql) or die($this->connect()->error);
 		}
 		return $NumOfAccepted ;
@@ -641,8 +726,6 @@ class StandardUser extends BaseUser
 		}
 		if($this->getUID()==$Transferfrom){
 	
-		
-			$this->TransferAmount($Transferto,$Transferfrom,$Amount,$ContractID);
 		
 		
 		$sql = "SELECT * FROM users WHERE UserID ='".$Transferto."'";

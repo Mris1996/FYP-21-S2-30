@@ -54,8 +54,7 @@ if(isset($_POST['Reject'])&& $_POST['Reject']==$User1){
 	
 $_SESSION['Object']->RejectContract($_POST['contractid']);
 $jsonData = json_encode([
-	'REPLY'=>'DeclineContract',
-	'Declined' => "set",
+	'REPLY'=>'Reject',
 	'ContractID' => $_POST['contractid']
 ]);
 
@@ -66,8 +65,26 @@ echo $query;
 
 //#############################################################
 if(isset($_POST['Refund'])){
-	
 $_SESSION['Object']->RequestRefund($_POST['contractid']);
+$jsonData = json_encode([
+	'REPLY'=>'Refund',
+	'ContractID' => $_POST['contractid']
+]);
+
+$query = http_build_query(['data' => $jsonData]);
+echo $query;
+}
+
+
+//#############################################################
+if(isset($_POST['Cancel'])){
+	
+$_SESSION['Object']->CancelOrder($_POST['contractid']);
+$jsonData = json_encode([
+	'REPLY'=>'Cancel',
+	'ContractID' => $_POST['contractid']
+]);
+$query = http_build_query(['data' => $jsonData]);
 }
 
 

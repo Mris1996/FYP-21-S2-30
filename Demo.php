@@ -22,6 +22,17 @@ $_SESSION['Object']->ListProduct('Product'.$x,'Electronics','Sample Description'
 }
 */
 
- $_SESSION['Object']->TransferAmount('625651521064jtr140897','50')
+
+
+for($x=0;$x<1;$x++){
+			$raw_data = file_get_contents('http://localhost:4000/getBalance');
+			if($raw_data==null){
+				$raw_data = file_get_contents('http://localhost:400'.$x.'/getBalance');
+				$x=$x+1;
+				echo $x;
+			}
+			
+		}
+
 
 ?>

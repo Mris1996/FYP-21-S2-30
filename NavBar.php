@@ -118,11 +118,12 @@ exit;
 }
 
 if(isset($_SESSION['ID'])){
-$_SESSION["Object"]->UpdateBalance();
+
 echo'<style> input[name="Nav_SignUp"]{display:none;}</style>';
 echo'<style> input[name="Nav_Login"]{display:none;}</style>';
 echo'<style> input[name="Nav_LogOut"]{display:visible;}</style>';
 echo '<h2>STICOIN BALANCE: '.$_SESSION['Object']->GetAccountBalance().'</h2>';
+echo '<form method="post"><input type="submit" name="Refresh" value="Refresh Balance"></form>';
 echo'
 <form action="ListPage.php">
 <input type="submit" value="List a product"/>
@@ -161,7 +162,9 @@ session_destroy();
 echo '<script> location.replace("index.php")</script> ';
 exit();
 }
-
+if(isset($_POST['Refresh'])){
+$_SESSION["Object"]->UpdateBalance();
+}
 ?>	
 <form method="post">
 			<input type="submit" class="btn btn-white"   name="Nav_Login"  value="Login"/>
