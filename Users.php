@@ -87,15 +87,8 @@ class BaseUser
 		}
 		
 		socket_close($socket);
-				$x = 4000;
-				$raw_data =	file_get_contents('http://localhost:'.$x.'/getBalance');
-				if($raw_data==null){
-					$x=$x+1;
-					$raw_data =	file_get_contents('http://localhost:'.$x.'/getBalance');	
-				
-				}
-				
 		
+				$raw_data =	file_get_contents('http://localhost:4000/getBalance');
 				
 				$data = json_decode($raw_data, true);
 			
@@ -175,6 +168,35 @@ class BaseUser
 			$this->Status = $row["Status"];
 
 	}
+	
+	return true;
+		
+	}
+	public function setUID_Admin($UID){
+		$sql = "SELECT * FROM users WHERE UserID='".$UID."'" ;
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		if ($result->num_rows == 0) 
+			{
+				return false;
+
+			}	
+		while($row = $result->fetch_assoc())
+		{ 	
+			$this->UID = $row["UserID"];
+			$this->DisplayName = $row["DisplayName"];
+			$this->PubKey = $row["PublicKey"];
+			$this->Email = $row["Email"];
+			$this->FirstName = $row["FirstName"];
+			$this->LastName = $row["LastName"];
+			$this->DOB = $row["DateOfBirth"];
+			$this->ContactNumber = $row["ContactNumber"];
+			$this->Address = $row["Address"];
+			$this->AccountType = $row["AccountType"];
+			$this->Rating = json_decode($row["Rating"],true);
+			$this->Status = $row["Status"];
+
+	}
+	
 	return true;
 		
 	}
@@ -349,7 +371,7 @@ class BaseUser
 		
 			
 			}
-		public function ViewSearchProduct($sortby,$Order,$Query,$page){
+	public function ViewSearchProduct($sortby,$Order,$Query,$page){
 			
 			$sql = "SELECT * FROM product WHERE ProductName LIKE '%$Query%' or ProductCategory LIKE '%$Query' or SellerUserID LIKE '%$Query%' ORDER BY $sortby $Order" ;
 			$result = $this->connect()->query($sql) or die($this->connect()->error); 
@@ -466,6 +488,20 @@ class StandardUser extends BaseUser
 		$this->AccountBalance = $Object->getAccountBalance();
 		
 		}
+	public function RateUser($Rating,$UserID) {
+		$sql = "SELECT * FROM users WHERE UserID='".$UserID."'" ;
+			$result = $this->connect()->query($sql) or die($this->connect()->error); 
+			while($row = $result->fetch_assoc())
+			{ 
+				$Data = $row['Rating'];
+			}
+			$Data = json_decode($Data, true);
+			$Data['Rating'] = ($Rating + $Data['Rating'])/2;
+			$Data['NumOfReviewers'] = 	$Data['NumOfReviewers'] +1;
+			$JData = json_encode($Data);
+			$sql="UPDATE `users` SET `Rating`='".$JData."' WHERE `UserID`='".$UserID."'";
+			$result = $this->connect()->query($sql) or die($this->connect()->error); 
+	}
 	public function NewOffer($Offer,$DateRequired,$SellerID,$ProductID,$InitialOffer){
 		while(true){					
 					$ContractID = str_pad(rand(0000,9999),4,0,STR_PAD_LEFT).str_pad(rand(0000,9999),4,0,STR_PAD_LEFT).str_pad(rand(0000,9999),4,0,STR_PAD_LEFT).chr(rand(97,122)).chr(rand(97,122)).chr(rand(97,122)).str_pad(rand(0000,9999),4,0,STR_PAD_LEFT). substr(rand(0000,9999), 2, 4);
@@ -505,9 +541,108 @@ class StandardUser extends BaseUser
 		}
 		return $ArrayOfContracts;
 	}
-	public function RetrieveChat($User1,$User2){
+	public function Chat($UserID){
 	
+		$sql = "SELECT * FROM negotiation WHERE UserID='".$UserID."' AND UserID2='".$this->getUID()."' OR UserID='".$this->getUID()."' AND UserID2='".$UserID."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		if ($result->num_rows == 0) 
+		{	
+			
+			$FullMessageArray = array();
+			$JSONdata = Json_encode($FullMessageArray);
+			$sql = "INSERT INTO `negotiation`(`UserID`, `Message`, `UserID2`) VALUES ('".$this->getUID()."','".$JSONdata."','".$UserID ."')";
+			$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		}
+		
+	}
+	public function DeleteChat($UserID){
+		
+		$sql = "DELETE FROM negotiation WHERE UserID='".$UserID."' AND UserID2='".$this->getUID()."' OR UserID='".$this->getUID()."' AND UserID2='".$UserID."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		
+	}
+	public function AllChatsArray(){
+	
+		$sql = "SELECT * FROM negotiation WHERE UserID='".$this->getUID()."' OR UserID2='".$this->getUID()."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		
+		if ($result->num_rows == 0) 
+		{
+			echo'<b>You have no chats currently</b>';
+		}
+		else{
+			echo'<form method="post">';
+			while($row = $result->fetch_assoc())
+			{
+					
+					if($row['UserID']!=$this->getUID()){
+					echo'<input type="submit" name ="Chat_with" value="'.$row['UserID'].'"></br>';
+					
+					}
+					else{
+					echo'<input type="submit" name ="Chat_with" value="'.$row['UserID2'].'"></br>';	
+					}
+					
+					
+			}
+			echo'</form>';
+		}
+			
+	}
+	public function InsertOrdinaryChat($User1,$User2,$Message){
+
+		$Message = array("Message"=>$Message , "User"=>$User1 , "Time"=>Time());
 		$sql = "SELECT * FROM negotiation WHERE UserID='".$User1."' AND UserID2='".$User2."' OR UserID='".$User2."' AND UserID2='".$User1."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		if ($result->num_rows == 0) 
+		{
+			$FullMessageArray = array($Message);
+			$JSONdata = Json_encode($FullMessageArray);
+			$sql = "INSERT INTO `negotiation`(`UserID`, `Message`, `UserID2`) VALUES ('".$User1."','".$JSONdata."','".$User2 ."')";
+			$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		}
+		else{
+			while($row = $result->fetch_assoc())
+			{ 
+			
+				$FullMessageArray = Json_decode( $row["Message"],true);
+
+			}
+			array_push($FullMessageArray,$Message);
+			$JSONdata = Json_encode($FullMessageArray);
+			$sql = "UPDATE `negotiation` SET `Message`='".$JSONdata."' WHERE  UserID='".$User1."' AND UserID2='".$User2."' OR UserID='".$User2."' AND UserID2='".$User1."'";
+			$result = $this->connect()->query($sql) or die($this->connect()->error);  
+		}               
+	}
+
+	public function InsertChat($ContractID,$User,$Message,$Type){
+	   
+		$Message = array("Message"=>$Message , "User"=>$User , "Time"=>Time() ,"Type"=>$Type);
+		$sql = "SELECT * FROM contracts WHERE ContractID='".$ContractID."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		if ($result->num_rows == 0) 
+		{
+			$FullMessageArray = array($Message);
+			$JSONdata = Json_encode($FullMessageArray);
+			$sql = "INSERT INTO `contracts`(`Message`) VALUES ('".$JSONdata."')";
+			$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		}
+		else{
+			while($row = $result->fetch_assoc())
+			{ 
+			
+				$FullMessageArray = Json_decode( $row["Message"],true);
+
+			}
+			array_push($FullMessageArray,$Message);
+			$JSONdata = Json_encode($FullMessageArray);
+			$sql = "UPDATE `contracts` SET `Message`='".$JSONdata."' WHERE ContractID='".$ContractID."'";
+			$result = $this->connect()->query($sql) or die($this->connect()->error);  
+		}               
+	}
+	public function RetrieveChat($ContractID){
+	
+		$sql = "SELECT * FROM contracts WHERE ContractID = '".$ContractID."'";
 
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		$Msg = array();
@@ -526,10 +661,17 @@ class StandardUser extends BaseUser
 				else{
 					echo'<div id="User2">';
 				}
-				echo'<span class="author">'.$Msg [$x]['User'].':</span>
-				<span class="messsage-text">'.$Msg [$x]['Message'].'</span></br>';
-		
-				echo'</div>';
+				if($Msg [$x]['Type']=="Admin"){
+					echo'<span class="author">'.$Msg [$x]['User'].'(Administrator):</span>
+						 <span class="messsage-text">'.$Msg [$x]['Message'].'</span></br>';
+					echo'</div>';
+				}
+				else{
+					echo'<span class="author">'.$Msg [$x]['User'].':</span>
+						 <span class="messsage-text">'.$Msg [$x]['Message'].'</span></br>';
+					echo'</div>';
+				}
+				
 			}
 		}
 		
@@ -666,7 +808,7 @@ class StandardUser extends BaseUser
 			$NumOfAccepted = $row['TotalAccepted'];
 		}
 		if($NumOfAccepted==2){
-			$sql = " UPDATE `contracts` SET `Status`= 'Transaction Complete' , `Transaction` = 'Complete' WHERE `ContractID`= '".$ContractID."' ";
+			$sql = " UPDATE `contracts` SET `Status`= 'Transaction Complete' ,`TransactionCloseDate`= '".date("Y-m-d")."', `Transaction` = 'Complete' WHERE `ContractID`= '".$ContractID."' ";
 			$result = $this->connect()->query($sql) or die($this->connect()->error);
 		}
 		return $NumOfAccepted ;
@@ -782,79 +924,6 @@ class StandardUser extends BaseUser
 		}
 		return;
 	}
-	public function Chat($UserID){
-	
-		$sql = "SELECT * FROM negotiation WHERE UserID='".$UserID."' AND UserID2='".$this->getUID()."' OR UserID='".$this->getUID()."' AND UserID2='".$UserID."'";
-		$result = $this->connect()->query($sql) or die($this->connect()->error);    
-		if ($result->num_rows == 0) 
-		{	
-			
-			$FullMessageArray = array();
-			$JSONdata = Json_encode($FullMessageArray);
-			$sql = "INSERT INTO `negotiation`(`UserID`, `Message`, `UserID2`) VALUES ('".$this->getUID()."','".$JSONdata."','".$UserID ."')";
-			$result = $this->connect()->query($sql) or die($this->connect()->error); 
-		}
-		
-	}
-	public function DeleteChat($UserID){
-		
-		$sql = "DELETE FROM negotiation WHERE UserID='".$UserID."' AND UserID2='".$this->getUID()."' OR UserID='".$this->getUID()."' AND UserID2='".$UserID."'";
-		$result = $this->connect()->query($sql) or die($this->connect()->error);    
-		
-	}
-	public function AllChatsArray(){
-	
-		$sql = "SELECT * FROM negotiation WHERE UserID='".$this->getUID()."' OR UserID2='".$this->getUID()."'";
-		$result = $this->connect()->query($sql) or die($this->connect()->error);    
-		
-		if ($result->num_rows == 0) 
-		{
-			echo'<b>You have no chats currently</b>';
-		}
-		else{
-			echo'<form method="post">';
-			while($row = $result->fetch_assoc())
-			{
-					
-					if($row['UserID']!=$this->getUID()){
-					echo'<input type="submit" name ="Chat_with" value="'.$row['UserID'].'"></br>';
-					
-					}
-					else{
-					echo'<input type="submit" name ="Chat_with" value="'.$row['UserID2'].'"></br>';	
-					}
-					
-					
-			}
-			echo'</form>';
-		}
-			
-	}
-	public function InsertChat($User1,$User2,$Message){
-
-		$Message = array("Message"=>$Message , "User"=>$User1 , "Time"=>Time());
-		$sql = "SELECT * FROM negotiation WHERE UserID='".$User1."' AND UserID2='".$User2."' OR UserID='".$User2."' AND UserID2='".$User1."'";
-		$result = $this->connect()->query($sql) or die($this->connect()->error);    
-		if ($result->num_rows == 0) 
-		{
-			$FullMessageArray = array($Message);
-			$JSONdata = Json_encode($FullMessageArray);
-			$sql = "INSERT INTO `negotiation`(`UserID`, `Message`, `UserID2`) VALUES ('".$User1."','".$JSONdata."','".$User2 ."')";
-			$result = $this->connect()->query($sql) or die($this->connect()->error); 
-		}
-		else{
-			while($row = $result->fetch_assoc())
-			{ 
-			
-				$FullMessageArray = Json_decode( $row["Message"],true);
-
-			}
-			array_push($FullMessageArray,$Message);
-			$JSONdata = Json_encode($FullMessageArray);
-			$sql = "UPDATE `negotiation` SET `Message`='".$JSONdata."' WHERE  UserID='".$User1."' AND UserID2='".$User2."' OR UserID='".$User2."' AND UserID2='".$User1."'";
-			$result = $this->connect()->query($sql) or die($this->connect()->error);  
-		}               
-	}
 	
 		public function getEscrow(){
 		$sql = "SELECT * FROM escrow" ;
@@ -883,10 +952,24 @@ class StandardUser extends BaseUser
 				$Data = $row['Review'];
 			}
 			$Data = json_decode($Data, true);
-			$NewData= array("Review"=>$Review, "ProductID"=>$ProductID, "User"=>$this->getUID());
+			$NewData= array("Review"=>$Review, "ProductID"=>$ProductID, "User"=>$this->getUID(),"Date"=>date("Y-m-d"));
 			array_push($Data,$NewData);
 			$JData = json_encode($Data);
 			$sql="UPDATE `product` SET `Review`='".$JData."' WHERE `ProductID`='".$ProductID."'";
+			$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		}
+		public function addNewUserReview($Review,$UserID){
+			$sql = "SELECT * FROM users WHERE UserID='".$UserID."'" ;
+			$result = $this->connect()->query($sql) or die($this->connect()->error); 
+			while($row = $result->fetch_assoc())
+			{ 
+				$Data = $row['Review'];
+			}
+			$Data = json_decode($Data, true);
+			$NewData= array("Review"=>$Review, "UserID"=>$UserID, "User"=>$this->getUID(),"Date"=>date("Y-m-d"));
+			array_push($Data,$NewData);
+			$JData = json_encode($Data);
+			$sql="UPDATE `users` SET `Review`='".$JData."' WHERE `UserID`='".$UserID."'";
 			$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		}
 		public function RemoveProduct($ProductID){
@@ -1059,6 +1142,111 @@ class Admin extends StandardUser
 		$this->AccountType =  $Object->getAccountType();
 		$this->AccountBalance = $Object->getAccountBalance();
 	
+	}
+	public function HaltTransaction($ContractID){
+		$sql = " UPDATE `contracts` SET `Status`='Admin has halted this transaction' WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+	}
+	public function ResumeTranasction($ContractID,$Transaction){
+		if($Transaction=="On-Going"){
+			$sql = " UPDATE `contracts` SET `Status`='Deal' WHERE `ContractID`= '".$ContractID."' ";
+		}
+		if($Transaction=="Negotiating"){
+			$sql = " UPDATE `contracts` SET `Status`='Negotiating' WHERE `ContractID`= '".$ContractID."' ";
+		}
+		if($Transaction=="Complete"){
+			$sql = " UPDATE `contracts` SET `Status`='Transaction Complete' WHERE `ContractID`= '".$ContractID."' ";
+		}
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+	}
+	public function ListOfAdminContracts($ContractType){
+	if($ContractType=="All"){
+	$sql = "SELECT * FROM contracts ORDER BY TransactionOpenDate" ;
+	}
+	if($ContractType=="Overdue contracts"){
+	$sql = "SELECT * FROM `contracts` WHERE DATEDIFF(`DateRequired`,now()) < 0 OR DATEDIFF(`DateRequired`,`TransactionOpenDate`) > 3 AND `Transaction` != 'Complete' " ;
+	}
+	if($ContractType=="Requested Refund"){
+
+	$sql = "SELECT * FROM contracts WHERE `Status` = 'Requested Refund' ORDER BY TransactionOpenDate" ;
+	}
+	$result = $this->connect()->query($sql) or die($this->connect()->error); 
+			
+	if ($result->num_rows == 0) 
+		{
+			return false;
+
+		}
+	$ArrayOfContracts = array();
+	while($row = $result->fetch_assoc())
+	{
+		array_push($ArrayOfContracts,$row['ContractID']);
+		
+			
+	}
+	return $ArrayOfContracts;
+	}
+	public function Refund_Admin($ContractID){
+		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		$Transferfrom = '';
+		$Transferto = '';
+		while($row = $result->fetch_assoc())
+		{
+			$Transferfrom = $row['SellerUserID'];
+			$Transferto = $row['BuyerUserID'];
+			$Amount = $row['NewOffer'];
+		}
+		
+		$sql = "SELECT * FROM users WHERE UserID ='".$Transferto."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		while($row = $result->fetch_assoc())
+		{
+			$TransfertoPubkey = $row['PublicKey'];
+			
+		}
+		$sql = "SELECT * FROM users WHERE UserID ='".$Transferfrom."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		while($row = $result->fetch_assoc())
+		{
+			
+			$TransferfromPubkey = $row['PublicKey'];
+			
+		}
+		$host    = "localhost";
+		$port    = 8080;
+
+		date_default_timezone_set('UTC');
+		$textToEncrypt = $this->getEscrowPrivate();;
+		$encryptionMethod = "AES-256-CBC";
+		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
+		$iv = substr($secret, 0, 16);
+		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
+		$arr = array('REQUEST' => "TransferSTICoins",'AMOUNT'=>$Amount,'BUYERPUBLICKEY'=>$TransferfromPubkey,'SELLERPUBLICKEY'=> $TransfertoPubkey ,'ESCROWPRIVATE'=>$encryptedMessage);
+		$message = json_encode($arr);
+		$socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
+		$result = socket_connect($socket, $host, $port) or die("Could not connect to server\n");  
+		if($result) { 
+		socket_write($socket, $message, strlen($message)) or die("Could not send data to server\n");
+		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
+		}
+		socket_close($socket);
+		$raw_data = file_get_contents('http://localhost:3000/TransferAmount');
+		$data = json_decode($raw_data, true);
+		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		while($row = $result->fetch_assoc())
+		{ 
+			$TransactionData = $row['TransactionID'];
+		}
+		$TransactionData = json_decode($TransactionData, true);
+		$NewData= array($data['TransactionHash']);
+		array_push($TransactionData,$NewData);
+		$JData = json_encode($TransactionData);
+		$sql = " UPDATE `contracts` SET `TransactionID`= '".$JData ."',`Status`='Refunded Transaction' ,`Transaction`='Complete',`TransactionCloseDate`='".date("Y-m-d")."'  WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		
+		return;
 	}
 	public function ListOfUsers(){
 		$sql = "SELECT * FROM users where AccountType != 'Administrator'";

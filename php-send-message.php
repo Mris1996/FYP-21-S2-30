@@ -6,8 +6,7 @@ $ch = curl_init('http://localhost:3030');
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 
 // get the input
-$User1 = trim(htmlspecialchars($_POST['User1'] ?? ''));
-$User2 = trim(htmlspecialchars($_POST['User2'] ?? ''));
+$User = trim(htmlspecialchars($_POST['User'] ?? ''));
 $message = trim(htmlspecialchars($_POST['message'] ?? ''));
 
 
@@ -17,8 +16,7 @@ if(isset($_POST['offer'])){
 $_SESSION['Object']->UpdateContract($_POST['offer'],$_POST['daterequired'],$_POST['paymentmode'],$_POST['contractid'],$_POST['usertype']);
 
 $jsonData = json_encode([
-	'User1' => $User1,
-	'User2' => $User2,
+	'User' => $User,
 	'offer' => $_POST['offer'],
 	'daterequired' => $_POST['daterequired'],
 	'paymentmode' => $_POST['paymentmode'],
@@ -30,13 +28,19 @@ $query = http_build_query(['data' => $jsonData]);
 
 
 //#############################################################
-if(isset($_POST['Accept'])&&$_POST['Accept']==$User1){
+if(isset($_POST['Accept'])){
 $_SESSION['Object']->AcceptContract($_POST['contractid'],$_POST['usertype']);
+$jsonData = json_encode([
+	'REPLY'=>'AcceptOffer',
+	'Type' => $_POST['usertype'],
+	'ContractID' => $_POST['contractid']
+]);
+$query = http_build_query(['data' => $jsonData]);
 }
 
 
 //#############################################################
-if(isset($_POST['AcceptService'])&&$_POST['AcceptService']==$User1){
+if(isset($_POST['AcceptService'])){
 
 $_SESSION['Object']->AcceptService($_POST['contractid'],$_POST['usertype']);
 
@@ -50,7 +54,7 @@ $query = http_build_query(['data' => $jsonData]);
 
 
 //#############################################################
-if(isset($_POST['Reject'])&& $_POST['Reject']==$User1){
+if(isset($_POST['Reject'])){
 	
 $_SESSION['Object']->RejectContract($_POST['contractid']);
 $jsonData = json_encode([
@@ -91,18 +95,32 @@ $query = http_build_query(['data' => $jsonData]);
 //#############################################################
 if(isset($message) && strlen($message)!=0){
 
-$_SESSION['Object']->InsertChat($User1,$User2,$message);
+$_SESSION['Object']->InsertChat($_POST['contractid'],$User,$message,$_POST['usertype']);
 
 	
 $jsonData = json_encode([
 	'REPLY'=>'ChatSystem',
-	'User1' => $User1,
-	'User2' => $User2,
+	'User' => $User,
+	'Type' => $_POST['usertype'],
 	'message' => $message,
 	'ContractID' => $_POST['contractid']
 ]);
 $query = http_build_query(['data' => $jsonData]);
 
+}
+
+
+//#############################################################
+if(isset($_POST['chatmessage'])){
+$_SESSION['Object']->InsertOrdinaryChat($_POST['User1'],$_POST['User2'],$message);
+
+$jsonData = json_encode([
+	'User1' => $_POST['User1'],
+	'User2' => $_POST['User2'],
+	'message' => $message,
+]);
+$query = http_build_query(['data' => $jsonData]);	
+	
 }
 
 
@@ -161,6 +179,18 @@ if(isset($_POST['Transfer'])&&$_POST['Transfer']==$_SESSION['ContractID']){
 	if($_SESSION['Object']->ToTransfer($_POST['Transfer'])){
 		$_SESSION['Object']->TransferAmount($_POST['Transfer'],$_SESSION['Object']->AmountToTransfer($_POST['Transfer']));
 	}
+}
+
+
+
+//#############################################################
+if(isset($_POST['RefundAdmin'])){
+	$_SESSION['Object']->Refund_Admin($_POST['contractid']);
+	$jsonData = json_encode([
+	'REPLY'=>'AdminRefund',
+	'ContractID' =>$_POST['contractid']
+]);
+$query = http_build_query(['data' => $jsonData]);
 }
 
 

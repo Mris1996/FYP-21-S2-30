@@ -142,7 +142,8 @@ echo'
 	<a href="ConvertSCPage.php">Convert to STICoin</a>
 	<a href="ConvertETHPage.php">Convert to ETH</a>';
 if($_SESSION['Object']->getAccountType()=="Administrator"){
-	echo'<a href="AdministratorPage.php">Manage accounts</a>';
+	echo'<a href="UserManagementPage.php">Manage accounts</a>';
+	echo'<a href="ContractManagementPage.php">Manage contracts</a>';
 }
 
 echo'
@@ -151,6 +152,24 @@ echo'
 </div>
 </form>';
 
+$BaseUserOBJ = new BaseUser("check status");
+$BaseUserOBJ->setUID_Admin($_SESSION["ID"]);
+if(json_decode($BaseUserOBJ->Status)[0]=="Suspended"){
+echo'<script>alert("You have been suspended till,'.json_decode($BaseUserOBJ->Status)[1].'")</script>';	
+echo'<style> input[name="Nav_Login"]{display:visible;}</style>';
+$_SESSION['ID']=NULL;
+session_destroy();
+echo '<script> location.replace("login.php")</script> ';
+exit();
+}
+if(json_decode($BaseUserOBJ->Status)[0]=="Banned"){
+echo'<script>alert("You have been banned")</script>';	
+echo'<style> input[name="Nav_Login"]{display:visible;}</style>';
+$_SESSION['ID']=NULL;
+session_destroy();
+echo '<script> location.replace("LoginPage.php")</script> ';
+exit();
+}
 }
 else{
 	echo'<style> input[name="Nav_LogOut"]{display:none;}</style>';
@@ -159,12 +178,14 @@ if(isset($_POST['Nav_LogOut'])){
 echo'<style> input[name="Nav_Login"]{display:visible;}</style>';
 $_SESSION['ID']=NULL;
 session_destroy();
-echo '<script> location.replace("index.php")</script> ';
+echo '<script> location.replace("LoginPage.php")</script> ';
 exit();
 }
 if(isset($_POST['Refresh'])){
 $_SESSION["Object"]->UpdateBalance();
 }
+
+
 ?>	
 <form method="post">
 			<input type="submit" class="btn btn-white"   name="Nav_Login"  value="Login"/>

@@ -131,3 +131,20 @@ $BaseUserObj->ViewAllUserProduct("DateOfListing","ASC",$ID);
 <h1>Reviews</h1>
 <?php $BaseUserObj->viewReview($ID,"User");?>
 </div>
+<form method="post" style="text-align:center;">
+<input type="text" name="reviewtext" style="width:1000px;height:100px;" placeholder="Review User">
+<input type="hidden" name="reviewtextsubmit">
+</form>
+</div>
+
+</div>
+<?php
+
+if(isset($_POST['reviewtextsubmit'])){
+	
+	$_SESSION['Object']->addNewUserReview($_POST['reviewtext'],$BaseUserObj->getUID());
+	echo'<script>history.pushState({}, "", "")</script>';
+	echo '<script> location.reload()</script> ';
+	exit();	
+}
+?>

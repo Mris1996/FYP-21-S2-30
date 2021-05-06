@@ -18,7 +18,7 @@ if($_SESSION['Object']->getAccountType()!="Administrator"){
 $SusDateErr = "";
 if(isset($_POST['hiddenval'])){
 	$BaseUserObj = new BaseUser("Check user");
-	if(!$BaseUserObj->setUID( $_POST['hiddenval'])){
+	if(!$BaseUserObj->setUID_Admin( $_POST['hiddenval'])){
 		echo'<script>alert("No such user!")</script>';
 		echo '<script> location.replace("AdministratorPage.php")</script> ';
 	}

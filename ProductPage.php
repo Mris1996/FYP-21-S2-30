@@ -57,11 +57,22 @@ echo'
 <hr>
 <h1>Reviews</h1>
 <?php $BaseUserOBJ->viewReview($ProductID,"Product");?>
+<form method="post" style="text-align:center;">
+<input type="text" name="reviewtext" style="width:1000px;height:100px;" placeholder="Review Product">
+<input type="hidden" name="reviewtextsubmit">
+</form>
 </div>
+
 </div>
 <?php
 
-
+if(isset($_POST['reviewtextsubmit'])){
+	
+	$_SESSION['Object']->addNewReview($_POST['reviewtext'],$ProductID);
+	echo'<script>history.pushState({}, "", "")</script>';
+	echo '<script> location.reload()</script> ';
+	exit();	
+}
 if(isset($_POST['Remove'])){
 
 	echo'<style> .ProductPage{display:none;}</style>';

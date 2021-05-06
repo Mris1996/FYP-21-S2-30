@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 29, 2021 at 12:41 PM
+-- Generation Time: May 06, 2021 at 09:40 PM
 -- Server version: 10.4.17-MariaDB
 -- PHP Version: 8.0.0
 
@@ -28,13 +28,21 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `contracts` (
-  `TransactionID` int(11) NOT NULL,
-  `TransactionOpenDate` datetime NOT NULL,
+  `TransactionID` text NOT NULL DEFAULT '[]',
+  `TransactionOpenDate` datetime NOT NULL DEFAULT current_timestamp(),
   `TransactionCloseDate` datetime NOT NULL,
-  `ContractID` text NOT NULL,
+  `ContractID` varchar(30) NOT NULL,
   `BuyerUserID` varchar(20) NOT NULL,
   `SellerUserID` varchar(20) NOT NULL,
-  `ProductID` varchar(20) NOT NULL
+  `ProductID` varchar(20) NOT NULL,
+  `DateRequired` date NOT NULL,
+  `InitialOffer` int(11) NOT NULL,
+  `NewOffer` int(11) NOT NULL,
+  `Status` text NOT NULL DEFAULT 'Pending Seller Reply',
+  `Payment Mode` text NOT NULL,
+  `TotalAccepted` int(11) NOT NULL DEFAULT 0,
+  `Transaction` text NOT NULL DEFAULT 'Negotiating',
+  `Message` text NOT NULL DEFAULT '[]'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -53,7 +61,7 @@ CREATE TABLE `escrow` (
 --
 
 INSERT INTO `escrow` (`PublicKey`, `PrivateKey`) VALUES
-('0x1403Bc7902e5E3796b053dCFa017609c7C99F85F ', ' 0x050f81c214c558617da8ad5f5cd39af5ad87ab1987260866833cc9854f6de655');
+('0x73fA385076B6e9BEA157Ba6e507E922c2951Dc69', '9fadb3c63d66140740461f300f6f65ef0f5f0a3611e72303cecc44e88789e734');
 
 -- --------------------------------------------------------
 
@@ -63,15 +71,9 @@ INSERT INTO `escrow` (`PublicKey`, `PrivateKey`) VALUES
 
 CREATE TABLE `negotiation` (
   `UserID` varchar(20) NOT NULL,
-  `Message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL
+  `Message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '[]',
+  `UserID2` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `negotiation`
---
-
-INSERT INTO `negotiation` (`UserID`, `Message`) VALUES
-('gg', 'gg');
 
 -- --------------------------------------------------------
 
@@ -138,7 +140,6 @@ INSERT INTO `product` (`ProductID`, `ProductName`, `ProductCategory`, `ProductDe
 ('tbf699236', 'Product31', 'Clothing', 'Sample Description', 'Sample caption', 1000, '2021-04-29', '0000-00-00', 'DemoUser40', 'Available', 'images/608a7ebcb42924.31420860.png', '[]'),
 ('tgs969702', 'Product43', 'Electronics', 'Sample Description', 'Sample caption', 1000, '2021-04-29', '0000-00-00', 'DemoUser41', 'Available', 'images/608a7ebcb42924.31420860.png', '[]'),
 ('tmx832910', 'Product6', 'Home and Lifestyle', 'Sample Description', 'Sample caption', 1000, '2021-04-29', '0000-00-00', 'DemoUser41', 'Available', 'images/608a7ebcb42924.31420860.png', '[]'),
-('twe670786', 'gg', 'Home', 'gg', 'gg', 666, '2021-04-29', '0000-00-00', 'DemoUser44', 'Available', 'images/608a7ebcb42924.31420860.png', '[]'),
 ('txp205418', 'Product23', 'Music', 'Sample Description', 'Sample caption', 1000, '2021-04-29', '0000-00-00', 'DemoUser1', 'Available', 'images/608a7ebcb42924.31420860.png', '[]'),
 ('ugo562616', 'Product5', 'Home and Lifestyle', 'Sample Description', 'Sample caption', 1000, '2021-04-29', '0000-00-00', 'DemoUser19', 'Available', 'images/608a7ebcb42924.31420860.png', '[]'),
 ('uik540740', 'Product16', 'Sports', 'Sample Description', 'Sample caption', 1000, '2021-04-29', '0000-00-00', 'DemoUser7', 'Available', 'images/608a7ebcb42924.31420860.png', '[]'),
@@ -146,7 +147,6 @@ INSERT INTO `product` (`ProductID`, `ProductName`, `ProductCategory`, `ProductDe
 ('uyx055120', 'Product47', 'Electronics', 'Sample Description', 'Sample caption', 1000, '2021-04-29', '0000-00-00', 'DemoUser10', 'Available', 'images/608a7ebcb42924.31420860.png', '[]'),
 ('vth730596', 'Product41', 'Electronics', 'Sample Description', 'Sample caption', 1000, '2021-04-29', '0000-00-00', 'DemoUser29', 'Available', 'images/608a7ebcb42924.31420860.png', '[]'),
 ('wbb995946', 'Product33', 'Clothing', 'Sample Description', 'Sample caption', 1000, '2021-04-29', '0000-00-00', 'DemoUser11', 'Available', 'images/608a7ebcb42924.31420860.png', '[]'),
-('xgj571844', 'Product7', 'Home and Lifestyle', 'Sample Description', 'Sample caption', 1000, '2021-04-29', '0000-00-00', 'DemoUser0', 'Available', 'images/608a7ebcb42924.31420860.png', '[]'),
 ('ydy653404', 'Product14', 'Sports', 'Sample Description', 'Sample caption', 1000, '2021-04-29', '0000-00-00', 'DemoUser18', 'Available', 'images/608a7ebcb42924.31420860.png', '[]'),
 ('ymo277469', 'Product46', 'Electronics', 'Sample Description', 'Sample caption', 1000, '2021-04-29', '0000-00-00', 'DemoUser24', 'Available', 'images/608a7ebcb42924.31420860.png', '[]');
 
@@ -179,13 +179,13 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`UserID`, `DisplayName`, `PublicKey`, `Password`, `Email`, `FirstName`, `LastName`, `DateOfBirth`, `ContactNumber`, `Address`, `AccountType`, `PrivateKey`, `Rating`, `Review`, `Status`) VALUES
-('DemoUser0', 'Demo 0', '0x5015c4CCb0a812C44bFFcB69e2D0d31422599A8D', '$2y$10$xYCXwoDh0exmIaOuaAT9IeJagRimDy1a6YO1x.Tk/X4pq3VqNUk3i', '0User@gmail.com', 'Demo', 'User', '01/01/1991', 96969696, 'demo road', 'Administrator', '0xb9dba28737a50c5c08a7b37b344915c451ea2832c53e6e14ab76b6ce2ae279df', '{\"Rating\":5,\"NumOfReviewers\":0}', '[]', '[\"Normal\",\"\"]'),
+('DemoUser0', 'Demo0', '0x5015c4CCb0a812C44bFFcB69e2D0d31422599A8D', '$2y$10$xYCXwoDh0exmIaOuaAT9IeJagRimDy1a6YO1x.Tk/X4pq3VqNUk3i', '0User@gmail.com', 'Demo', 'User', '01/01/1991', 96969696, 'demo road', 'Administrator', '0xb9dba28737a50c5c08a7b37b344915c451ea2832c53e6e14ab76b6ce2ae279df', '{\"Rating\":5,\"NumOfReviewers\":0}', '[]', '[\"Normal\",\"\"]'),
 ('DemoUser1', 'Demo 1', '0x829cbE27525E5D60A3c4B9b09D9b3f27CEa2b582', '$2y$10$7LcALCP1fYorP55lGzBlP.qXe1Hmz4H83EJrtz.6JHHi0hrF9wQZ6', '1User@gmail.com', 'Demo', 'User', '01/01/1991', 96969696, 'demo road', 'Administrator', '0xb84a33308ad07b1e19a2ce88e267525dfccfc097e0046d0b427fe97073af08d1', '{\"Rating\":5,\"NumOfReviewers\":0}', '[]', '[\"Normal\",\"\"]'),
 ('DemoUser10', 'Demo 10', '0x4946Ee1843dA9900cbD44f5735D02FF0Ca604455', '$2y$10$E0oXBVVPLf2rhXnZMB3UCervukZWwvH0cmUp9TDw4qJHWIChjMUF6', '10User@gmail.com', 'Demo', 'User', '01/01/1991', 96969696, 'demo road', 'Administrator', '0xefaaf13d5c800d2babe60d0230a8040ba568d9b4521f017a08e8094ea36387e1', '{\"Rating\":5,\"NumOfReviewers\":0}', '[]', '[\"Normal\",\"\"]'),
 ('DemoUser11', 'Demo 11', '0xDe2DC35Fb0cFb83368f84321C180F6837ae05594', '$2y$10$.kRfnTwWhjFa6KMnnEqJre98YTdTF3WvXkkZ00pRraq8ktmZiEKZy', '11User@gmail.com', 'Demo', 'User', '01/01/1991', 96969696, 'demo road', 'Standard', '0x870f07ec2a0a938d467b2d471dc650571013ebdc92cab2f04e96ec5828028eac', '{\"Rating\":5,\"NumOfReviewers\":0}', '[]', '[\"Normal\",\"\"]'),
 ('DemoUser12', 'Demo 12', '0xA9Fc340d57e2fb968cF5F4c5dF47dbB0A0D57003', '$2y$10$G8mF0UBiw1gqBc.v0.oG0.3pFDcjQGkCrTzM.qrngO82JRBM4wdnC', '12User@gmail.com', 'Demo', 'User', '01/01/1991', 96969696, 'demo road', 'Standard', '0x498df18349b0b32a1b8b2a48d393955bf529648f5a99bc4730875eafc1f5bf0f', '{\"Rating\":5,\"NumOfReviewers\":0}', '[]', '[\"Normal\",\"\"]'),
 ('DemoUser13', 'Demo 13', '0x24EE50f9ff0EaB90792edb8cA9c39ec7f601f5aa', '$2y$10$rODhDdhu.k4v6ilpntLGv..jRo4xQpZJzwifkg3x6Xh04gJyyeUFC', '13User@gmail.com', 'Demo', 'User', '01/01/1991', 96969696, 'demo road', 'Standard', '0xb7dd5ce50ba4091c5e39277da6a90d8a1e892e5c045f5943e3e0affc0352d134', '{\"Rating\":5,\"NumOfReviewers\":0}', '[]', '[\"Normal\",\"\"]'),
-('DemoUser14', 'Demo 14', '0x445eF169b49C82bb249AfBc3c35624052685B979', '$2y$10$IHsphheXwec9SjAUp4rbTO49DsvcijkamzLeWanmXrDx9/QwSQKHq', '14User@gmail.com', 'Demo', 'User', '01/01/1991', 96969696, 'demo road', 'Standard', '0xf857ac805427da6db76fc340480f2c81a3d62c5107e68b267f2647a78c77d505', '{\"Rating\":5,\"NumOfReviewers\":0}', '[]', '[\"Normal\",\"\"]'),
+('DemoUser14', 'Demo 14', '0x445eF169b49C82bb249AfBc3c35624052685B979', '$2y$10$IHsphheXwec9SjAUp4rbTO49DsvcijkamzLeWanmXrDx9/QwSQKHq', '14User@gmail.com', 'Demo', 'User', '01/01/1991', 96969696, 'demo road', 'Standard', '0xf857ac805427da6db76fc340480f2c81a3d62c5107e68b267f2647a78c77d505', '{\"Rating\":2.625,\"NumOfReviewers\":3}', '[]', '[\"Normal\",\"\"]'),
 ('DemoUser15', 'Demo 15', '0x5a78414B579eB7E554a941c450eDCAD01bAc74B5', '$2y$10$sHxdp1RCwCofvPFQ.kWjJ.5RXQqLJ8eSpIAaWhvZEe.srTdVDtavi', '15User@gmail.com', 'Demo', 'User', '01/01/1991', 96969696, 'demo road', 'Standard', '0x8839fc04577c6da12a973632828dde0bdb6244f93d15c81f050e36970e521e05', '{\"Rating\":5,\"NumOfReviewers\":0}', '[]', '[\"Normal\",\"\"]'),
 ('DemoUser16', 'Demo 16', '0x76f71626C2b9Fa5D7784031798B25ea5405f34de', '$2y$10$oTf/JJf3ki7PSaI0vBv1q.WqOdAG8VHZJy9ZIUax0jnsWLLPbFQAO', '16User@gmail.com', 'Demo', 'User', '01/01/1991', 96969696, 'demo road', 'Standard', '0x1f8060ce9b750e4783754427f922062a3fa88b4930cdd82c084c3d937d1f7f68', '{\"Rating\":5,\"NumOfReviewers\":0}', '[]', '[\"Normal\",\"\"]'),
 ('DemoUser17', 'Demo 17', '0xF3C01e9902e7fEd8882C16126495e5210096170c', '$2y$10$N2rFTDtboQVKTW6kOW.Tp./uoDUoYBBt0oZYg7LamV0cYbViFYqBi', '17User@gmail.com', 'Demo', 'User', '01/01/1991', 96969696, 'demo road', 'Standard', '0x58f7976b61653ed7ce2dddf667b6fa142035f5e96afa0f67c371188903fd75aa', '{\"Rating\":5,\"NumOfReviewers\":0}', '[]', '[\"Normal\",\"\"]'),
@@ -238,7 +238,7 @@ INSERT INTO `users` (`UserID`, `DisplayName`, `PublicKey`, `Password`, `Email`, 
 -- Indexes for table `contracts`
 --
 ALTER TABLE `contracts`
-  ADD PRIMARY KEY (`TransactionID`);
+  ADD PRIMARY KEY (`ContractID`);
 
 --
 -- Indexes for table `escrow`
@@ -257,16 +257,6 @@ ALTER TABLE `product`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`UserID`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `contracts`
---
-ALTER TABLE `contracts`
-  MODIFY `TransactionID` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

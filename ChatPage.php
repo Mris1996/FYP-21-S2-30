@@ -65,7 +65,7 @@ if (isset($_POST["Chat_with"])){
 if(isset($_POST['DeleteChat'])){
 
 	$_SESSION['Object']->DeleteChat($_SESSION['OtherUser']);
-	echo '<script> location.replace("NegotiationsPage.php")</script> ';	
+	echo '<script> location.replace("ChatPage.php")</script> ';	
 }
 
 
@@ -106,7 +106,7 @@ function sendMessage() {
 	var ajax = new XMLHttpRequest();
 	ajax.open("POST", "php-send-message.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	ajax.send("User1=" + User1 +  "&User2=" + User2 + "&message=" + message);
+	ajax.send("User1=" + User1 +  "&User2=" + User2 + "&chatmessage=" + message);
 	console.log(ajax);
 	messageInput.value = "";
 }
