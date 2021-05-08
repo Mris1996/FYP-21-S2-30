@@ -20,7 +20,7 @@ if(isset($_POST['hiddenval'])){
 	$BaseUserObj = new BaseUser("Check user");
 	if(!$BaseUserObj->setUID_Admin( $_POST['hiddenval'])){
 		echo'<script>alert("No such user!")</script>';
-		echo '<script> location.replace("AdministratorPage.php")</script> ';
+		echo '<script> location.replace("UserManagementPage.php")</script> ';
 	}
 	$_SESSION['Temp'] = $_POST['hiddenval'];
 	
@@ -39,11 +39,11 @@ if (isset ($_POST['Ban']) ){
 if(isset($_POST['YesBan'])){
 	$_SESSION['Object']->Ban($_SESSION['Temp']);
 	unset($_SESSION['Temp']);
-	echo '<script> location.replace("AdministratorPage.php")</script> ';
+	echo '<script> location.replace("UserManagementPage.php")</script> ';
 }
 if(isset($_POST['NoBan'])){
 	unset($_SESSION['Temp']);
-	echo '<script> location.replace("AdministratorPage.php")</script> ';
+	echo '<script> location.replace("UserManagementPage.php")</script> ';
 }
 
 //Remove ban
@@ -60,11 +60,11 @@ if (isset ($_POST['Remove']) ){
 if(isset($_POST['YesRemove'])){
 	$_SESSION['Object']->Removestatus($_SESSION['Temp']);
 	unset($_SESSION['Temp']);
-	echo '<script> location.replace("AdministratorPage.php")</script> ';
+	echo '<script> location.replace("UserManagementPage.php")</script> ';
 }
 if(isset($_POST['NoRemove'])){
 	unset($_SESSION['Temp']);
-	echo '<script> location.replace("AdministratorPage.php")</script> ';
+	echo '<script> location.replace("UserManagementPage.php")</script> ';
 }
 
 
@@ -83,11 +83,11 @@ if (isset ($_POST['MakeAdmin']) ){
 if(isset($_POST['YesAdmin'])){
 	$_SESSION['Object']->MakeAdmin($_SESSION['Temp']);
 	unset($_SESSION['Temp']);
-	echo '<script> location.replace("AdministratorPage.php")</script> ';
+	echo '<script> location.replace("UserManagementPage.php")</script> ';
 }
 if(isset($_POST['NoAdmin'])){
 	unset($_SESSION['Temp']);
-	echo '<script> location.replace("AdministratorPage.php")</script> ';
+	echo '<script> location.replace("UserManagementPage.php")</script> ';
 }
 
 if(isset($_POST['Suspend2'])){
@@ -118,12 +118,12 @@ if(isset($_POST['Yes_Suspension'])){
 	$_SESSION['Object']->suspendUser($_SESSION['Temp'],$_SESSION['TempDate']);
 	unset($_SESSION['TempDate']);
 	unset($_SESSION['Temp']);
-	echo '<script> location.replace("AdministratorPage.php")</script> ';
+	echo '<script> location.replace("UserManagementPage.php")</script> ';
 }
 if(isset($_POST['No_Suspension'])){
 	unset($_SESSION['TempDate']);
 	unset($_SESSION['Temp']);
-	echo '<script> location.replace("AdministratorPage.php")</script> ';
+	echo '<script> location.replace("UserManagementPage.php")</script> ';
 }
 
 if (isset ($_POST['Suspend']) ){  

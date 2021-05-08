@@ -149,7 +149,7 @@ $ProductObj->InitialiseProduct($ProductID);
 if($Type=="Admin"){
 $BaseUserOBJ = new BaseUser("check balance");
 $BaseUserOBJ->setUID($ContractObj->SellerUserID);
-echo'<input type="hidden" class="text-box" id="SellerBalance"  value = "'.$BaseUserOBJ->getAccountBalance().'">';
+echo'<input type="hidden" class="text-box" id="SellerBalance"  value = "'.$BaseUserOBJ->getAccountBalanceFromServer($BaseUserOBJ->getPubKey()).'">';
 }
 
 ?>

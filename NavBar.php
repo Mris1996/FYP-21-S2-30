@@ -159,7 +159,7 @@ echo'<script>alert("You have been suspended till,'.json_decode($BaseUserOBJ->Sta
 echo'<style> input[name="Nav_Login"]{display:visible;}</style>';
 $_SESSION['ID']=NULL;
 session_destroy();
-echo '<script> location.replace("login.php")</script> ';
+echo '<script> location.replace("LoginPage.php")</script> ';
 exit();
 }
 if(json_decode($BaseUserOBJ->Status)[0]=="Banned"){
