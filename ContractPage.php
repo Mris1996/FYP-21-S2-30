@@ -365,7 +365,7 @@ var Intervals = setInterval(checkaccepted,3000);
 function checkaccepted(){
 
 	var ajax = new XMLHttpRequest();
-	ajax.open("POST", "php-send-message.php", true);
+	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("&CheckAccepted=" + ContractID);
 	console.log(ajax);
@@ -380,7 +380,7 @@ else if($ContractObj->Transaction == "On-Going"){
 var Intervals2 = setInterval(checkserviceaccepted,3000);
 function checkserviceaccepted(){
 	var ajax = new XMLHttpRequest();
-	ajax.open("POST", "php-send-message.php", true);
+	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("&CheckServiceAccepted=" + ContractID);
 	console.log(ajax);
@@ -439,7 +439,7 @@ function sendMessage() {
 	var message = messageInput.value.trim();
 
 	var ajax = new XMLHttpRequest();
-	ajax.open("POST", "php-send-message.php", true);
+	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("User=" + User + "&message=" + message + "&contractid=" + ContractID + "&usertype=" + UserType );
 	console.log(ajax);
@@ -465,12 +465,12 @@ function formsyncfunction(){
 	}
 	
 	var ajax = new XMLHttpRequest();
-	ajax.open("POST", "php-send-message.php", true);
+	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("User=" + User + "&offer=" + Offer + "&daterequired=" + DateRequired + "&paymentmode=" + PaymentMode + "&contractid=" + ContractID + "&usertype=" + UserType);
 	console.log(ajax);
 	var ajax = new XMLHttpRequest();
-	ajax.open("POST", "php-send-message.php", true);
+	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("User=" + User + "&contractid=" + ContractID + "&message=" + " has updated the offer");
 	console.log(ajax);
@@ -513,11 +513,11 @@ document.getElementById('PaymentMode3').disabled = true;
 document.getElementById('PaymentMode2').disabled = true;
 document.getElementById('PaymentMode1').disabled = true;
 var ajax = new XMLHttpRequest();
-ajax.open("POST", "php-send-message.php", true);
+ajax.open("POST", "ContractPageController.php", true);
 ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 ajax.send("Accept=" + User + "&contractid=" + ContractID + "&usertype=" + UserType + "&User=" + User);
 var ajax = new XMLHttpRequest();
-ajax.open("POST", "php-send-message.php", true);
+ajax.open("POST", "ContractPageController.php", true);
 ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 ajax.send("User=" + User + "&contractid=" + ContractID + "&message=" + " has accepted the offer");
 console.log(ajax);
@@ -534,12 +534,12 @@ function Reject(){
 	document.getElementById('PaymentMode2').disabled = true;
 	document.getElementById('PaymentMode1').disabled = true;
 	var ajax = new XMLHttpRequest();
-	ajax.open("POST", "php-send-message.php", true);
+	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("Reject=" + User + "&contractid=" + ContractID );
 	console.log(ajax);
 	var ajax = new XMLHttpRequest();
-	ajax.open("POST", "php-send-message.php", true);
+	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("message=" + " has rejected the offer,Transaction declined" + "&contractid=" + ContractID + "&usertype=" + UserType + "&User=" + User );
 	console.log(ajax);
@@ -575,11 +575,11 @@ else{
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function SendAcceptService(){
 	var ajax = new XMLHttpRequest();
-	ajax.open("POST", "php-send-message.php", true);
+	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("AcceptService=" + User + "&contractid=" + ContractID + "&usertype=" + UserType + "&User=" + User);
 	console.log(ajax);
-	ajax.open("POST", "php-send-message.php", true);
+	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("message=" + " has agreed upon the service" + "&contractid=" + ContractID + "&usertype=" + UserType + "&User=" + User );
 	console.log(ajax);
@@ -588,12 +588,12 @@ function SendAcceptService(){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function RequestRefund(){
 	var ajax = new XMLHttpRequest();
-	ajax.open("POST", "php-send-message.php", true);
+	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("Refund=" + User + "&contractid=" + ContractID + "&usertype=" + UserType + "&User=" + User);
 	console.log(ajax);
 	var ajax = new XMLHttpRequest();
-	ajax.open("POST", "php-send-message.php", true);
+	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("message=" + " has requested refund" + "&contractid=" + ContractID + "&usertype=" + UserType + "&User=" + User );
 	console.log(ajax);
@@ -630,12 +630,12 @@ else{
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function SendCancelOrder(){
 	var ajax = new XMLHttpRequest();
-	ajax.open("POST", "php-send-message.php", true);
+	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("Cancel=" + User + "&contractid=" + ContractID + "&usertype=" + UserType + "&User=" + User);
 	console.log(ajax);
 	var ajax = new XMLHttpRequest();
-	ajax.open("POST", "php-send-message.php", true);
+	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("message=" + " has cancelled order.Sorry for the inconvenience,your STICoins will return to you shortly." + "&contractid=" + ContractID + "&usertype=" + UserType + "&User=" + User );
 	console.log(ajax);
@@ -652,12 +652,12 @@ function Refund_Admin(){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function SendRefund_Admin(){
 	var ajax = new XMLHttpRequest();
-	ajax.open("POST", "php-send-message.php", true);
+	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("RefundAdmin=" + User + "&contractid=" + ContractID + "&usertype=" + UserType + "&User=" + User);
 	console.log(ajax);
 	var ajax = new XMLHttpRequest();
-	ajax.open("POST", "php-send-message.php", true);
+	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("message=" + " has refunded for buyer." + "&contractid=" + ContractID + "&usertype=" + UserType + "&User=" + User );
 	console.log(ajax);
@@ -738,7 +738,7 @@ connection.onmessage = function (message) {
 					{
 						clearInterval(Intervals);
 						var ajax = new XMLHttpRequest();
-						ajax.open("POST", "php-send-message.php", true);
+						ajax.open("POST", "ContractPageController.php", true);
 						ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 						ajax.send("Transfer=" + ContractID);
 						console.log(ajax);
@@ -757,7 +757,7 @@ connection.onmessage = function (message) {
 
 					clearInterval(Intervals2);
 					var ajax = new XMLHttpRequest();
-					ajax.open("POST", "php-send-message.php", true);
+					ajax.open("POST", "ContractPageController.php", true);
 					ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 					ajax.send("Transfer=" + ContractID);
 					console.log(ajax);
