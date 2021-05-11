@@ -1,4 +1,4 @@
-<?php 
+<?php require_once("NavBar.php");
 $ContractID = "asdas";
 $InitialOffer = 1;	
 $Offer = 1;
