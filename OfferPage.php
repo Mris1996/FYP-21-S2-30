@@ -124,7 +124,6 @@ if(isset($_POST['submit'])&& $submit){
 	echo'<style> .Offer_GUI{display:none;}</style>';
 	
 	$ContractID = $_SESSION['Object']->NewOffer($_POST["Offer"],$_POST["DateRequired"],$ProductObj->SellerUserID,$ProductObj->ProductID,$ProductObj->ProductInitialPrice);
-		echo "ASd";
 	echo'<script>history.pushState({}, "", "")</script>';
 	echo'<div class="Post_Offer_GUI">
 			</br>
