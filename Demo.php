@@ -8,7 +8,7 @@ $UID = 'asdasdsadas';
 $SellerID  = 'asdaasdsdsadas';
 $ProductID = 'adqa1e21312dasdqas';
 $sql = "INSERT INTO `contracts`(`ContractID`) VALUES ('".$ContractID."')";
-		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		$result = $_SESSION['Object']->connect()->query($sql) or die($_SESSION['Object']->connect()->error); 
 echo "asd";
 
 ?>
