@@ -2,7 +2,7 @@
 require_once("Users.php");
 require_once("Products.php");
 session_start();
-$ch = curl_init('https://8e514a2c860f.ngrok.io');
+$ch = curl_init('http://localhost:3030');
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 
 // get the input
