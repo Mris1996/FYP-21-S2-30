@@ -1,5 +1,5 @@
 <?php require_once("NavBar.php");
-echo $_SESSION['Object']->GetDisplayName();
+echo $_SESSION['Object']->GetDOB();
 /*
 $ContractID = "asdas";
 $InitialOffer = 1;	
