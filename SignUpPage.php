@@ -86,7 +86,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SignUpButton'])){
 		$submit = false;
 	}
 	else{
-		if(!preg_match("~(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])^[A-Za-z0-9]{5,15}$~", $_POST["SignUpID"])){
+		if(!preg_match("~(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])^[A-Za-z0-9]{8,20}$~", $_POST["SignUpID"])){
 			$submit = false;
 			$SignUpIDError = "Invalid User ID ,requires at least 8 characters and 20 characters at maximum";
 		}
