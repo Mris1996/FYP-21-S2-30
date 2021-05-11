@@ -515,10 +515,11 @@ class StandardUser extends BaseUser
 						break;
 					  }
 				}
-		 mysqli_query($this->connect(),"INSERT INTO `contracts`(`ContractID`,`InitialOffer`,`NewOffer`,`DateRequired`, `BuyerUserID`, `SellerUserID`, `ProductID`) VALUES ('".$ContractID."','".$InitialOffer."','".$Offer."','".$DateRequired."','".$this->getUID()."','".$SellerID."','".$ProductID."')") or die(mysqli_error($this->connect()));
-
-		//$sql = "INSERT INTO `contracts`(`ContractID`,`InitialOffer`,`NewOffer`,`DateRequired`, `BuyerUserID`, `SellerUserID`, `ProductID`) VALUES ('".$ContractID."','".$InitialOffer."','".$Offer."','".$DateRequired."','".$this->getUID()."','".$SellerID."','".$ProductID."')";
-		//$result = $this->connect()->query($sql) or die($this->connect()->error); 
+	
+		$sql = "INSERT INTO `contracts`(`ContractID`,`InitialOffer`) VALUES ('".$ContractID."','".$InitialOffer."')";
+		//,`NewOffer`,`DateRequired`, `BuyerUserID`, `SellerUserID`, `ProductID`
+		//,'".$Offer."','".$DateRequired."','".$this->getUID()."','".$SellerID."','".$ProductID."'
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 			
 		return $ContractID;
 	}
