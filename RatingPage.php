@@ -35,7 +35,7 @@ color: #faa;
 </style>
 <?php
 if($_SESSION['RatingToken']!=0){
-	echo '<script> location.replace("index.php")</script> ';
+	//echo '<script> location.replace("index.php")</script> ';
 }
 
 echo'<div id="rating"><form action="" method="POST" style="margin:auto;margin-top:20%;">
