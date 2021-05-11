@@ -122,7 +122,7 @@ if(isset($_SESSION['ID'])){
 echo'<style> input[name="Nav_SignUp"]{display:none;}</style>';
 echo'<style> input[name="Nav_Login"]{display:none;}</style>';
 echo'<style> input[name="Nav_LogOut"]{display:visible;}</style>';
-echo '<h2>STICOIN BALANCE: '.$_SESSION['Object']->GetAccountBalance().'</h2>';
+echo '<h2>STICOIN BALANCE: '.$_SESSION['Object']->getAccountBalance().'</h2>';
 echo '<form method="post"><input type="submit" name="Refresh" value="Refresh Balance"></form>';
 echo'
 <form action="ListPage.php">
