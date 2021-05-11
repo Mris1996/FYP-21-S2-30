@@ -515,10 +515,10 @@ class StandardUser extends BaseUser
 						break;
 					  }
 				}
-	
-		$sql = "INSERT INTO `contracts`(`ContractID`,`InitialOffer`) VALUES ('".$ContractID."','".$InitialOffer."')";
-		//,`NewOffer`,`DateRequired`, `BuyerUserID`, `SellerUserID`, `ProductID`
-		//,'".$Offer."','".$DateRequired."','".$this->getUID()."','".$SellerID."','".$ProductID."'
+		
+		$sql = "INSERT INTO `contracts`(`ContractID`) VALUES (`".$ContractID."`)";
+		//,`InitialOffer`,`NewOffer`,`DateRequired`, `BuyerUserID`, `SellerUserID`, `ProductID`
+		//,'".$InitialOffer."','".$Offer."','".$DateRequired."','".$this->getUID()."','".$SellerID."','".$ProductID."'
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 			echo "Asd";
 		return $ContractID;
