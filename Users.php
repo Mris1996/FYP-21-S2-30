@@ -520,7 +520,7 @@ class StandardUser extends BaseUser
 		//,`NewOffer`,`DateRequired`, `BuyerUserID`, `SellerUserID`, `ProductID`
 		//,'".$Offer."','".$DateRequired."','".$this->getUID()."','".$SellerID."','".$ProductID."'
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
-			
+			echo "Asd";
 		return $ContractID;
 	}
 	public function ListOfContracts($ContractType){
