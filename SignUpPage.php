@@ -145,13 +145,13 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SignUpButton'])){
 		}
 
 		if ( !preg_match("#[0-9]+#", $_POST["SignUpPassword"]) ) {
-			echo"asssdx";
+		
 			$submit = False;
 			$SignUpPasswordError = "Password must contain 8 characters at least , with alphabets and numbers";
 		}
 
 		if ( !preg_match("#[a-z]+#", $_POST["SignUpPassword"]) ) {
-			echo"asd";
+	
 			$submit = False;
 			$SignUpPasswordError = "Password must contain 8 characters at least , with alphabets and numbers";
 		}
