@@ -87,12 +87,14 @@ class BaseUser
 		}
 		
 		socket_close($socket);
-		
-				$raw_data =	file_get_contents('http://localhost:4000/getBalance');
-				
-				$data = json_decode($raw_data, true);
-			
-				return $data['sticoin_balance'];
+		sleep(5);
+		$sql = "SELECT * FROM users WHERE PublicKey='".$PubKey."'" ;
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+	
+		while($row = $result->fetch_assoc())
+		{ 	
+			return $row['AccountBalance'];
+		}
 	}
 	public function createEthereumAccount(){
 		

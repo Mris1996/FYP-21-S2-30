@@ -177,6 +177,7 @@ else{
 if(isset($_POST['Nav_LogOut'])){
 echo'<style> input[name="Nav_Login"]{display:visible;}</style>';
 $_SESSION['ID']=NULL;
+$_SESSION['RatingToken'] = 0;
 session_destroy();
 echo '<script> location.replace("LoginPage.php")</script> ';
 exit();

@@ -22,25 +22,23 @@ if($ContractObj->BuyerUserID!=$_SESSION['ID']&&$ContractObj->SellerUserID!=$_SES
 
 
 <style type="text/css">
-		* {
-		box-sizing:border-box;
-	}
-	#rating{
-		display:none;
-		position:fixed;
-		padding:0;
-		margin:auto;
-		top:0;
-		left:0;
-		width: 100%;
-		height: 100%;
-		background:rgba(255,255,255,0.5);
-		
-	}
+	* {
+	box-sizing:border-box;
+}
+#sharedform{
+	width:45%;
+	float:left;
+	display:block;
+	margin-bottom:10px;
+	opacity:1;
 
-	#content {
+}
+#sharedform input{
+	
+}
+	#chatbox {
 		float:right;
-		width:1000px;
+		width:50%;
 		max-width:100%;
 		margin:30px auto;
 		display:none;
@@ -65,35 +63,15 @@ if($ContractObj->BuyerUserID!=$_SESSION['ID']&&$ContractObj->SellerUserID!=$_SES
 		padding:10px;
 		margin-bottom:10px;
 	}
-	#User1{
-		text-align:right;
-		word-wrap: break-word;
-	}
-	#User2{
-		text-align:left;
-		word-wrap: break-word;
-	}
-#rating	form {
-  width: 100px;
-	}
-
-
-#rating button {
-  border: 0;
-  background: transparent;
-  font-size: 1.5em;
-  margin: 0;
-  padding: 0;
-  float: right;
+#User1{
+	text-align:right;
+	word-wrap: break-word;
+}
+#User2{
+	text-align:left;
+	word-wrap: break-word;
 }
 
-#rating  button:hover,
-#rating button:hover + button,
-#rating button:hover + button + button,
-#rating button:hover + button + button + button,
-#rating button:hover + button + button + button + button {
-  color: #faa;
-}
 
 </style>
 
@@ -124,7 +102,7 @@ if (isset($_POST["Chat_with"])){
 	else{
 		$_SESSION['OtherUser'] = $_POST["Chat_with"];
 	}
-	echo'<style> #content{display:block;}</style>';
+	echo'<style> #chatbox{display:block;}</style>';
 }
 
 
@@ -153,114 +131,7 @@ echo'<input type="hidden" class="text-box" id="SellerBalance"  value = "'.$BaseU
 }
 
 ?>
-<div id="sharedform">
-
-<img src="<?php echo $ProductObj->Image;?>" style="width:50%;margin:auto"></br>
-<label>Product Name:</label><b><?php echo $ProductObj->ProductName;?></b></br>
-<label>Product Owner:</label><b><?php echo $_SESSION['Object']->getUserDisplayName($ProductObj->SellerUserID)?></b></br>
-<label>Product Caption:</label><b><?php echo $ProductObj->ProductCaption?></b></br>
-<label>Product Description:</label><b><?php echo $ProductObj->ProductDescription?></b></br>
-<label>Product Initial Price:</label><b><?php echo $ProductObj->ProductInitialPrice?></b></br>
-
-
-<h2>Your Offer</h2>
-<?php
-		if($Type == "Buyer"){
-		echo'
-			<label>Date product is required by:</label>
-			<input type="date"  id ="DateRequired" name="DateRequired" oninput="formsyncfunction()" value="'.$ContractObj->DateRequired.'" required>';
-		}
-		if($Type == "Seller" || $Type== "Admin"){
-		echo'
-			<label>Date product is required by:</label>
-			<input type="date" id ="DateRequired" name="DateRequired" oninput="formsyncfunction()" value="'.$ContractObj->DateRequired.'" readonly>';
-		}
-?>
-	
-	
-		<br />
-		<label>Offer(STICoins):</label>
-		<input type="number" id="Offer" name="Offer" min="0.00" step="any" oninput="formsyncfunction()" value="<?php echo $ContractObj->NewOffer;?>" required>
-		<br />
-<?php 
-		if($Type == "Buyer"){
-		echo'
-		<label>Offer will be rounded up to whole number</label><br /><br />
-		<label> Payment Mode</label><br>
-		<input type="radio"  id="PaymentMode1" onclick="formsyncfunction()" name="PaymentMode" value="Half-STICoins" >
-		<label for="Half">Half-STICoins now:</label><br>
-		<input type="radio"  id="PaymentMode2" onclick="formsyncfunction()" name="PaymentMode" value="Full-STICoins">
-		<label for="female">Full-STICoins now:</label><br>
-		<input type="radio" id="PaymentMode3" onclick="formsyncfunction()" name="PaymentMode" value="Full-STICoins_Later">
-		<label for="FullLater">Full-STICoins later :</label><br><br>';
-		}
-		if($Type == "Seller" || $Type == "Admin"){
-			echo'
-		<label>Offer will be rounded up to whole number</label><br /><br />
-		<label> Payment Mode</label><br>
-		<input type="radio"  id="PaymentMode1" onclick="formsyncfunction()" name="PaymentMode" value="Half-STICoins"  disabled>
-		<label for="Half">Half-STICoins now:</label><br>
-		<input type="radio"  id="PaymentMode2" onclick="formsyncfunction()" name="PaymentMode" value="Full-STICoins" disabled>
-		<label for="FullNow">Full-STICoins now:</label><br>
-		<input type="radio" id="PaymentMode3" onclick="formsyncfunction()" name="PaymentMode" value="Full-STICoins_Later" disabled>
-		<label for="FullLater">Full-STICoins later :</label><br><br>';
-			
-		}
-		echo'</br>';
-		if($Type=="Seller" && $ContractObj->Status == "Buyer has accepted service" || $Type=="Buyer" && $ContractObj->Status == "Seller has accepted service"|| $ContractObj->Status == "Deal"){
-			echo'<input type="button" name="service" id="service" onclick="AcceptService()" value="Service fullfilled">';
-		}
-		if($Type == "Buyer" && $ContractObj->Status == "Transaction Complete"){
-			echo'</br><input type="button" name="refund" id="refund" onclick="RequestRefund()" value="Request Refund">';
-		}
-		if($Type == "Buyer" && $ContractObj->Transaction == "On-Going"){
-				if($ContractObj->PaymentMode=="Half-STICoins" || $ContractObj->PaymentMode=="Full-STICoins"){
-				echo'</br><input type="button" name="refund" id="refund" onclick="RequestRefund()" value="Request Refund">';
-			}
-				
-		}
-		if($Type == "Seller" && $ContractObj->Transaction == "On-Going" && $ContractObj->Status != "Order Cancelled"){
-				
-				echo'</br><input type="button" name="cancel" id="cancel" onclick="CancelOrder()" value="Cancel Order">';
-			
-				
-		}
-		
-?>
-<button id="Accept" name="Accept" value="Accept" onclick="Accept()">Accept</button>
-<button id="Reject" name="Reject" value="Reject" onclick="Reject()">Reject</button>
-<?php 
-if($Type=="Admin"){
-echo'<button id="Refund_Admin" name="Refund_Admin" value="Refund Buyer" onclick="Refund_Admin()">Refund Buyer</button>';
-echo'<form action="UserManagementPage.php?ID='.$ContractObj->SellerUserID.'" method="post"><input type="submit" value="Take disciplinary action on seller"></form>';
-echo'<form action="UserManagementPage.php?ID='.$ContractObj->BuyerUserID.'"method="post"><input type="submit" value="Take disciplinary action on buyer"></form>';
-if($ContractObj->Status == "Admin has halted this transaction"){
-echo'<form method="post"><input type="submit" name="ResumeTranasction" value="Resume Transaction"></form>';	
-}
-}
-if(isset($_POST['ResumeTranasction'])){
-	$_SESSION['Object']->ResumeTranasction($ContractObj->ContractID,$ContractObj->Transaction);
-	echo'<script>location.replace("ContractManagementPage.php");</script>';
-}
-if($ContractObj->Transaction=="Complete"){
-echo'<div id="rating"><form action="" method="POST" style="margin:auto;margin-top:20%;">
-
-<label>Rate User</label></br>
-  <input type="hidden" name="rating[post_id]" value="3">
-  <button type="submit" name="rating[rating]" value="5">&#9733;</button>
-  <button type="submit" name="rating[rating]" value="4">&#9733;</button>
-  <button type="submit" name="rating[rating]" value="3">&#9733;</button>
-  <button type="submit" name="rating[rating]" value="2">&#9733;</button>
-  <button type="submit" name="rating[rating]" value="1">&#9733;</button>
- 
-</form></div>';
-}
-if(isset($_POST['rating'])){
-	
-	$_SESSION['Object']->RateUser($_POST['rating']['rating'],$_SESSION['OtherUser']);
-}
-?>
-<h1 id="statusmessage">Status:<?php 
+<h1 id="statusmessage" style="text-align:center">Status:<?php 
 if($ContractObj->Status == "Deal"){
 	
 echo 'Contract agreed upon, awaiting for product to be transferred';
@@ -302,8 +173,98 @@ echo 'Terms are being negotiated';
 }
 
 ?></h1>
-<div>
-<div id="content">
+<div id="sharedform">
+<center><h2>Product Details</h2>
+<img src="<?php echo $ProductObj->Image;?>" style="width:50%;"></br></center>
+<label>Product Name:</label><b><?php echo $ProductObj->ProductName;?></b></br>
+<label>Product Owner:</label><b><?php echo $_SESSION['Object']->getUserDisplayName($ProductObj->SellerUserID)?></b></br>
+<label>Product Caption:</label><b><?php echo $ProductObj->ProductCaption?></b></br>
+<label>Product Description:</label><b><?php echo $ProductObj->ProductDescription?></b></br>
+<label>Product Initial Price:</label><b><?php echo $ProductObj->ProductInitialPrice?></b></br>
+
+
+<hr><center><h2>Contract Details</h2></center>
+<?php
+		if($Type == "Buyer"){
+		echo'
+			<label>Date product is required by:</label>
+			<input type="date"  id ="DateRequired" name="DateRequired" oninput="formsyncfunction()" value="'.$ContractObj->DateRequired.'" required>';
+		}
+		if($Type == "Seller" || $Type== "Admin"){
+		echo'
+			<label>Date product is required by:</label>
+			<input type="date" id ="DateRequired" name="DateRequired" oninput="formsyncfunction()" value="'.$ContractObj->DateRequired.'" readonly>';
+		}
+?>
+	
+	
+		<br />
+		<label>Offer(STICoins):</label>
+		<input type="number" id="Offer" name="Offer" min="0.00" step="any" oninput="formsyncfunction()" value="<?php echo $ContractObj->NewOffer;?>" required>
+		<br />
+<?php 
+		if($Type == "Buyer"){
+		echo'
+		<label>Offer will be rounded up to whole number</label><br /><br />
+		<label> Payment Mode</label><br>
+		<label for="Half">Half-STICoins now:</label>
+		<input type="radio"  id="PaymentMode1" onclick="formsyncfunction()" name="PaymentMode" value="Half-STICoins" ><br>
+		<label for="female">Full-STICoins now:</label>
+		<input type="radio"  id="PaymentMode2" onclick="formsyncfunction()" name="PaymentMode" value="Full-STICoins"><br>
+		<label for="FullLater">Full-STICoins later :</label>
+		<input type="radio" id="PaymentMode3" onclick="formsyncfunction()" name="PaymentMode" value="Full-STICoins_Later"><br>
+		<br>';
+		}
+		if($Type == "Seller" || $Type == "Admin"){
+			echo'
+		<label>Offer will be rounded up to whole number</label><br /><br />
+		<label> Payment Mode</label><br>
+		<label for="Half">Half-STICoins now:</label>
+		<input type="radio"  id="PaymentMode1" onclick="formsyncfunction()" name="PaymentMode" value="Half-STICoins"  disabled><br>
+		<label for="FullNow">Full-STICoins now:</label>
+		<input type="radio"  id="PaymentMode2" onclick="formsyncfunction()" name="PaymentMode" value="Full-STICoins" disabled><br>
+		<label for="FullLater">Full-STICoins later :</label>
+		<input type="radio" id="PaymentMode3" onclick="formsyncfunction()" name="PaymentMode" value="Full-STICoins_Later" disabled><br>
+		<br>';
+			
+		}
+		echo'</br>';
+		if($Type=="Seller" && $ContractObj->Status == "Buyer has accepted service" || $Type=="Buyer" && $ContractObj->Status == "Seller has accepted service"|| $ContractObj->Status == "Deal"){
+			echo'<input type="button" name="service" id="service" onclick="AcceptService()" value="Service fullfilled">';
+		}
+		if($Type == "Buyer" && $ContractObj->Status == "Transaction Complete"){
+			echo'</br><input type="button" name="refund" id="refund" onclick="RequestRefund()" value="Request Refund">';
+		}
+		if($Type == "Seller" && $ContractObj->Transaction == "On-Going" && $ContractObj->Status != "Order Cancelled" && $ContractObj->Status != "Buyer has accepted service"){
+				
+				echo'</br><input type="button" name="cancel" id="cancel" onclick="CancelOrder()" value="Cancel Order">';
+			
+				
+		}
+		
+?>
+<button id="Accept" name="Accept" value="Accept" onclick="Accept()">Sign Contract</button>
+<button id="Reject" name="Reject" value="Reject" onclick="Reject()">Reject Contract</button>
+<?php 
+if($Type=="Admin"){
+if($ContractObj->Status == "Requested Refund"){
+	echo'<button id="Refund_Admin" name="Refund_Admin" value="Refund Buyer" onclick="Refund_Admin()">Refund Buyer</button>';
+}
+echo'<form action="UserManagementPage.php?ID='.$ContractObj->SellerUserID.'" method="post"><input type="submit" value="Take disciplinary action on seller"></form>';
+echo'<form action="UserManagementPage.php?ID='.$ContractObj->BuyerUserID.'"method="post"><input type="submit" value="Take disciplinary action on buyer"></form>';
+if($ContractObj->Status == "Admin has halted this transaction"){
+echo'<form method="post"><input type="submit" name="ResumeTranasction" value="Resume Transaction"></form>';	
+}
+}
+if(isset($_POST['ResumeTranasction'])){
+	$_SESSION['Object']->ResumeTranasction($ContractObj->ContractID,$ContractObj->Transaction);
+	echo'<script>location.replace("ContractManagementPage.php");</script>';
+}
+
+?>
+
+</div>
+<div id="chatbox">
 	<h1>Contract ID:<?php echo $ContractID?></h1>
 <?php if($Type!="Admin"){ ?>
 	<h1>Dealing with:<?php  if(isset($_SESSION['OtherUser'])){echo $_SESSION['OtherUser'];}?></h1>
@@ -333,7 +294,7 @@ if($Type=="Admin" || $ContractObj->Status == "Admin has halted this transaction"
 
 ?>
 <script>
-	document.getElementById('Accept').disabled = true;
+	document.getElementById('Accept').style.display = "None";
 	document.getElementById('Offer').disabled = true;
 	document.getElementById('DateRequired').disabled = true;
 	document.getElementById('PaymentMode3').disabled = true;
@@ -345,7 +306,8 @@ if($Type=="Admin" || $ContractObj->Status == "Admin has halted this transaction"
 if($Type=="Admin" || $ContractObj->Status == "Admin has halted this transaction"|| $ContractObj->Status == "Rejected" || $ContractObj->Status ==  "Requested Refund" ||$ContractObj->Status == "Order Cancelled" ||  $ContractObj->Status == "Deal" || $ContractObj->Status == "Seller has accepted service" || $ContractObj->Status == "Buyer has accepted service" || $ContractObj->Status == "Transaction Complete" ){
 ?>
 <script>
-	document.getElementById('Reject').disabled = true;
+	document.getElementById('Reject').style.display = "None";
+	
 
 </script>
 <?php
@@ -353,7 +315,7 @@ if($Type=="Admin" || $ContractObj->Status == "Admin has halted this transaction"
 if($ContractObj->Status == "Seller has accepted" && $Type == "Seller"){
 ?>
 <script>
-	document.getElementById('Accept').disabled = true;
+	document.getElementById('Accept').style.display = "None";
 	document.getElementById('Offer').disabled = true;
 </script>
 <?php
@@ -392,8 +354,8 @@ function checkserviceaccepted(){
 else{
 ?>
 <script>
-	document.getElementById('Accept').disabled = true;
-	document.getElementById('Reject').disabled = true;
+	document.getElementById('Accept').style.display = "None";
+	document.getElementById('Reject').style.display = "None";
 	document.getElementById('Offer').disabled = true;
 	document.getElementById('DateRequired').disabled = true;
 	document.getElementById('PaymentMode3').disabled = true;
@@ -405,6 +367,7 @@ else{
 ?>
 <script>
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 if (document.getElementById('PaymentMode1').value == document.getElementById("Payment").value) {
 	document.getElementById('PaymentMode1').checked = true;
 
@@ -419,13 +382,14 @@ if (document.getElementById('PaymentMode3').value == document.getElementById("Pa
 } 
 //initialise all required variables from php -> Js
 var User = document.getElementById("UserID").value.trim(),
-	ContractID =  document.getElementById("contractid").value.trim(),
-	Balance = document.getElementById("Balance").value,
-	messageInput = document.getElementById("message-input"),
-    UserType =  document.getElementById("usertype").value.trim();
-	if (UserType=="Admin") {
-		SellerBalance = document.getElementById("SellerBalance").value;
-	}
+ContractID =  document.getElementById("contractid").value.trim(),
+Balance = Number(document.getElementById("Balance").value),
+messageInput = document.getElementById("message-input"),
+UserType =  document.getElementById("usertype").value.trim();
+if (UserType=="Admin") {
+	SellerBalance = document.getElementById("SellerBalance").value;
+	
+}
 		
 function handleKeyUp(e) {
 	
@@ -506,7 +470,8 @@ function Accept(){
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function SendAccept(){
-document.getElementById('Accept').disabled = true;
+document.getElementById('Accept').style.display = "None";
+document.getElementById('Reject').style.display = "None";
 document.getElementById("Offer").disabled = true;
 document.getElementById("DateRequired").disabled = true;
 document.getElementById('PaymentMode3').disabled = true;
@@ -524,11 +489,12 @@ console.log(ajax);
 console.log(ajax);
 	
 }
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function Reject(){
-	document.getElementById('Accept').disabled = true;
+	document.getElementById('Accept').style.display = "None";
+	document.getElementById('Reject').style.display = "None";
 	document.getElementById("Offer").disabled = true;
-	document.getElementById("Reject").disabled = true;
 	document.getElementById("DateRequired").disabled = true;
 	document.getElementById('PaymentMode3').disabled = true;
 	document.getElementById('PaymentMode2').disabled = true;
@@ -574,6 +540,7 @@ else{
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function SendAcceptService(){
+	document.getElementById('service').style.display = "none";
 	var ajax = new XMLHttpRequest();
 	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -583,7 +550,7 @@ function SendAcceptService(){
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("message=" + " has agreed upon the service" + "&contractid=" + ContractID + "&usertype=" + UserType + "&User=" + User );
 	console.log(ajax);
-	location.reload();
+
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function RequestRefund(){
@@ -642,7 +609,8 @@ function SendCancelOrder(){
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function Refund_Admin(){
-	if(SellerBalance < (document.getElementById("Offer").value)){
+
+	if(Number(SellerBalance) < document.getElementById("Offer").value){
 		alert("You have insufficient balance,please top up STICoins");
 	}
 	else{
@@ -711,7 +679,13 @@ connection.onmessage = function (message) {
 			document.getElementById("message-box").appendChild(div);
 			}
 			if (typeof data.offer != 'undefined') {
-				
+				document.getElementById('Accept').style.display = "inline";
+				document.getElementById('Reject').style.display = "inline";
+				document.getElementById("Offer").disabled = false;
+				document.getElementById("DateRequired").disabled = false;
+				document.getElementById('PaymentMode3').disabled = false;
+				document.getElementById('PaymentMode2').disabled = false;
+				document.getElementById('PaymentMode1').disabled = false;
 				document.getElementById('Offer').value = data.offer;
 				document.getElementById('DateRequired').value = data.daterequired;
 				console.log(data.paymentmode);
@@ -766,8 +740,8 @@ connection.onmessage = function (message) {
 					setTimeout(function() {
 					//your code to be executed after 1 second
 					}, delayInMilliseconds);
-					document.getElementById( 'rating' ).style.display = 'block';
-
+					location.replace("RatingPage.php");
+					
 
 				}
 
@@ -808,6 +782,10 @@ connection.onmessage = function (message) {
 					
 				}
 				if (data.REPLY == 'AcceptService') {
+					if(UserType == "Seller"){
+						document.getElementById('cancel').style.display = "none";
+					}
+					
 					document.getElementById('statusmessage').innerHTML = "Status:"+ data.Type + " has accepted service";
 				}
 				if (data.REPLY == 'AcceptOffer') {
@@ -827,3 +805,4 @@ objDiv.scrollTop = objDiv.scrollHeight;
 	
 </script>
 </body>
+<?php require_once("Footer.php");?>
