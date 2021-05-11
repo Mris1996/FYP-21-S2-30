@@ -217,12 +217,27 @@ $submit2 = true;
 			$submit2 = false;
 		}
 		else{
-			if(!preg_match("/^(?!\d+$)[a-z0-9\'.]{8,16}$/",$_POST["ChangePasswordNewPassword"])) {
-				$submit2 = false;
-				$ChangePasswordNewPasswordError = "Password must contain 8 characters at least , with alphabets and numbers";
-			}
-
+		
+		if ( strlen($_POST["ChangePasswordNewPassword"]) < 8 ) {
+			$submit2 = False;
+			$SignUpPasswordError = "Password must contain 8 characters at least , with alphabets and numbers";
 		}
+
+		if ( !preg_match("#[0-9]+#", $_POST["ChangePasswordNewPassword"]) ) {
+		
+			$submit2 = False;
+			$SignUpPasswordError = "Password must contain 8 characters at least , with alphabets and numbers";
+		}
+
+		if ( !preg_match("#[a-z]+#", $_POST["ChangePasswordNewPassword"]) ) {
+	
+			$submit2 = False;
+			$SignUpPasswordError = "Password must contain 8 characters at least , with alphabets and numbers";
+		}
+
+
+		
+	}
 
 		if(empty($_POST["ChangePasswordNewConfirmPassword"]))
 		{
