@@ -86,7 +86,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SignUpButton'])){
 		$submit = false;
 	}
 	else{
-		if(!preg_match("~(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])^[A-Za-z0-9]{8,20}$~", $_POST["SignUpID"])){
+		if(!preg_match("/^[A-Za-z0-9]{8,20}$/i", $_POST["SignUpID"])){
 			$submit = false;
 			$SignUpIDError = "Invalid User ID ,requires at least 8 characters and 20 characters at maximum";
 		}
@@ -138,7 +138,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SignUpButton'])){
 		$submit = false;
 	}
 	else{
-		if(!preg_match("/^(?!\d+$)[a-z0-9\'.]{8,16}$/",$_POST["SignUpPassword"])) {
+		if(!preg_match("'~(?=.*[0-9])(?=.*[a-z])^[a-z0-9]{8,20}$~'",$_POST["SignUpPassword"])) {
 			$submit = false;
 			$SignUpPasswordError = "Password must contain 8 characters at least , with alphabets and numbers";
 		}
