@@ -117,9 +117,9 @@ input[type="text"]{
 </div>
 
 <?php
-echo "ASd";
+
 if(isset($_POST['submit'])&& $submit){
-	
+	echo "ASd";
 	
 	echo'<style> .Offer_GUI{display:none;}</style>';
 	
