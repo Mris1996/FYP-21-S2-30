@@ -243,7 +243,7 @@ class BaseUser
 		return $this->Status;
 	}
 	public function connect(){
-		$servername= "localhost";
+		$servername= "http://35.240.207.160/";
 		$username = "root";
 		$password = "";
 		$dbname = "sticdb";
