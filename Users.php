@@ -516,7 +516,7 @@ class StandardUser extends BaseUser
 					  }
 				}
 		
-		$sql = "INSERT INTO `contracts`(`ContractID`) VALUES (`".$ContractID."`)";
+		$sql = "INSERT INTO `contracts`(`ContractID`) VALUES ($ContractID)";
 		//,`InitialOffer`,`NewOffer`,`DateRequired`, `BuyerUserID`, `SellerUserID`, `ProductID`
 		//,'".$InitialOffer."','".$Offer."','".$DateRequired."','".$this->getUID()."','".$SellerID."','".$ProductID."'
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
