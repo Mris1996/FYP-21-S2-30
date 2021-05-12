@@ -197,12 +197,13 @@ $query = http_build_query(['data' => $jsonData]);
 
 //#############################################################
 if(isset($query)){
+	echo "hi";
 curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
 // Just return the transfer
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 // execute
 $response = curl_exec($ch);
-echo $reponse;
+	echo $ch;
  // close
 curl_close($ch);
 }
