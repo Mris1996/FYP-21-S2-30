@@ -2,7 +2,7 @@
 require_once("Users.php");
 require_once("Products.php");
 session_start();
-$ch = curl_init('http://localhost:8080');
+$ch = curl_init('http://localhost:3030');
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 
 // get the input
