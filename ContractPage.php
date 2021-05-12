@@ -633,7 +633,8 @@ function SendRefund_Admin(){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 window.WebSocket = window.WebSocket || window.MozWebSocket;
 
-var connection = new WebSocket('ws://localhost:3030');
+const connection = new WebSocket("wss://" + location.host + ":3000")
+
 var connectingSpan = document.getElementById("connecting");
 connection.onopen = function () {
 	
