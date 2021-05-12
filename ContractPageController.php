@@ -202,6 +202,7 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 // execute
 $response = curl_exec($ch);
+echo $reponse;
  // close
 curl_close($ch);
 }
