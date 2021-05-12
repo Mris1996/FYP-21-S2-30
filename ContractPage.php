@@ -630,8 +630,15 @@ function SendRefund_Admin(){
 	ajax.send("message=" + " has refunded for buyer." + "&contractid=" + ContractID + "&usertype=" + UserType + "&User=" + User );
 	console.log(ajax);
 }
+const socket = new WebSocket('ws://localhost:3030');
+
+// Connection opened
+socket.addEventListener('open', function (event) {
+    socket.send('Hello Server!');
+});
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-window.WebSocket = window.WebSocket || window.MozWebSocket;
+/*window.WebSocket = window.WebSocket || window.MozWebSocket;
 
 var connection =  new WebSocket('ws://localhost:3030',null);
 var connectingSpan = document.getElementById("connecting");
@@ -798,7 +805,7 @@ connection.onmessage = function (message) {
 			
 		
 	}
-}
+}*/
 var objDiv = document.getElementById("message-box");
 objDiv.scrollTop = objDiv.scrollHeight;
 
