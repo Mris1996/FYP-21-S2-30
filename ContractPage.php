@@ -635,6 +635,7 @@ const socket = new WebSocket('ws://localhost:3030');
 // Connection opened
 socket.addEventListener('open', function (event) {
     socket.send('Hello Server!');
+	connectingSpan.style.display = "none";
 });
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
