@@ -196,20 +196,17 @@ $query = http_build_query(['data' => $jsonData]);
 
 //#############################################################
 if(isset($query)){
-$ch = curl_init(); 
-echo "!2ss3";
-curl_setopt($ch, CURLOPT_URL, 'http://localhost:3030'); 
-curl_setopt($ch, CURLOPT_POST, 1 ); 
-curl_setopt($ch, CURLOPT_POSTFIELDS, $query); 
-curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
-$postResult = curl_exec($ch); 
-echo $postResult;
-if (curl_errno($ch)) { 
 
-   echo curl_error($ch); 
-} 
-curl_close($ch); 
+ $urltopost = 'http://localhost:3030';
+ $header=array("content-type"=>"application/json");
+ $ch = curl_init ($urltopost);
+ curl_setopt ($ch, CURLOPT_POST, true);
+ curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
+ curl_setopt ($ch, CURLOPT_HTTPHEADER, $header);
+ curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+ $returndata = curl_exec ($ch);
+ $status_code = @curl_getinfo($ch, CURLINFO_HTTP_CODE); 
+ print_r($status_code);
+ print_r($returndata);
 	
 }
