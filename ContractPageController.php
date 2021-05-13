@@ -2,6 +2,8 @@
 require_once("Users.php");
 require_once("Products.php");
 session_start();
+$ch = curl_init('http://localhost:3030');
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 
 // get the input
 $User = trim(htmlspecialchars($_POST['User'] ?? ''));
@@ -195,22 +197,13 @@ $query = http_build_query(['data' => $jsonData]);
 
 //#############################################################
 if(isset($query)){
-
- echo "Asd1";  
-
-$url = "http://10.148.0.3:3030";  
-
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	echo"asd1";
+curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
+// Just return the transfer
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_PROXY, false);
-curl_setopt($ch, CURLOPT_URL,$url);
-$result=curl_exec($ch);
+// execute
+$response = curl_exec($ch);
+ // close
 curl_close($ch);
-echo "Asd";
-// Will dump json
-var_dump(json_decode($result, true));
-
-$response = "http://10.148.0.3:3030";
-echo $response;
+	echo"asd2";
 }
