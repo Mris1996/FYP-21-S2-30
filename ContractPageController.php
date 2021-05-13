@@ -202,6 +202,10 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 // execute
 $response = curl_exec($ch);
+
  // close
 curl_close($ch);
+$raw_data = file_get_contents('http://localhost:3030/');
+$data = json_decode($raw_data, true);
+echo $data;
 }
