@@ -196,7 +196,7 @@ $query = http_build_query(['data' => $jsonData]);
 //#############################################################
 if(isset($query)){
 
-   
+ echo "Asd1";  
 
 $url = "http://10.148.0.3:3030";  
 
