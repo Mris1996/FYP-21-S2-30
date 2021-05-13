@@ -206,6 +206,6 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 $response = curl_exec($ch);
  // close
  $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-echo $response;
+//echo $response;
 curl_close($ch);
 }
