@@ -209,17 +209,10 @@ $response = curl_exec($ch);
 	echo $ch;
  // close
 curl_close($ch);*/
-$ch = curl_init('http://localhost:3030');
-$fp = fopen("example_homepage.txt", "w");
+$result = file_get_contents('http://localhost:3030');
 
-curl_setopt($ch, CURLOPT_FILE, $fp);
-curl_setopt($ch, CURLOPT_HEADER, 0);
+	echo $result;
+	
 
-curl_exec($ch);
-if(curl_error($ch)) {
-    fwrite($fp, curl_error($ch));
-}
-curl_close($ch);
-fclose($fp);
 
 }
