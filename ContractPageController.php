@@ -206,7 +206,7 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 $postResult = curl_exec($ch); 
 
 if (curl_errno($ch)) { 
-   print curl_error($ch); 
+   echo curl_error($ch); 
 } 
 curl_close($ch); 
 	
