@@ -203,7 +203,7 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 // execute
 $response = curl_exec($ch);
- // close
+echo $response;
 curl_close($ch);
-	echo"asd2";
+	
 }
