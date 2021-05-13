@@ -2,8 +2,7 @@
 require_once("Users.php");
 require_once("Products.php");
 session_start();
-$ch = curl_init('http://localhost:3030');
-curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+
 
 // get the input
 $User = trim(htmlspecialchars($_POST['User'] ?? ''));
@@ -197,7 +196,11 @@ $query = http_build_query(['data' => $jsonData]);
 
 //#############################################################
 if(isset($query)){
-	echo "hi";
+/*$ch = curl_init('http://localhost:3030');
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+curl_setopt(CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)');
+
+
 curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
 // Just return the transfer
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -205,5 +208,13 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 $response = curl_exec($ch);
 	echo $ch;
  // close
+curl_close($ch);*/
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, 'http://localhost:3030');
+curl_setopt($ch, CURLOPT_HEADER, TRUE);
+curl_setopt($ch, CURLOPT_NOBODY, TRUE); // remove body
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+$head = curl_exec($ch);
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 }
