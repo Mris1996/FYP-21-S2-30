@@ -640,7 +640,8 @@ connection.onopen = function () {
 	connectingSpan.style.display = "none";
 };
 connection.onerror = function (error) {
-	connectingSpan.innerHTML = "Error occured";
+	
+	connectingSpan.innerHTML = error;
 };
 connection.onmessage = function (message) {
 	var data = JSON.parse(message.data);
