@@ -196,7 +196,7 @@ $query = http_build_query(['data' => $jsonData]);
 
 //#############################################################
 if(isset($query)){
-/$ch = curl_init('http://localhost:3030');
+$ch = curl_init('http://localhost:3030');
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 curl_setopt(CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)');
 
@@ -205,8 +205,17 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
 // Just return the transfer
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 // execute
-$response = curl_exec($ch);
-	echo $ch;
+//$response = curl_exec($ch);
+	
  // close
 curl_close($ch);
+
+$raw_data = file_get_contents('http://localhost:3030');
+$data = json_decode($raw_data, true);
+
+
+	echo $data;
+	
+
+
 }
