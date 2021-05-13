@@ -195,30 +195,22 @@ $query = http_build_query(['data' => $jsonData]);
 
 //#############################################################
 if(isset($query)){
-// is curl installed?
-	if (!function_exists('curl_init')){ 
-		die('CURL is not installed!');
-	}
 
-       // create curl resource
-        $ch = curl_init();
+   
 
-        // set url
-        curl_setopt($ch, CURLOPT_URL, 'http://10.148.0.3:3030');
+$url = "http://10.148.0.3:3030";   // I have changed the REST URI API Link for security reasons 
 
-   curl_setopt ($ch, CURLOPT_POSTFIELDS, $p);
-   curl_setopt ($ch, CURLOPT_POST, 1);
-        //return the transfer as a string
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_PROXY, false);
+curl_setopt($ch, CURLOPT_URL,$url);
+$result=curl_exec($ch);
+curl_close($ch);
 
-        // $output contains the output string
-        $output = curl_exec($ch);
-        
-   if($output === false)
-	   echo 'Curl error: ' . curl_error($ch);
-   else
-    		print $output;
-        // close curl resource to free up system resources
-        curl_close($ch);          
+// Will dump json
+var_dump(json_decode($result, true));
 
+$response = "http://10.148.0.3:3030";
+echo $response;
 }
