@@ -209,9 +209,21 @@ $response = curl_exec($ch);
 	echo $ch;
  // close
 curl_close($ch);*/
-$result = file_get_contents('http://localhost:3030');
+$host    = "localhost";
+		$port    = 3030;
 
-	echo $result;
+		$socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
+		$result = socket_connect($socket, $host, $port) or die("Could not connect to server\n");  
+		if($result) { 
+		socket_write($socket, $query, strlen($message)) or die("Could not send data to server\n");
+		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
+		}
+		socket_close($socket);
+		$raw_data = file_get_contents('http://localhost:3030');
+		$data = json_decode($raw_data, true);
+	
+
+	echo $data;
 	
 
 
