@@ -640,7 +640,7 @@ connection.onopen = function () {
 	connectingSpan.style.display = "none";
 };
 connection.onerror = function (error) {
-	
+	console.log(error);
 	connectingSpan.innerHTML = error;
 };
 connection.onmessage = function (message) {
