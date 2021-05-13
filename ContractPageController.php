@@ -2,8 +2,6 @@
 require_once("Users.php");
 require_once("Products.php");
 session_start();
-$ch = curl_init('http://10.148.0.3:3030');
-curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 
 // get the input
 $User = trim(htmlspecialchars($_POST['User'] ?? ''));
@@ -197,13 +195,30 @@ $query = http_build_query(['data' => $jsonData]);
 
 //#############################################################
 if(isset($query)){
-curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
-// Just return the transfer
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-// execute
-$response = curl_exec($ch);
+// is curl installed?
+	if (!function_exists('curl_init')){ 
+		die('CURL is not installed!');
+	}
 
- // close
-curl_close($ch);
+       // create curl resource
+        $ch = curl_init();
+
+        // set url
+        curl_setopt($ch, CURLOPT_URL, 'http://10.148.0.3:3030');
+
+   curl_setopt ($ch, CURLOPT_POSTFIELDS, $p);
+   curl_setopt ($ch, CURLOPT_POST, 1);
+        //return the transfer as a string
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+        // $output contains the output string
+        $output = curl_exec($ch);
+        
+   if($output === false)
+	   echo 'Curl error: ' . curl_error($ch);
+   else
+    		print $output;
+        // close curl resource to free up system resources
+        curl_close($ch);          
 
 }

@@ -323,7 +323,7 @@ if($ContractObj->Status == "Seller has accepted" && $Type == "Seller"){
 if($ContractObj->Transaction == "Negotiating"){
 ?>
 <script>
-//var Intervals = setInterval(checkaccepted,3000);
+var Intervals = setInterval(checkaccepted,3000);
 function checkaccepted(){
 
 	var ajax = new XMLHttpRequest();
@@ -339,7 +339,7 @@ function checkaccepted(){
 else if($ContractObj->Transaction == "On-Going"){
 ?>
 <script>
-//var Intervals2 = setInterval(checkserviceaccepted,3000);
+var Intervals2 = setInterval(checkserviceaccepted,3000);
 function checkserviceaccepted(){
 	var ajax = new XMLHttpRequest();
 	ajax.open("POST", "ContractPageController.php", true);
@@ -640,8 +640,7 @@ connection.onopen = function () {
 	connectingSpan.style.display = "none";
 };
 connection.onerror = function (error) {
-	console.log(error);
-	connectingSpan.innerHTML = error;
+	connectingSpan.innerHTML = "Error occured";
 };
 connection.onmessage = function (message) {
 	var data = JSON.parse(message.data);
