@@ -824,7 +824,7 @@ socket.onclose = function(event) {
 };
 
 socket.onerror = function(error) {
-  alert(`[error] ${error.message}`);
+  console.log('WebSocket Error: ' + error);
 };
 var objDiv = document.getElementById("message-box");
 objDiv.scrollTop = objDiv.scrollHeight;
