@@ -206,7 +206,7 @@ if(isset($query)){
  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
  $returndata = curl_exec ($ch);
  $status_code = @curl_getinfo($ch, CURLINFO_HTTP_CODE); 
- print curl_error($ch);
+
  print_r($status_code);
  print_r($returndata);
 	
