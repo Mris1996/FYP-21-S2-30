@@ -2,7 +2,7 @@
 require_once("Users.php");
 require_once("Products.php");
 session_start();
-$ch = curl_init('http://localhost:3030');
+$ch = curl_init('http://10.148.0.3:3030');
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 
 // get the input
@@ -202,6 +202,8 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 // execute
 $response = curl_exec($ch);
+
  // close
 curl_close($ch);
+
 }
