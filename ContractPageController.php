@@ -198,7 +198,7 @@ if(isset($query)){
 
    
 
-$url = "http://10.148.0.3:3030";   // I have changed the REST URI API Link for security reasons 
+$url = "http://10.148.0.3:3030";  
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -207,7 +207,7 @@ curl_setopt($ch, CURLOPT_PROXY, false);
 curl_setopt($ch, CURLOPT_URL,$url);
 $result=curl_exec($ch);
 curl_close($ch);
-
+echo "Asd";
 // Will dump json
 var_dump(json_decode($result, true));
 
