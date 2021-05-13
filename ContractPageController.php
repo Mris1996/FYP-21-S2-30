@@ -2,8 +2,7 @@
 require_once("Users.php");
 require_once("Products.php");
 session_start();
-$ch = curl_init('http://localhost:3030');
-curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+
 
 // get the input
 $User = trim(htmlspecialchars($_POST['User'] ?? ''));
@@ -197,13 +196,18 @@ $query = http_build_query(['data' => $jsonData]);
 
 //#############################################################
 if(isset($query)){
-	echo"asd1";
-curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
-// Just return the transfer
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-// execute
-$response = curl_exec($ch);
-echo $response;
-curl_close($ch);
+$ch = curl_init(); 
+curl_setopt($ch, CURLOPT_URL, 'http://localhost:3030'); 
+curl_setopt($ch, CURLOPT_POST, 1 ); 
+curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data); 
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+$postResult = curl_exec($ch); 
+
+if (curl_errno($ch)) { 
+   print curl_error($ch); 
+} 
+curl_close($ch); 
 	
 }
