@@ -199,7 +199,7 @@ if(isset($query)){
 $ch = curl_init(); 
 curl_setopt($ch, CURLOPT_URL, 'http://localhost:3030'); 
 curl_setopt($ch, CURLOPT_POST, 1 ); 
-curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data); 
+curl_setopt($ch, CURLOPT_POSTFIELDS, $query); 
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
