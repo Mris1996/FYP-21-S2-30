@@ -196,7 +196,7 @@ $query = http_build_query(['data' => $jsonData]);
 
 //#############################################################
 if(isset($query)){
-$ch = curl_init('http://localhost:3030');
+/*$ch = curl_init('http://localhost:3030');
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 curl_setopt(CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)');
 
@@ -205,14 +205,23 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
 // Just return the transfer
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 // execute
-//$response = curl_exec($ch);
-	
+$response = curl_exec($ch);
+	echo $ch;
  // close
-curl_close($ch);
+curl_close($ch);*/
+$host    = "localhost";
+		$port    = 3030;
 
-$raw_data = file_get_contents('http://localhost:3030');
-$data = json_decode($raw_data, true);
-
+		$socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
+		$result = socket_connect($socket, $host, $port) or die("Could not connect to server\n");  
+		if($result) { 
+		socket_write($socket, $query, strlen($query)) or die("Could not send data to server\n");
+		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
+		}
+		socket_close($socket);
+		$raw_data = file_get_contents('http://localhost:3030');
+		$data = json_decode($raw_data, true);
+	
 
 	echo $data;
 	
