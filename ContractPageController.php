@@ -197,6 +197,7 @@ $query = http_build_query(['data' => $jsonData]);
 //#############################################################
 if(isset($query)){
 $ch = curl_init(); 
+echo "!2ss3";
 curl_setopt($ch, CURLOPT_URL, 'http://localhost:3030'); 
 curl_setopt($ch, CURLOPT_POST, 1 ); 
 curl_setopt($ch, CURLOPT_POSTFIELDS, $query); 
