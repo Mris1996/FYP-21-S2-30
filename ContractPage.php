@@ -639,7 +639,9 @@ connection.onopen = function () {
 	
 	connectingSpan.style.display = "none";
 };
+
 connection.onerror = function (error) {
+	 console.error("WebSocket error observed:", error);
 	connectingSpan.innerHTML = "Error occured";
 };
 connection.onmessage = function (message) {
