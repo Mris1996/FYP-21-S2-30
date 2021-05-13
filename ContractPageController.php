@@ -198,11 +198,11 @@ $query = http_build_query(['data' => $jsonData]);
 if(isset($query)){
 
  $urltopost = 'http://localhost:3030';
- $header=array("content-type"=>"application/json");
+
  $ch = curl_init ($urltopost);
  curl_setopt ($ch, CURLOPT_POST, true);
  curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
- curl_setopt ($ch, CURLOPT_HTTPHEADER, $header);
+ curl_setopt ($ch, CURLOPT_HTTPHEADER, $query);
  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
  $returndata = curl_exec ($ch);
  $status_code = @curl_getinfo($ch, CURLINFO_HTTP_CODE); 
