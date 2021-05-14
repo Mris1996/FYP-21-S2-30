@@ -88,7 +88,7 @@ $_POST["Convert_privatekey"] = '';
 $_POST["Convert_amount"] = '';
 }
 if(!$STIC){
-echo'<style> .STICGUI{display:none;}</style>';	
+echo'<style> .ETHGUI{display:none;}</style>';	
 }
 if(isset($_POST['ETH2STIC'])){
 $ETH = true;
@@ -175,7 +175,7 @@ $_POST["Convert_privatekey"] = '';
 $_POST["Convert_amount"] = '';
 }
 if(!$ETH){
-echo'<style> .ETHGUI{display:none;}</style>';	
+echo'<style> .STICGUI{display:none;}</style>';	
 }
 ?> 
 
