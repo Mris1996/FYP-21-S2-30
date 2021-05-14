@@ -9,6 +9,7 @@ $Convert_publickeyError = $Convert_privatekeyError = $Convert_amountError= "";
 $validated = true;
 
 if(isset($_POST['STIC2ETH'])){
+echo'<script>document.getElementsByClassName("STIC").click();</script>';
 	
 if(empty($_POST["Convert_publickey"]))
 {
