@@ -631,7 +631,7 @@ function SendRefund_Admin(){
 	console.log(ajax);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*window.WebSocket = window.WebSocket || window.MozWebSocket;
+window.WebSocket = window.WebSocket || window.MozWebSocket;
 
 var connection =  new WebSocket('ws://localhost:3030');
 var connectingSpan = document.getElementById("connecting");
@@ -639,9 +639,7 @@ connection.onopen = function () {
 	
 	connectingSpan.style.display = "none";
 };
-
 connection.onerror = function (error) {
-	 console.error("WebSocket error observed:", error);
 	connectingSpan.innerHTML = "Error occured";
 };
 connection.onmessage = function (message) {
@@ -800,32 +798,7 @@ connection.onmessage = function (message) {
 			
 		
 	}
-}*/
-let socket = new WebSocket("ws://localhost:3030");
-
-socket.onopen = function(e) {
-  alert("[open] Connection established");
-  alert("Sending to server");
-  socket.send("My name is John");
-};
-
-socket.onmessage = function(event) {
-  alert(`[message] Data received from server: ${event.data}`);
-};
-
-socket.onclose = function(event) {
-  if (event.wasClean) {
-    alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
-  } else {
-    // e.g. server process killed or network down
-    // event.code is usually 1006 in this case
-    alert(event.code);
-  }
-};
-
-socket.onerror = function(error) {
-  console.log('WebSocket Error: ' + error);
-};
+}
 var objDiv = document.getElementById("message-box");
 objDiv.scrollTop = objDiv.scrollHeight;
 
