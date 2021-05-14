@@ -191,7 +191,6 @@ span{
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
-document.getElementsByClassName("STIC").click();
 $(document).ready(function(){
   $(".STIC").click(function(){
     $(".ETHGUI").show();
