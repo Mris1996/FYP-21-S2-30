@@ -7,7 +7,8 @@ if(!isset($_SESSION['ID'])){
 
 $Convert_publickeyError = $Convert_privatekeyError = $Convert_amountError= "";
 $validated = true;
-
+$STIC = false;
+$ETH = false;
 if(isset($_POST['STIC2ETH'])){
 $STIC = true;
 echo'<script>var gs = document.getElementsByClassName("STIC").click();</script>';
