@@ -11,7 +11,7 @@ $STIC = false;
 $ETH = false;
 if(isset($_POST['STIC2ETH'])){
 $STIC = true;
-echo'<script>var gs = document.getElementsByClassName("STIC").click();</script>';
+
 	
 if(empty($_POST["Convert_publickey"]))
 {
