@@ -9,6 +9,7 @@ $Convert_publickeyError = $Convert_privatekeyError = $Convert_amountError= "";
 $validated = true;
 
 if(isset($_POST['STIC2ETH'])){
+$STIC = true;
 echo'<script>var gs = document.getElementsByClassName("STIC").click();</script>';
 	
 if(empty($_POST["Convert_publickey"]))
@@ -85,8 +86,11 @@ $_POST["Convert_publickey"] = '';
 $_POST["Convert_privatekey"] = '';
 $_POST["Convert_amount"] = '';
 }
+if(!$STIC){
+echo'<style> .STICGUI{display:none;}</style>';	
+}
 if(isset($_POST['ETH2STIC'])){
-	
+$ETH = true;
 if(empty($_POST["Convert_publickey"]))
 {
 $Convert_publickeyError = "Public key is required";
@@ -169,6 +173,9 @@ $_POST["Convert_publickey"] = '';
 $_POST["Convert_privatekey"] = '';
 $_POST["Convert_amount"] = '';
 }
+if(!$ETH){
+echo'<style> .ETHGUI{display:none;}</style>';	
+}
 ?> 
 
 <style>
@@ -176,12 +183,7 @@ span{
 	
 	color:red;
 }
-.STICGUI{
-	display:none;
-}
-.ETHGUI{
-	display:none;
-}
+
 </style>
 <button class="STIC">STIC to ETH</button>
 <button class="ETH">ETH to STIC</button>
