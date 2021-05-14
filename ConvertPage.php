@@ -11,7 +11,7 @@ $STIC = false;
 $ETH = false;
 if(isset($_POST['STIC2ETH'])){
 $STIC = true;
-
+echo $_POST["Convert_publickey"];
 	
 if(empty($_POST["Convert_publickey"]))
 {
@@ -47,7 +47,6 @@ sleep(2);
 
 $ConvertedAmount = $_POST["Convert_amount"]/10000;
 $message = $_SESSION['Object'] -> ConvertToETH($_POST['Convert_amount'],$_POST['Convert_publickey']);
-echo'<script>history.pushState({}, "", "")</script>';
 echo'<style> .ETHGUI{display:none;}</style>';	
 	
 
@@ -134,7 +133,6 @@ sleep(2);
 
 $ConvertedAmount = $_POST["Convert_amount"]*10000;
 $message = $_SESSION['Object'] -> ConvertToSTICOIN($_POST['Convert_amount'],$_POST['Convert_publickey'],$_POST['Convert_privatekey']);
-echo'<script>history.pushState({}, "", "")</script>';
 echo'<style> .STICGUI{display:none;}</style>';
 
 
