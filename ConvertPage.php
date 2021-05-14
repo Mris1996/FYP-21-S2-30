@@ -9,7 +9,7 @@ $Convert_publickeyError = $Convert_privatekeyError = $Convert_amountError= "";
 $validated = true;
 
 if(isset($_POST['STIC2ETH'])){
-echo'<script>document.getElementsByClassName("STIC").click();</script>';
+echo'<script>var gs = document.getElementsByClassName("STIC").click();</script>';
 	
 if(empty($_POST["Convert_publickey"]))
 {
@@ -188,6 +188,7 @@ span{
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
+document.getElementsByClassName("STIC").click();
 $(document).ready(function(){
   $(".STIC").click(function(){
     $(".ETHGUI").show();
