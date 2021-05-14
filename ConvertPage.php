@@ -6,57 +6,58 @@ if(!isset($_SESSION['ID'])){
 
 
 $Convert_publickeyError = $Convert_privatekeyError = $Convert_amountError= "";
+$Convert2_publickeyError = $Convert2_privatekeyError = $Convert2_amountError= "";
 $validated = true;
 $STIC = false;
 $ETH = false;
 if(isset($_POST['STIC2ETH'])){
 $STIC = true;
-echo $_POST["Convert_publickey"];
+echo $_POST["Convert2_publickey"];
 	
-if(empty($_POST["Convert_publickey"]))
+if(empty($_POST["Convert2_publickey"]))
 {
-$Convert_publickeyError = "Public key is required";
+$Convert2_publickeyError = "Public key is required";
 	$validated = false;
 
 }
 else{
-	if($_SESSION['Object'] -> checkAccountInNetwork($_POST['Convert_publickey'])){
+	if($_SESSION['Object'] -> checkAccountInNetwork($_POST['Convert2_publickey'])){
 	
 	}
 	else{
-		$Convert_publickeyError= "Public key is invalid";
+		$Convert2_publickeyError= "Public key is invalid";
 		$validated = false;		
 	}
 	
 }
 
-if(empty($_POST["Convert_amount"]))
+if(empty($_POST["Convert2_amount"]))
 {
-$Convert_amountError = "Amount is required";
+$Convert2_amountError = "Amount is required";
 $validated = false;
 }
 else{
 	
-if($_POST["Convert_amount"]>$_SESSION['Object']->getAccountBalance()){
-$Convert_amountError = "You insufficient amount of STICoins";	
+if($_POST["Convert2_amount"]>$_SESSION['Object']->getAccountBalance()){
+$Convert2_amountError = "You insufficient amount of STICoins";	
 $validated = false;
 }
 }
 if($validated){
 sleep(2);
 
-$ConvertedAmount = $_POST["Convert_amount"]/10000;
-$message = $_SESSION['Object'] -> ConvertToETH($_POST['Convert_amount'],$_POST['Convert_publickey']);
+$Convert2edAmount = $_POST["Convert2_amount"]/10000;
+$message = $_SESSION['Object'] -> ConvertToETH($_POST['Convert2_amount'],$_POST['Convert2_publickey']);
 echo'<style> .ETHGUI{display:none;}</style>';	
 	
 
 if($message!="Success"){
 	echo'
-	<form method="post" action="ConvertETHPage.php">
+	<form method="post" action="ConvertPage.php">
 	<h1>Transaction Summary</h1>
 	<b>Operation:Convert to Ethereum</b></br>
-	<b>Initial Amount :'.$_POST["Convert_amount"].'</b></br>
-	<b>Converted Amount:'.$ConvertedAmount.'</b></br>
+	<b>Initial Amount :'.$_POST["Convert2_amount"].'</b></br>
+	<b>Converted Amount:'.$Convert2edAmount.'</b></br>
 	<b>Transaction: Failed </b></br>
 	<b>Reason:'.$message.'</b></br>
 	<b>STICoin Balance:'.$_SESSION['Object']->getAccountBalance().'</b></br>
@@ -69,8 +70,8 @@ else{
 	<form method="post" action="index.php">
 	<h1>Transaction Summary</h1>
 	<b>Operation:Convert to Ethereum</b></br>
-	<b>Initial Amount :'.$_POST["Convert_amount"].'</b></br>
-	<b>Converted Amount:'.$ConvertedAmount.'</b></br>
+	<b>Initial Amount :'.$_POST["Convert2_amount"].'</b></br>
+	<b>Converted Amount:'.$Convert2edAmount.'</b></br>
 	<b>Transaction: Success </br>
 	<b>STICoin Balance:'.$_SESSION['Object']->getAccountBalance().'</b></br>
 	<input type="submit" value="Return to main menu!">
@@ -82,9 +83,9 @@ else{
 
 }
 else{
-$_POST["Convert_publickey"] = '';
-$_POST["Convert_privatekey"] = '';
-$_POST["Convert_amount"] = '';
+$_POST["Convert2_publickey"] = '';
+$_POST["Convert2_privatekey"] = '';
+$_POST["Convert2_amount"] = '';
 }
 if(!$STIC){
 echo'<style> .ETHGUI{display:none;}</style>';	
@@ -218,15 +219,15 @@ $(document).ready(function(){
 	
 <form method="post">
   <?php echo '<b>Convert to STICoin</b></br>';?>
-  <label for="Convert_publickey">Public Key:</label><br>
-  <input type="text" id="Convert_publickey" name="Convert_publickey" value=<?php echo $_POST["Convert_publickey"];?>><br>
-  <span class="error"><?php echo $Convert_publickeyError;?></span><br /><br />
-  <label for="Convert_privatekey">Private Key:</label><br>
-  <input type="text" id="Convert_privatekey" name="Convert_privatekey"value=<?php echo $_POST["Convert_privatekey"];?>><br><br>
-  <span class="error"><?php echo $Convert_privatekeyError;?></span><br /><br />
-  <label for="Convert_amount">Amount:</label><br>
-  <input type="Number" id="Convert_amount" name="Convert_amount"value=<?php echo $_POST["Convert_amount"];?>><br><br>
-  <span class="error"><?php echo $Convert_amountError;?></span><br /><br />
+  <label for="Convert2_publickey">Public Key:</label><br>
+  <input type="text" id="Convert2_publickey" name="Convert2_publickey" value=<?php echo $_POST["Convert2_publickey"];?>><br>
+  <span class="error"><?php echo $Convert2_publickeyError;?></span><br /><br />
+  <label for="Convert2_privatekey">Private Key:</label><br>
+  <input type="text" id="Convert2_privatekey" name="Convert2_privatekey"value=<?php echo $_POST["Convert2_privatekey"];?>><br><br>
+  <span class="error"><?php echo $Convert2_privatekeyError;?></span><br /><br />
+  <label for="Convert2_amount">Amount:</label><br>
+  <input type="Number" id="Convert2_amount" name="Convert2_amount"value=<?php echo $_POST["Convert2_amount"];?>><br><br>
+  <span class="error"><?php echo $Convert2_amountError;?></span><br /><br />
   <input type="submit" name="ETH2STIC" value="Convert">
 </form> 
 
