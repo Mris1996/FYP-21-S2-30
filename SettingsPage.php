@@ -253,7 +253,7 @@ $submit2 = true;
 		}
 		}
 		if($submit2){
-			echo "sad";
+		
 		$ChangePassword = false;
 		if($_SESSION['Object']->ChangePasswordValidate($_POST["ChangePasswordPassword"],$_POST["ChangePasswordNewPassword"],$_POST["ChangePasswordNewConfirmPassword"]) =="Validated"){
 			//echo'<style> alert("Password Changed Successfully!Please login again")</style>';

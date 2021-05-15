@@ -1119,7 +1119,8 @@ class StandardUser extends BaseUser
 				$Hpass = password_hash($Pass, PASSWORD_DEFAULT);
 				$ID = $this->getUID();
 				$sql = "UPDATE `users` SET `Password`= '$Hpass' WHERE `UserID` = '$ID' ";
-				$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
+				$result = $this->connect()->query($sql) or die( $this->connect()->error);   
+	echo "s";				
 				return "Validated";
 			}
 			else{
