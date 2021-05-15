@@ -262,7 +262,7 @@ $submit2 = true;
 			exit();
 			
 		}
-		else if($_SESSION['Object']->ChangePasswordValidate($_POST["ChangePasswordPassword"],$_POST["ChangePasswordNewConfirmPassword"]) =="Wrong Password"){
+		else{
 			$ChangePasswordPasswordError = "Incorrect password";
 			$ChangePassword = true;
 		}
