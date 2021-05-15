@@ -1104,8 +1104,7 @@ class StandardUser extends BaseUser
 	}
 	
 	public function ChangePasswordValidate($Pass,$NewPass){
-		echo $NewPass;
-		echo $Pass;
+		
 			$sql = "SELECT Password FROM users WHERE UserID='".$this->getUID()."'" ;
 			$result = $this->connect()->query($sql) or die($this->connect()->error); 
 			$validated = false;
@@ -1117,7 +1116,8 @@ class StandardUser extends BaseUser
 				
 			}	
 			if($validated)
-			{		
+			{		echo $NewPass;
+		echo $Pass;
 				$Hpass = password_hash($NewPass, PASSWORD_DEFAULT);
 				$ID = $this->getUID();
 				$sql = "UPDATE `users` SET `Password`= '$Hpass' WHERE `UserID` = '$ID' ";
