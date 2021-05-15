@@ -74,10 +74,11 @@ if(isset($_POST['reviewtextsubmit'])){
 	exit();	
 }
 if(isset($_POST['Remove'])){
-
+	
 	echo'<style> .ProductPage{display:none;}</style>';
 	echo'
 	<form method="post" >
+
 	<b>Are you sure you want to remove this product?</b></br>
 		<input type="submit" name="Confirmation" value="Yes">
 		<input type="submit" name="Confirmation" value="No">

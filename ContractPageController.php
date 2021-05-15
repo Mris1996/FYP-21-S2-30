@@ -41,7 +41,7 @@ $query = http_build_query(['data' => $jsonData]);
 
 //#############################################################
 if(isset($_POST['AcceptService'])){
-
+$_SESSION['RatingToken']=1;
 $_SESSION['Object']->AcceptService($_POST['contractid'],$_POST['usertype']);
 
 $jsonData = json_encode([
@@ -158,6 +158,7 @@ $jsonData = json_encode([
 	'DealComplete' => "set",
 	'Type' => $_POST['usertype'],
 	'ContractID' => $_POST['CheckServiceAccepted']
+	
 ]);	
 
 }

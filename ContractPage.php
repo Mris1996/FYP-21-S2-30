@@ -378,7 +378,6 @@ if (document.getElementById('PaymentMode2').value == document.getElementById("Pa
 }
 if (document.getElementById('PaymentMode3').value == document.getElementById("Payment").value) {
 	document.getElementById('PaymentMode3').checked = true;
-
 } 
 //initialise all required variables from php -> Js
 var User = document.getElementById("UserID").value.trim(),
