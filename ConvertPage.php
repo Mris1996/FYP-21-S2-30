@@ -140,7 +140,7 @@ echo'<style> .STICGUI{display:none;}</style>';
 
 if($message!="Success"){
 	echo'
-	<form method="post" action="ConvertSCPage.php">
+	<form method="post" action="ConvertPage.php">
 	<h1>Transaction Summary</h1>
 	<b>Operation:Convert to STICoin</b></br>
 	<b>Initial Amount :'.$_POST["Convert_amount"].'</b></br>
