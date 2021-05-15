@@ -1120,7 +1120,7 @@ class StandardUser extends BaseUser
 				$ID = $this->getUID();
 				$sql = "UPDATE `users` SET `Password`= '$Hpass' WHERE `UserID` = '$ID' ";
 				$result = $this->connect()->query($sql) or die( $this->connect()->error);   
-	echo "s";				
+	echo $Pass;				
 				return "Validated";
 			}
 			else{
