@@ -355,6 +355,7 @@ class BaseUser
 			</div></div>';
 		
 			}
+			if($number_of_page>1){
 			echo'<div class = "pagination" >';			
 			echo'<b style="bottom: 20;">Page</b></BR></BR>';
 			echo '<a href = "'.$pagename.'?page=1">First </a>'; 
@@ -370,7 +371,7 @@ class BaseUser
 			} 
 			echo '<a href = "'.$pagename.'?page=' . $number_of_page . '">Last </a>';  
 			echo'</div>';
-		
+			}
 			
 			}
 	public function ViewSearchProduct($sortby,$Order,$Query,$page){
@@ -411,22 +412,23 @@ class BaseUser
 			</div>';
 		
 			}	
+			if($number_of_page>1){
 			echo'<div class = "pagination" >';	
 			echo'<b style="bottom: 20;">Page</b></BR>';
-			echo '<a href = "SearchPage.php?page=1">First </a>'; 
+			echo '<a href ="SearchPage.php?query='.$Query.'&page=1">First </a>'; 
 			for($page = 1; $page<= $number_of_page; $page++) { 
 				if($page==1){
 
-				echo '<a href = "SearchPage.php?page=' . $page . '">' . $page . ' </a>';  
+				echo '<a href = "SearchPage.php?query='.$Query.'&page=' . $page . '">' . $page . ' </a>';  
 				
 				}
 				else{
-				echo '<a href = "SearchPage.php?page=' . $page . '">' . $page . ' </a>';  
+				echo '<a href = "SearchPage.php?query='.$Query.'&page=' . $page . '">' . $page . ' </a>';  
 				}
 			} 
-			echo '<a href = "SearchPage.php?page=' . $number_of_page . '">Last </a>';  
+			echo '<a href = "SearchPage.php?query='.$Query.'&page=' . $number_of_page . '">Last </a>';  
 			echo'</div>';
-		
+			}
 			
 	}
 	

@@ -1,12 +1,12 @@
 <?php require_once("NavBar.php");
-if(isset($_POST['searchfunction'])){
-    if(empty($_POST['SearchBar'])){
+if(empty($_GET['query'])){
+  
 
         echo "<h3> Enter a search query </h3>";
-    }else{
-
-       echo "<h1>Search results for :".$_POST['SearchBar']."</h1>";
-    
+    }
+else{
+ $_SESSION['Searchquery'] = $_GET['query'];
+echo "<h1>Search results for :". $_SESSION['Searchquery']."</h1>";
 
 
 ?> 
@@ -78,20 +78,20 @@ if (!isset ($_GET['page']) ) {
 $BaseUserOBJ = new BaseUser("Search page");	
 if(isset($_POST['SortDate'])){
 
-$BaseUserOBJ->ViewSearchProduct("DateOfListing",$_POST['Order'],$_POST['SearchBar'],$page);
+$BaseUserOBJ->ViewSearchProduct("DateOfListing",$_POST['Order'], $_SESSION['Searchquery'],$page);
 }
 if(isset($_POST['SortPrice'])){
 
-$BaseUserOBJ->ViewSearchProduct("ProductInitialPrice",$_POST['Order'],$_POST['SearchBar'],$page);
+$BaseUserOBJ->ViewSearchProduct("ProductInitialPrice",$_POST['Order'], $_SESSION['Searchquery'],$page);
 }
 if(isset($_POST['SortCat'])){
 
-$BaseUserOBJ->ViewSearchProduct("ProductCategory",$_POST['Order'],$_POST['SearchBar'],$page);
+$BaseUserOBJ->ViewSearchProduct("ProductCategory",$_POST['Order'], $_SESSION['Searchquery'],$page);
 }
 if(!isset($_POST['SortCat'])&&!isset($_POST['SortPrice'])&&!isset($_POST['SortDate'])){
 
-$BaseUserOBJ->ViewSearchProduct("DateOfListing","ASC",$_POST['SearchBar'],$page);	
+$BaseUserOBJ->ViewSearchProduct("DateOfListing","ASC", $_SESSION['Searchquery'],$page);	
 }
 }
-}
+
 ?>

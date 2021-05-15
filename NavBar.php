@@ -185,7 +185,9 @@ if(isset($_POST['Refresh'])){
 $_SESSION["Object"]->UpdateBalance();
 }
 
-
+if(isset($_POST['searchfunction'])){
+	echo '<script> location.replace("SearchPage.php?query='.$_POST['SearchBar'].'")</script> ';
+}
 ?>	
 <form method="post">
 			<input type="submit" class="btn btn-white"   name="Nav_Login"  value="Login"/>
@@ -195,7 +197,7 @@ $_SESSION["Object"]->UpdateBalance();
 
 
 <div class="SearchBar">
-	<form action="SearchPage.php" method="post">
+	<form  method="post">
 		<input type="text"   aria-label="Search" id="SearchBar" style="width:500px;height:50px;background:white;opacity:0.9; border-radius:5px;color:black" name="SearchBar" placeholder="Search">
 	<input type="hidden" name="searchfunction" value="">
 	</form>
