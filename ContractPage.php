@@ -250,8 +250,8 @@ if($Type=="Admin"){
 if($ContractObj->Status == "Requested Refund"){
 	echo'<button id="Refund_Admin" name="Refund_Admin" value="Refund Buyer" onclick="Refund_Admin()">Refund Buyer</button>';
 }
-echo'<form action="UserManagementPage.php?ID='.$ContractObj->SellerUserID.'" method="post"><input type="submit" value="Take disciplinary action on seller"></form>';
-echo'<form action="UserManagementPage.php?ID='.$ContractObj->BuyerUserID.'"method="post"><input type="submit" value="Take disciplinary action on buyer"></form>';
+echo'<form action="UserManagementPage.php?ID='.$ContractObj->SellerUserID.'" method="post"><input type="submit" value="Ban/Suspend seller"></form>';
+echo'<form action="UserManagementPage.php?ID='.$ContractObj->BuyerUserID.'"method="post"><input type="submit" value="Ban/Suspend buyer"></form>';
 if($ContractObj->Status == "Admin has halted this transaction"){
 echo'<form method="post"><input type="submit" name="ResumeTranasction" value="Resume Transaction"></form>';	
 }
@@ -739,7 +739,7 @@ connection.onmessage = function (message) {
 					setTimeout(function() {
 					//your code to be executed after 1 second
 					}, delayInMilliseconds);
-					location.replace("RatingPage.php");
+					location.replace("RatingPage.php?ID="+ContractID);
 					
 
 				}

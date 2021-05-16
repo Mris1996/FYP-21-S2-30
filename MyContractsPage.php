@@ -84,9 +84,13 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 		<td>'.$ContractsObj->BuyerUserID.'</td>
 		<td>'.$ContractsObj->InitialOffer.'</td>
 		<td>'.$ContractsObj->NewOffer.'</td>
-		<td>'.$ContractsObj->Status.'</td>
-		<td><form method="post" action="ContractPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="Go to page"></form></td>
-	
+		<td>'.$ContractsObj->Status.'</td>';
+		if(in_array($_SESSION['ID'],$ContractsObj->RatingToken)){
+		echo'
+		<td><form  method="post" action="RatingPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="Review"></form></td>';
+		}
+		echo'
+		<td><form  method="post" action="ContractPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="View Contract"></form></td>
 	</tr>';
 	}
 }
@@ -160,9 +164,13 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 		<td>'.$ContractsObj->BuyerUserID.'</td>
 		<td>'.$ContractsObj->InitialOffer.'</td>
 		<td>'.$ContractsObj->NewOffer.'</td>
-		<td>'.$ContractsObj->Status.'</td>
-		<td><form  method="post" action="ContractPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="Go to page"></form></td>
-	
+		<td>'.$ContractsObj->Status.'</td>';
+		if(in_array($_SESSION['ID'],$ContractsObj->RatingToken)){
+		echo'
+		<td><form  method="post" action="RatingPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="Review"></form></td>';
+		}
+		echo'
+		<td><form  method="post" action="ContractPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="View Contract"></form></td>
 	</tr>';
 	}
 }
@@ -239,10 +247,15 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 		<td>'.$ContractsObj->BuyerUserID.'</td>
 		<td>'.$ContractsObj->InitialOffer.'</td>
 		<td>'.$ContractsObj->NewOffer.'</td>
-		<td>'.$ContractsObj->Status.'</td>
-		<td><form  method="post" action="ContractPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="Go to page"></form></td>
-	
+		<td>'.$ContractsObj->Status.'</td>';
+		if(in_array($_SESSION['ID'],$ContractsObj->RatingToken)){
+		echo'
+		<td><form  method="post" action="RatingPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="Review"></form></td>';
+		}
+		echo'
+		<td><form  method="post" action="ContractPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="View Contract"></form></td>
 	</tr>';
+		
 	}
 }
 echo'</table>';

@@ -492,20 +492,7 @@ class StandardUser extends BaseUser
 		$this->AccountBalance = $Object->getAccountBalance();
 		
 		}
-	public function RateUser($Rating,$UserID) {
-		$sql = "SELECT * FROM users WHERE UserID='".$UserID."'" ;
-			$result = $this->connect()->query($sql) or die($this->connect()->error); 
-			while($row = $result->fetch_assoc())
-			{ 
-				$Data = $row['Rating'];
-			}
-			$Data = json_decode($Data, true);
-			$Data['Rating'] = ($Rating + $Data['Rating'])/2;
-			$Data['NumOfReviewers'] = 	$Data['NumOfReviewers'] +1;
-			$JData = json_encode($Data);
-			$sql="UPDATE `users` SET `Rating`='".$JData."' WHERE `UserID`='".$UserID."'";
-			$result = $this->connect()->query($sql) or die($this->connect()->error); 
-	}
+	
 	public function NewOffer($Offer,$DateRequired,$SellerID,$ProductID,$InitialOffer){
 
 		while(true){					
@@ -812,9 +799,13 @@ class StandardUser extends BaseUser
 		{
 			
 			$NumOfAccepted = $row['TotalAccepted'];
+			$Buyer = $row['BuyerUserID'];
+			$Seller = $row['SellerUserID'];
 		}
+		$Data = array($Buyer,$Seller);
+		$Jdata = json_encode($Data);
 		if($NumOfAccepted==2){
-			$sql = " UPDATE `contracts` SET `Status`= 'Transaction Complete' ,`TransactionCloseDate`= '".date("Y-m-d")."', `Transaction` = 'Complete' WHERE `ContractID`= '".$ContractID."' ";
+			$sql = " UPDATE `contracts` SET `Status`= 'Transaction Complete' ,`TransactionCloseDate`= '".date("Y-m-d")."',`RatingToken` = '".$Jdata."', `Transaction` = 'Complete' WHERE `ContractID`= '".$ContractID."' ";
 			$result = $this->connect()->query($sql) or die($this->connect()->error);
 		}
 		return $NumOfAccepted ;
@@ -977,6 +968,35 @@ class StandardUser extends BaseUser
 			$JData = json_encode($Data);
 			$sql="UPDATE `users` SET `Review`='".$JData."' WHERE `UserID`='".$UserID."'";
 			$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		}
+		public function RateUser($Rating,$UserID) {
+		$sql = "SELECT * FROM users WHERE UserID='".$UserID."'" ;
+			$result = $this->connect()->query($sql) or die($this->connect()->error); 
+			while($row = $result->fetch_assoc())
+			{ 
+				$Data = $row['Rating'];
+			}
+			$Data = json_decode($Data, true);
+			$Data['Rating'] = ($Rating + $Data['Rating'])/2;
+			$Data['NumOfReviewers'] = 	$Data['NumOfReviewers'] +1;
+			$JData = json_encode($Data);
+			$sql="UPDATE `users` SET `Rating`='".$JData."' WHERE `UserID`='".$UserID."'";
+			$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		}
+		public function PostContractRateBuyer($Rating,$UserID,$Review,$ReviewProduct,$ProductID){
+			$this->RateUser($Rating,$UserID);
+			if(!empty($Review)){
+				$this->addNewUserReview($Review,$UserID);
+			}
+			if(!empty($ReviewProduct)){
+				$this->addNewReview($ReviewProduct,$ProductID);
+			}
+		}
+		public function PostContractRateSeller($Rating,$UserID,$Review){
+			$this->RateUser($Rating,$UserID);
+			if(!empty($Review)){
+				$this->addNewUserReview($Review,$UserID);
+			}
 		}
 		public function RemoveProduct($ProductID){
 			

@@ -2,7 +2,9 @@
 <style>
 
 #rating	form {
-width: 300px;
+width: 400px;
+margin:auto;
+
 }
 
 #rating button {
@@ -14,7 +16,7 @@ padding: 0;
 float: right;
 }
 
-#rating  button:hover,
+#rating button:hover,
 #rating button:hover + button,
 #rating button:hover + button + button,
 #rating button:hover + button + button + button,
@@ -24,12 +26,32 @@ color: #faa;
 
 </style>
 <?php
-
-if($_SESSION['RatingToken']==0){
+if(!isset($_GET['ID'])){
 	echo '<script> location.replace("index.php")</script> ';
 }
-echo'<h2>Rate User:'.$_SESSION['OtherUser'].'</label></h2>';
-echo'<div id="rating"><form action="" method="POST" style="margin:auto;">
+if(!isset($_SESSION['ID'])){
+	echo '<script> location.replace("index.php")</script> ';
+}
+$ContractsObj = new Contracts();
+$ContractsObj->InitialiseContract($_GET['ID']);
+
+if(!in_array($_SESSION['ID'],$ContractsObj->RatingToken)){
+	echo '<script> location.replace("index.php")</script> ';
+}
+if($ContractsObj->SellerUserID!=$_SESSION['ID'] && $ContractsObj->BuyerUserID!=$_SESSION['ID']){
+	echo '<script> location.replace("index.php")</script> ';
+}
+if($ContractsObj->SellerUserID!=$_SESSION['ID']){
+	$_SESSION['OtherUser'] = $ContractsObj->SellerUserID;
+	$Type = "Buyer";
+}
+if($ContractsObj->BuyerUserID!=$_SESSION['ID']){
+	$_SESSION['OtherUser'] = $ContractsObj->SellerUserID;
+	$Type = "Seller";
+}
+
+echo'<div id="rating"><form action="" method="POST" style="margin:auto;"><h2>Rate User:'.$_SESSION['OtherUser'].'</label></h2>';
+echo'
 	Rating:
 		<input type="hidden" name="rating[post_id]" value="3">
 		<button type="submit" id ="rate5" name="rating[rating]" value="5">&#9733;</button>
@@ -38,8 +60,15 @@ echo'<div id="rating"><form action="" method="POST" style="margin:auto;">
 		<button type="submit" id ="rate2" name="rating[rating]" value="2">&#9733;</button>
 		<button type="submit" id ="rate1" name="rating[rating]" value="1">&#9733;</button></br></br>
 	Review:
-		<input type="text" name="reviewtext" style="width:1000px;height:100px;" placeholder="Review User"></br></br>
-		<input type="submit" name="submit" value="Submit review">
+		<input type="text" name="reviewtext" style="width:1000px;height:100px;" placeholder="Review User"></br></br>';
+
+
+if($Type=="Buyer"){
+	echo'<h2>Review Product:'.$ContractsObj->ProductID.'</label></h2>';
+	echo'<input type="text" name="reviewtextproduct" style="width:1000px;height:100px;" placeholder="Review Product"></br></br>';
+	
+}
+echo'<input type="submit" name="submit" value="Submit review">
 </form></div>';
 if(isset($_POST['rating'])){
 	if(isset($_POST['rating']['rating'])){
@@ -49,18 +78,25 @@ if(isset($_POST['rating'])){
 	}
 	$_SESSION['Rating'] =$_POST['rating']['rating'];
 }
-	
+else{
+$_POST['rating']['rating'] = 3;
+$_SESSION['Rating'] = 3;
+}	
 	
 }
 
 
 if(isset($_POST['submit'])){
-	$_SESSION['Object']->RateUser($_SESSION['Rating'],$_SESSION['OtherUser']);
-	
-	$_SESSION['Object']->addNewUserReview($_POST['reviewtext'],$_SESSION['OtherUser']);
+	if($Type=="Buyer"){
+		$_SESSION['Object']->PostContractRateBuyer($_SESSION['Rating'],$_SESSION['OtherUser'],$_POST['reviewtext'],$_POST['reviewtextproduct'],$ContractsObj->ProductID);
+	}
+	if($Type=="Seller"){
+			$_SESSION['Object']->PostContractRateSeller($_SESSION['Rating'],$_SESSION['OtherUser'],$_POST['reviewtext']);
+	}
 	unset($_SESSION['OtherUser']);
 	unset($_SESSION['Rating']);
-	$_SESSION['RatingToken']-1;
+	$ContractsObj->ReduceToken($_SESSION['ID']);
+	echo '<script>alert("Successfully submitted review")</script> ';
 	echo '<script>location.replace("MyContractsPage.php")</script> ';
 	
 }

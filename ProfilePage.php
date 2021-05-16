@@ -91,7 +91,7 @@ echo'<div class="card" style="margin-top:200px;">
 
 		}
 		echo'
-		<h2 style="font-weight:bold">Rating:'.$BaseUserObj->Rating['Rating'].'('.$BaseUserObj->Rating['NumOfReviewers'].')</h2>
+		<h2 style="font-weight:bold">Rating:'.round(intval($BaseUserObj->Rating['Rating']),3).'('.$BaseUserObj->Rating['NumOfReviewers'].')</h2>
 		</div> 
 		<p style="font-weight:bold"> Name:'.$BaseUserObj->getFirstName().' '.$BaseUserObj->getLastName().'</p>
 		<p style="font-weight:bold">Email:'.$BaseUserObj->getEmail().'</p>

@@ -30,6 +30,8 @@ class Contracts
 	
 	public $Transaction;
 	
+	public $RatingToken; 
+	
 	public function connect(){
 		$servername= "localhost";
 		$username = "root";
@@ -80,11 +82,19 @@ class Contracts
 			
 			$this->Transaction = $row["Transaction"];	
 	
+			$this->RatingToken = json_decode($row["RatingToken"],true);
 	}
 
 		return true;
 	}
-
+	public function ReduceToken($ID){
+		if (($key = array_search($ID, $this->RatingToken)) !== false) {
+			unset($this->RatingToken[$key]);
+		}
+		$Jdata = json_encode($this->RatingToken);
+		$sql="UPDATE `contracts` SET `RatingToken`= '".$Jdata."' WHERE `ContractID`='".$this->ContractID."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+	}
 }
 	
 ?>
