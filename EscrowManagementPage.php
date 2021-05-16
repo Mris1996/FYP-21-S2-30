@@ -38,7 +38,7 @@ for($x = 0;$x<sizeof($ArrayOFEscrows);$x++){
 	</form></td></tr>
 	';
 }
-if(sizeof($ArrayOFEscrows==0)){
+if(sizeof($ArrayOFEscrows)==0){
 echo'<td colspan="2">Add Escrow Account</td>';	
 }
 if(isset($_POST['Remove'])){
