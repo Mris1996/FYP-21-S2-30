@@ -71,20 +71,13 @@ a
   opacity: 1;
 }
 
-.text {
 
-  background-color: black;
-  color: white;
-  font-size: 16px;
-  padding: 20px 0px;
-  width:200px;
-  margin:auto;
-}
 </style>
 <?php 
 
 echo'<div class="card" style="margin-top:200px;">
 		<h1>'.$BaseUserObj->getDisplayName().'</h1>
+		<center><img src="'.$BaseUserObj->ProfilePic.'" height="200" width="200"></center>
 		<div class="w3-panel w3-black">';
 		for($i=0;$i<intval($BaseUserObj->Rating['Rating']);$i++){
 			echo'<span class="fa fa-star checked"></span>';
@@ -131,13 +124,12 @@ $BaseUserObj->ViewAllUserProduct("DateOfListing","ASC",$ID);
 <h1>Reviews</h1>
 <?php $BaseUserObj->viewReview($ID,"User");?>
 </div>
-<form method="post" style="text-align:center;">
+
+<form method="post" style="float:left;width:100%;text-align:center;">
 <input type="text" name="reviewtext" style="width:1000px;height:100px;" placeholder="Review User">
 <input type="hidden" name="reviewtextsubmit">
 </form>
-</div>
 
-</div>
 <?php
 
 if(isset($_POST['reviewtextsubmit'])){

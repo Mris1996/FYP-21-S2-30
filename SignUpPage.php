@@ -1,7 +1,7 @@
 <html>
 <style>
 span{
-	width:200px;
+	width:300px;
 	color:red;
 }
 .SignUpForm * {
@@ -10,7 +10,7 @@ span{
 
 .centerBox {
 	margin: auto;
-	width: 40%;
+	width: 50%;
 	/* border: 3px solid #73AD21; */
 	padding: 10px;
 }
@@ -25,7 +25,7 @@ label {
 }
 
 label+input+textarea {
-	width: 30%;
+	width: 40%;
 	
 	/* Large margin-right to force the next element to the new-line
     and margin-left to create a gutter between the label and input */
@@ -37,7 +37,7 @@ label+input+textarea {
 </style>
 <?php 
 include("NavBar.php");
-$SignUpFirstNameError = $SignUpContactError = $SignUpLastNameError = $SignUpIDError =  $SignUpEmailError =  $SignUpPasswordError =  $SignUpConfirmPasswordError = $SignUpAddressError = $SignUpDisplayNameError = $SignUpDOBError = ""; 
+$SignUpFirstNameError = $SignUpContactError = $SignUpFileErr = $SignUpLastNameError = $SignUpIDError =  $SignUpEmailError =  $SignUpPasswordError =  $SignUpConfirmPasswordError = $SignUpAddressError = $SignUpDisplayNameError = $SignUpDOBError = ""; 
 if(isset($_SESSION['ID'])){
 	echo '<script> location.replace("index.php")</script> ';
 }
@@ -46,6 +46,7 @@ $submit = true;
 
 
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SignUpButton'])){
+
 	if(empty($_POST["SignUpFirstName"]))
 	{
 		$SignUpFirstNameError = "First name is required";
@@ -173,24 +174,72 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SignUpButton'])){
 			$submit = false;
 		}
 	}
+	if (empty($_POST["file"])){
+		$file = $_FILES['file'];
+		
+		$File = $_FILES['file']['name'];
+		$fileTmpName = $_FILES['file']['tmp_name'];
+		$fileSize = $_FILES['file']['size'];
+		$SignUpFileError = $_FILES['file']['error'];
+		$fileType = $_FILES['file']['type'];
+		
+		$fileExt = explode('.',$File);
+		$fileActualExt = strtolower(end($fileExt));
+		$allowed = array('jpg','jpeg','png','pdf');
+		
+		if(in_array($fileActualExt, $allowed)){
+		
+			if($SignUpFileError == 0){
+					
+				if($fileSize < 500000){	//if file size less then 50mb
+					$FileNew = uniqid('', true).".".$fileActualExt;
+					
+
+				} else {
+					
+					$SignUpFileErr= "The file is too big!";
+					$submit = false;
+				}
+			} else {
+				
+				$SignUpFileErr= "There was an error uploading the file!";
+				$submit = false;
+			}
+			
+		} else {
+			if($fileSize==0){
+				
+				$SignUpFileErr= "Upload a file";
+				$submit = false;
+			}
+			else{	
+				$SignUpFileErr= "You cannot upload files of this type!";
+				$submit = false;
+			}
+		
+		}
+	}
+	
 	
 	if($submit){
 		require_once("Users.php");
 		$BaseUserOBJ = new BaseUser("SignUp");
-		if($BaseUserOBJ->SignUpValidate($_POST["SignUpID"],$_POST["SignUpEmail"],$_POST["SignUpPassword"],$_POST["SignUpFirstName"],$_POST["SignUpLastName"],$_POST["SignUpContact"],$_POST["SignUpDisplayName"],$_POST["SignUpDOB"],$_POST["SignUpAddress"])=="validated"){
+		$fileDestination = 'profilepictures/'.$FileNew;
+		if($BaseUserOBJ->SignUpValidate($_POST["SignUpID"],$_POST["SignUpEmail"],$_POST["SignUpPassword"],$_POST["SignUpFirstName"],$_POST["SignUpLastName"],$_POST["SignUpContact"],$_POST["SignUpDisplayName"],$_POST["SignUpDOB"],$_POST["SignUpAddress"],$fileTmpName,$fileDestination)=="validated"){
 			echo '<script> alert("Successfully Signed Up! Please login now")</script> ';
 			echo '<script> location.replace("LoginPage.php")</script> ';
 			exit();
 		}
-		else if($BaseUserOBJ->SignUpValidate($_POST["SignUpID"],$_POST["SignUpEmail"],$_POST["SignUpPassword"],$_POST["SignUpFirstName"],$_POST["SignUpLastName"],$_POST["SignUpContact"],$_POST["SignUpDisplayName"],$_POST["SignUpDOB"],$_POST["SignUpAddress"])=="UserID error"){
+		else if($BaseUserOBJ->SignUpValidate($_POST["SignUpID"],$_POST["SignUpEmail"],$_POST["SignUpPassword"],$_POST["SignUpFirstName"],$_POST["SignUpLastName"],$_POST["SignUpContact"],$_POST["SignUpDisplayName"],$_POST["SignUpDOB"],$_POST["SignUpAddress"],$fileTmpName,$fileDestination )=="UserID error"){
 			$SignUpIDError = "UserID already exists";
 		}
-		else if($BaseUserOBJ->SignUpValidate($_POST["SignUpID"],$_POST["SignUpEmail"],$_POST["SignUpPassword"],$_POST["SignUpFirstName"],$_POST["SignUpLastName"],$_POST["SignUpContact"],$_POST["SignUpDisplayName"],$_POST["SignUpDOB"],$_POST["SignUpAddress"])=="Email error"){
+		else if($BaseUserOBJ->SignUpValidate($_POST["SignUpID"],$_POST["SignUpEmail"],$_POST["SignUpPassword"],$_POST["SignUpFirstName"],$_POST["SignUpLastName"],$_POST["SignUpContact"],$_POST["SignUpDisplayName"],$_POST["SignUpDOB"],$_POST["SignUpAddress"],$fileTmpName,$fileDestination )=="Email error"){
 			$SignUpEmailError = "Email already exists";
 		}
 	}
 }
 else{
+$_POST["file"] = "";
 $_POST["SignUpID"]  = "";
 $_POST["SignUpDisplayName"]  = "";
 $_POST["SignUpFirstName"]  = "";
@@ -202,9 +251,11 @@ $_POST["SignUpDOB"]  = "";
 $_POST["SignUpPassword"]  = "";
 $_POST["SignUpConfirmPassword"]  = "";
 }
+
+
 ?>
 <div class="SignUp_GUI">
-<form class ="SignUpForm" method="post">
+<form class ="SignUpForm" method="post" enctype="multipart/form-data">
 <span class="error"></span><br /><br />
 
 <div class="centerBox">
@@ -215,7 +266,12 @@ $_POST["SignUpConfirmPassword"]  = "";
 	<label>Display Name:</label>
 	<input type="text" name="SignUpDisplayName" value = <?php echo $_POST["SignUpDisplayName"] ; ?>>
 	<span class="error">&nbsp;&nbsp;<?php echo $SignUpDisplayNameError;?></span><br /><br />
-
+	
+	<label>Upload Profile Picture:</label>
+	<input type="file" name="file"/>
+	<span class="error"><?php echo $SignUpFileErr;?></span><br /><br />
+	
+	
 	<label>First Name:</label>
 	<input type="text" name="SignUpFirstName" value = <?php echo $_POST["SignUpFirstName"] ; ?>>
 	<span class="error">&nbsp;&nbsp;<?php echo $SignUpFirstNameError;?></span><br /><br />
@@ -254,8 +310,3 @@ $_POST["SignUpConfirmPassword"]  = "";
 </form>
 </div>
 </html>
-
-<!--Links Used:-->
-<!--https://www.w3schools.com/css/css_align.asp-->
-<!--https://stackoverflow.com/questions/13204002/align-form-elements-in-css-->
-<!--https://www.w3schools.com/cssref/css_selectors.asp-->

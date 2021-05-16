@@ -16,7 +16,9 @@ class BaseUser
 	private $PrivateKey;
 	public $Rating;
 	public $Status;
+	public $ProfilePic;
 	public $results_per_page = 12;  
+	
 	public function __construct($Operation)
 	{
 		if($Operation == "SignUp"){
@@ -48,7 +50,8 @@ class BaseUser
 			if($validated)
 			{	
 				$this->setUID($ID);
-				
+				$sql="UPDATE `users` SET `LoginCount`= `LoginCount`+1 WHERE `UserID`='".$ID."'";
+				$result = $this->connect()->query($sql) or die($this->connect()->error); 
 				return true;
 			}
 			else{
@@ -56,6 +59,15 @@ class BaseUser
 			}
 		}
 		
+	}
+	public function LogOut(){
+		$sql="UPDATE `users` SET `LoginCount`= `LoginCount`-1 WHERE `UserID`='".$this->getUID()."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		echo'<style> input[name="Nav_Login"]{display:visible;}</style>';
+		$_SESSION['ID']=NULL;
+		session_destroy();
+		echo '<script> location.replace("LoginPage.php")</script> ';
+		exit();
 	}
 	public function ForgetPassword ($Email){
 		$sql = "SELECT * FROM users WHERE Email='".$Email."'";
@@ -115,7 +127,7 @@ class BaseUser
 		$this->PrivateKey = $data['privatekey'];
 		
 	}
-	public function SignUpValidate($ID,$Email,$Pass,$FName,$LName,$ContactNumber,$DispName,$DOB,$Address){
+	public function SignUpValidate($ID,$Email,$Pass,$FName,$LName,$ContactNumber,$DispName,$DOB,$Address,$ProfilePicCurrent,$ProfilePicDest){
 		$sql = "SELECT * FROM users WHERE UserID='".$ID."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		if ($result->num_rows != 0) 
@@ -130,15 +142,11 @@ class BaseUser
 			return "Email error";
 			
 		}
-	
 		$HPass = password_hash($Pass, PASSWORD_DEFAULT);
 		$Type = "Standard";
-		
-	
-		$sql = "INSERT INTO users (UserID,FirstName,LastName,Email,ContactNumber,Password,AccountType,DisplayName,Address,DateOfBirth,PublicKey,PrivateKey)VALUES('".$ID."','".$FName."','".$LName."','".$Email."' ,'".$ContactNumber."','".$HPass."','".$Type."','".$DispName."','".$Address."','".date('d/m/Y', strtotime($DOB))."','".$this->PubKey."','".$this->PrivateKey."' )";
+		$sql = "INSERT INTO users (UserID,FirstName,LastName,Email,ContactNumber,Password,AccountType,DisplayName,Address,DateOfBirth,PublicKey,PrivateKey,ProfilePicture)VALUES('".$ID."','".$FName."','".$LName."','".$Email."' ,'".$ContactNumber."','".$HPass."','".$Type."','".$DispName."','".$Address."','".date('d/m/Y', strtotime($DOB))."','".$this->PubKey."','".$this->PrivateKey."','".$ProfilePicDest."' )";
 		$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
-		echo $this->connect()->error;
-		
+		move_uploaded_file($ProfilePicCurrent, $ProfilePicDest);
 		return "validated";
 	}
 	
@@ -168,6 +176,8 @@ class BaseUser
 			$this->AccountBalance = $this->GetAccountBalanceFromServer($this->PubKey);
 			$this->Rating = json_decode($row["Rating"],true);
 			$this->Status = $row["Status"];
+			$this->ProfilePic = $row["ProfilePicture"];
+		
 
 	}
 	
@@ -477,6 +487,7 @@ class BaseUser
 
 class StandardUser extends BaseUser 
 {
+	private $EscrowPrivate;
 	public function __construct($Object){
 	
 		$this->UID = $Object->getUID();
@@ -923,23 +934,20 @@ class StandardUser extends BaseUser
 	}
 	
 		public function getEscrow(){
-		$sql = "SELECT * FROM escrow" ;
+
+		$sql = "SELECT * FROM users where `AccountType` = 'Escrow' ORDER BY RAND() LIMIT 1" ;
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		while($row = $result->fetch_assoc())
 		{ 
+			
+			$this->EscrowPrivate = $row["PrivateKey"];
 			return $row["PublicKey"];
 
 		}
 		}
 		
 		public function getEscrowPrivate(){
-		$sql = "SELECT * FROM escrow" ;
-		$result = $this->connect()->query($sql) or die($this->connect()->error); 
-		while($row = $result->fetch_assoc())
-		{ 
-			return $row["PrivateKey"];
-
-		}
+			return $this->EscrowPrivate;
 		}
 		public function addNewReview($Review,$ProductID){
 			$sql = "SELECT * FROM product WHERE ProductID='".$ProductID."'" ;
@@ -1277,7 +1285,7 @@ class Admin extends StandardUser
 		return;
 	}
 	public function ListOfUsers(){
-		$sql = "SELECT * FROM users where AccountType != 'Administrator'";
+		$sql = "SELECT * FROM users where AccountType = 'Standard'";
 		$usersarray = array();
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		while($row = $result->fetch_assoc())
@@ -1286,6 +1294,17 @@ class Admin extends StandardUser
 		}
 		
 		return $usersarray;
+	}
+	public function ListOfEscrows(){
+	
+		$sql = "SELECT * FROM users where `AccountType` = 'Escrow'";
+		$pubkeysarray = array();
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		while($row = $result->fetch_assoc())
+		{ 	
+			array_push($pubkeysarray,$row['PublicKey']);
+		}
+		return $pubkeysarray;
 	}
 	public function suspendUser($ID,$SuspensionDate){
 		$data = array('Suspended',$SuspensionDate);
@@ -1309,6 +1328,24 @@ class Admin extends StandardUser
 		$sql = "UPDATE `users` SET `AccountType`='Administrator' WHERE `UserID` = '$ID' ";
 		$result = $this->connect()->query($sql) or die( $this->connect()->error);
 	}
-	
+	public function RemoveEscrow($pubkey){
+		$sql = "DELETE FROM users WHERE PublicKey='$pubkey'";
+		$result = $this->connect()->query($sql) or die( $this->connect()->error);
+		
+	}
+	public function AddEscrow($pubkey,$privatekey){
+		while(true){					
+					$UserID = "Escrow". substr(rand(0000,9999), 2, 4);
+					$result = $this->connect()->query("SELECT count(*) as 'c' FROM users WHERE UserID='".$UserID."'");
+					$count = $result->fetch_object()->c;
+					if ($count==0)
+					  {
+						break;
+					  }
+				}
+				$sql = "INSERT INTO users (UserID,PublicKey,PrivateKey,AccountType)VALUES('".$UserID."','".$pubkey."','".$privatekey."','Escrow' )";
+				$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
+				
+	}
 	
 }

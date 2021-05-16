@@ -256,10 +256,7 @@ $submit2 = true;
 		$ChangePassword = false;
 		if($_SESSION['Object']->ChangePasswordValidate($_POST["ChangePasswordPassword"],$_POST["ChangePasswordNewPassword"],$_POST["ChangePasswordNewConfirmPassword"]) =="Validated"){
 			echo'<style> alert("Password Changed Successfully!Please login again")</style>';
-			$_SESSION['ID']=NULL;
-			session_destroy();
-			echo '<script> location.replace("LoginPage.php")</script> ';
-			exit();
+			$_SESSION["Object"]->LogOut();
 			
 		}
 		else{

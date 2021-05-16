@@ -97,8 +97,6 @@ fclose($myfile);
 
 
 
-
-
 date_default_timezone_set("Singapore");
 require_once("Users.php");
 require_once("Products.php");
@@ -141,6 +139,7 @@ echo'
 	<a href="SettingsPage.php">Settings</a>
 	<a href="ConvertPage.php">Convert Coins</a>';
 if($_SESSION['Object']->getAccountType()=="Administrator"){
+	echo'<a href="EscrowManagementPage.php">Manage escrows</a>';
 	echo'<a href="UserManagementPage.php">Manage accounts</a>';
 	echo'<a href="ContractManagementPage.php">Manage contracts</a>';
 }
@@ -155,31 +154,18 @@ $BaseUserOBJ = new BaseUser("check status");
 $BaseUserOBJ->setUID_Admin($_SESSION["ID"]);
 if(json_decode($BaseUserOBJ->Status)[0]=="Suspended"){
 echo'<script>alert("You have been suspended till,'.json_decode($BaseUserOBJ->Status)[1].'")</script>';	
-echo'<style> input[name="Nav_Login"]{display:visible;}</style>';
-$_SESSION['ID']=NULL;
-session_destroy();
-echo '<script> location.replace("LoginPage.php")</script> ';
-exit();
+$_SESSION["Object"]->LogOut();
 }
 if(json_decode($BaseUserOBJ->Status)[0]=="Banned"){
 echo'<script>alert("You have been banned")</script>';	
-echo'<style> input[name="Nav_Login"]{display:visible;}</style>';
-$_SESSION['ID']=NULL;
-session_destroy();
-echo '<script> location.replace("LoginPage.php")</script> ';
-exit();
+$_SESSION["Object"]->LogOut();
 }
 }
 else{
 	echo'<style> input[name="Nav_LogOut"]{display:none;}</style>';
 }
 if(isset($_POST['Nav_LogOut'])){
-echo'<style> input[name="Nav_Login"]{display:visible;}</style>';
-$_SESSION['ID']=NULL;
-$_SESSION['RatingToken'] = 0;
-session_destroy();
-echo '<script> location.replace("LoginPage.php")</script> ';
-exit();
+$_SESSION["Object"]->LogOut();
 }
 if(isset($_POST['Refresh'])){
 $_SESSION["Object"]->UpdateBalance();
@@ -188,6 +174,7 @@ $_SESSION["Object"]->UpdateBalance();
 if(isset($_POST['searchfunction'])){
 	echo '<script> location.replace("SearchPage.php?query='.$_POST['SearchBar'].'")</script> ';
 }
+
 ?>	
 <form method="post">
 			<input type="submit" class="btn btn-white"   name="Nav_Login"  value="Login"/>
