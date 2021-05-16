@@ -38,6 +38,9 @@ for($x = 0;$x<sizeof($ArrayOFEscrows);$x++){
 	</form></td></tr>
 	';
 }
+if(sizeof($ArrayOFEscrows==0){
+echo'<td colspan="2">Add Escrow Account</td>';	
+}
 if(isset($_POST['Remove'])){
 		$_SESSION['Object']->RemoveEscrow($_POST['PubKey']);
 		echo '<script> location.replace("EscrowManagementPage.php")</script> ';
