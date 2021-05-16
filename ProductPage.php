@@ -62,7 +62,7 @@ echo'
 <input type="hidden" name="reviewtextsubmit">
 </form>
 </div>
-
+</div>
 </div>
 <?php
 
