@@ -240,6 +240,30 @@ ALTER TABLE `users`
   ADD PRIMARY KEY (`UserID`);
 COMMIT;
 
+--
+-- Added by Samuel:
+--
+-- Database:
+-- Create Temporary Password Table
+-- Fields: UserID, Password
+--
+-- Table structure for table `temporaryPassword`
+--
+CREATE TABLE `temporarypassword` (
+	`UserID` varchar(20) NOT NULL,
+	`Password` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Adding Primary Key to `temporaryPassword` Database
+-- https://www.w3schools.com/sql/sql_comments.asp
+--
+-- Indexes for table `temporaryPassword` 
+--
+ALTER TABLE `temporaryPassword`
+	ADD PRIMARY KEY (`UserID`);
+COMMIT;
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
