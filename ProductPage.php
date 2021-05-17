@@ -37,7 +37,7 @@ echo'
 }
 }
 
-
+echo $ProductObj->SellerUserID;
 echo'
 <div class="card">
 <img src="'.$ProductObj->Image.'" style="width:50%;margin:auto">
