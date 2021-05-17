@@ -137,7 +137,7 @@ echo'
 	<div class="dropdown-content">
 	<a href="ProfilePage.php?ID='.$_SESSION['ID'].'">Profile</a>
 	<a href="SettingsPage.php">Settings</a>
-	<a href="ConvertPage.php">Convert Coins</a>';
+	<a href="ConvertPage.php">Top-Up</a>';
 if($_SESSION['Object']->getAccountType()=="Administrator"){
 	echo'<a href="EscrowManagementPage.php">Manage escrows</a>';
 	echo'<a href="UserManagementPage.php">Manage accounts</a>';
