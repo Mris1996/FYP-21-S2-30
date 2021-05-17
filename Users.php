@@ -422,7 +422,7 @@ class BaseUser
 	}
 	public function connect(){
 		$servername= "localhost";
-		$username = "root";
+		$username = "pma";
 		$password = "";
 		$dbname = "sticdb";
 		$conn = new mysqli($servername, $username, $password, $dbname);
