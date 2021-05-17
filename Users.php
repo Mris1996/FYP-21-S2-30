@@ -206,7 +206,7 @@ class BaseUser
 			$this->AccountType = $row["AccountType"];
 			$this->Rating = json_decode($row["Rating"],true);
 			$this->Status = $row["Status"];
-
+			$this->ProfilePic = $row["ProfilePicture"];
 	}
 	
 	return true;
@@ -501,7 +501,7 @@ class StandardUser extends BaseUser
 		$this->Address =  $Object->getAddress();
 		$this->AccountType =  $Object->getAccountType();
 		$this->AccountBalance = $Object->getAccountBalance();
-		
+		$this->ProfilePic = $Object->ProfilePic;
 		}
 	
 	public function NewOffer($Offer,$DateRequired,$SellerID,$ProductID,$InitialOffer){
@@ -1116,7 +1116,7 @@ class StandardUser extends BaseUser
 			
 				return true;
 	}
-	public function EditProfileValidate($Email,$FName,$LName,$ContactNumber,$DispName,$Address){
+	public function EditProfileValidate($Email,$FName,$LName,$ContactNumber,$DispName,$Address,$ProfilePicCurrent,$ProfilePicDest){
 	
 		$sql = "SELECT * FROM users WHERE Email='".$Email."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
@@ -1126,10 +1126,13 @@ class StandardUser extends BaseUser
 			
 		}
 		$ID = $this->getUID();
-		$sql = "UPDATE `users` SET `DisplayName`= '$DispName',`Email`= '$Email',`FirstName`= '$FName',`LastName`='$LName',`ContactNumber`='$ContactNumber',`Address`= '$Address' WHERE `UserID` = '$ID' ";
+		$sql = "UPDATE `users` SET `DisplayName`= '$DispName',`Email`= '$Email',`FirstName`= '$FName',`LastName`='$LName',`ContactNumber`='$ContactNumber',`Address`= '$Address', `ProfilePicture`='$ProfilePicDest' WHERE `UserID` = '$ID' ";
 		$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
 		echo $this->connect()->error;
-		
+		move_uploaded_file($ProfilePicCurrent, $ProfilePicDest);
+		if($this->ProfilePic!="profilepictures/default.jpg"){
+			unlink($this->ProfilePic);
+		}
 		return "validated";
 	}
 	
@@ -1177,6 +1180,7 @@ class Admin extends StandardUser
 		$this->Address =  $Object->getAddress();
 		$this->AccountType =  $Object->getAccountType();
 		$this->AccountBalance = $Object->getAccountBalance();
+		$this->ProfilePic = $Object->ProfilePic;
 	
 	}
 	public function HaltTransaction($ContractID){

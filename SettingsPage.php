@@ -12,7 +12,7 @@ span{
 	width:200px;
 	color:red;
 }
-.SignUpForm * {
+.EditProfileForm * {
   vertical-align: middle;
 }
 
@@ -65,7 +65,7 @@ $(document).ready(function(){
 <hr>
 <?php 
 $submit = true;
-$EditProfileFirstNameError = $EditProfileContactError = $EditProfileLastNameError  =  $EditProfileEmailError =  $EditProfileAddressError = $EditProfileDisplayNameError  = ""; 
+$EditProfileFirstNameError = $EditProfileContactError = $EditProfileLastNameError  =  $EditProfileEmailError =  $EditProfileAddressError = $EditProfileDisplayNameError =  $EditProfileFileErr = ""; 
 
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['EditProfileButton'])){
 	$EditProfile  = true;
@@ -133,14 +133,61 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['EditProfileButton'])){
 		}
 	}
 	
+	if (empty($_POST["file"])){
+		$file = $_FILES['file'];
+		$File = $_FILES['file']['name'];
+		$fileTmpName = $_FILES['file']['tmp_name'];
+		$fileSize = $_FILES['file']['size'];
+		$EditProfileFileError = $_FILES['file']['error'];
+		$fileType = $_FILES['file']['type'];
+		
+		$fileExt = explode('.',$File);
+		$fileActualExt = strtolower(end($fileExt));
+		$allowed = array('jpg','jpeg','png','pdf');
+		
+		if(in_array($fileActualExt, $allowed)){
+		
+			if($EditProfileFileError == 0){
+					
+				if($fileSize < 500000){	//if file size less then 50mb
+					$FileNew = uniqid('', true).".".$fileActualExt;
+					
+
+				} else {
+					
+					$EditProfileFileErr= "The file is too big!";
+					$submit = false;
+				}
+			} else {
+				
+				$EditProfileFileErr= "There was an error uploading the file!";
+				$submit = false;
+			}
+			
+		} else {
+			if($fileSize==0){
+				$fileempty = true;
+				$fileTmpName = $_SESSION['Object']->ProfilePic;
+				$fileExt = explode('.',$_SESSION['Object']->ProfilePic);
+				$fileActualExt = strtolower(end($fileExt));
+				$FileNew = uniqid('', true).".".$fileActualExt;
+			}
+			else{	
+				$EditProfileFileErr= "You cannot upload files of this type!";
+				$submit = false;
+			}
+		
+		}
+	}
 	if($submit){
-		if($_POST["EditProfileDisplayName"] == $_SESSION['Object']-> getDisplayName() && $_POST["EditProfileFirstName"] == $_SESSION['Object']-> getFirstName() && $_POST["EditProfileLastName"] == $_SESSION['Object']-> getLastName() && $_POST["EditProfileEmail"] == $_SESSION['Object']-> getEmail() && $_POST["EditProfileContact"] == $_SESSION['Object']-> getContactNumber() && $_POST["EditProfileAddress"]  == $_SESSION['Object']-> getAddress()){
+		if($_POST["EditProfileDisplayName"] == $_SESSION['Object']-> getDisplayName() && $_POST["EditProfileFirstName"] == $_SESSION['Object']-> getFirstName() && $_POST["EditProfileLastName"] == $_SESSION['Object']-> getLastName() && $_POST["EditProfileEmail"] == $_SESSION['Object']-> getEmail() && $_POST["EditProfileContact"] == $_SESSION['Object']-> getContactNumber() && $_POST["EditProfileAddress"]  == $_SESSION['Object']-> getAddress()&&$fileempty){
 			$EditProfile = false;
 			echo'<script>alert("No changes were made")</script>';
 			echo '<script> location.replace("SettingsPage.php")</script> ';
 		}
 		else{
-			if($_SESSION['Object']->EditProfileValidate($_POST["EditProfileEmail"],$_POST["EditProfileFirstName"],$_POST["EditProfileLastName"],$_POST["EditProfileContact"],$_POST["EditProfileDisplayName"],$_POST["EditProfileAddress"])=="validated"){
+			$FileNew = 'profilepictures/'.$FileNew;
+			if($_SESSION['Object']->EditProfileValidate($_POST["EditProfileEmail"],$_POST["EditProfileFirstName"],$_POST["EditProfileLastName"],$_POST["EditProfileContact"],$_POST["EditProfileDisplayName"],$_POST["EditProfileAddress"],$fileTmpName,$FileNew)=="validated"){
 				$EditProfile = false;
 				echo'<script>alert("Successfully updated your profile, please check your profile")</script>';
 				$_SESSION['Object']->setUID($_SESSION['Object']->getUID());
@@ -148,7 +195,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['EditProfileButton'])){
 				
 				
 			}
-			else if($_SESSION['Object']->EditProfileValidate($_POST["EditProfileEmail"],$_POST["EditProfileFirstName"],$_POST["EditProfileLastName"],$_POST["EditProfileContact"],$_POST["EditProfileDisplayName"],$_POST["EditProfileAddress"])=="Email error"){
+			else if($_SESSION['Object']->EditProfileValidate($_POST["EditProfileEmail"],$_POST["EditProfileFirstName"],$_POST["EditProfileLastName"],$_POST["EditProfileContact"],$_POST["EditProfileDisplayName"],$_POST["EditProfileAddress"],$fileTmpName,$FileNew)=="Email error"){
 				$EditProfileEmailError = "Email already exists";
 				$EditProfile = false;
 			}
@@ -167,17 +214,37 @@ $EditProfile = false;
 if(!$EditProfile){
 echo'<style> .EditProfile_GUI{display:none;}</style>';	
 }
-?>
 
+?>
+<script>
+function UpdatePicture(){
+	var input = document.getElementById("fileupload");
+	var fReader = new FileReader();
+	fReader.readAsDataURL(input.files[0]);
+	fReader.onloadend = function(event){
+	var img = document.getElementById("profilepicture");
+	img.src = event.target.result;
+	}
+
+}
+</script>
 <div class="EditProfile_GUI">
-<form class ="EditProfileForm" method="post">
+<form class ="EditProfileForm" method="post" enctype="multipart/form-data">
 <span class="error"></span><br /><br />
 <div class="centerBox">
+
 	<center><h1>Edit Profile<h1></center>
+	
+	<label>Profile Picture:</label>
+	<img src="<?php echo $_SESSION['Object']->ProfilePic ?>" id="profilepicture" height="300" width="300">
+	<label>Upload Profile Picture:</label>
+	<input type="file" id="fileupload" onchange="UpdatePicture()" name="file" />
+	<span class="error"><?php echo $EditProfileFileErr;?></span><br /><br />
+	
 	<label>Display Name:</label>
 	<input type="text" name="EditProfileDisplayName" value = <?php echo $_SESSION['Object']->getDisplayName() ; ?>>
 	<span class="error">&nbsp;&nbsp;<?php echo $EditProfileDisplayNameError;?></span><br /><br />
-
+	
 	<label>First Name:</label>
 	<input type="text" name="EditProfileFirstName" value = <?php echo $_SESSION['Object']->getFirstName(); ?>>
 	<span class="error">&nbsp;&nbsp;<?php echo $EditProfileFirstNameError;?></span><br /><br />
@@ -220,19 +287,19 @@ $submit2 = true;
 		
 		if ( strlen($_POST["ChangePasswordNewPassword"]) < 8 ) {
 			$submit2 = False;
-			$SignUpPasswordError = "Password must contain 8 characters at least , with alphabets and numbers";
+			$EditProfilePasswordError = "Password must contain 8 characters at least , with alphabets and numbers";
 		}
 
 		if ( !preg_match("#[0-9]+#", $_POST["ChangePasswordNewPassword"]) ) {
 		
 			$submit2 = False;
-			$SignUpPasswordError = "Password must contain 8 characters at least , with alphabets and numbers";
+			$EditProfilePasswordError = "Password must contain 8 characters at least , with alphabets and numbers";
 		}
 
 		if ( !preg_match("#[a-z]+#", $_POST["ChangePasswordNewPassword"]) ) {
 	
 			$submit2 = False;
-			$SignUpPasswordError = "Password must contain 8 characters at least , with alphabets and numbers";
+			$EditProfilePasswordError = "Password must contain 8 characters at least , with alphabets and numbers";
 		}
 
 
