@@ -33,6 +33,7 @@ $(document).ready(function(){
 <button class="Buyer">Contracts as buyer</button>
 
 <?php
+
 if(!isset($_SESSION['ID'])){
 	echo '<script> location.replace("index.php")</script> ';
 }
@@ -89,9 +90,13 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 		echo'
 		<td><form  method="post" action="RatingPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="Review"></form></td>';
 		}
+		if($ContractsObj->Status=="Transaction Complete"){
+		echo'
+		<td><form  method="post" action="RecieptPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="View Reciept"></form></td>';
+		}
 		echo'
 		<td><form  method="post" action="ContractPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="View Contract"></form></td>
-	</tr>';
+		</tr>';
 	}
 }
 echo'</table>';

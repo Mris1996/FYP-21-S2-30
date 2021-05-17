@@ -229,23 +229,38 @@ echo 'Terms are being negotiated';
 			
 		}
 		echo'</br>';
-		if($Type=="Seller" && $ContractObj->Status == "Buyer has accepted service" || $Type=="Buyer" && $ContractObj->Status == "Seller has accepted service"|| $ContractObj->Status == "Deal"){
+		if($Type=="Seller" && $ContractObj->Status == "Buyer has accepted service" || $Type=="Buyer" && $ContractObj->Status == "Seller has accepted service"||$Type=="Seller" && $ContractObj->Status == "Deal"){
 			echo'<input type="button" name="service" id="service" onclick="AcceptService()" value="Service fullfilled">';
 		}
 		if($Type == "Buyer" && $ContractObj->Status == "Transaction Complete"){
 			echo'</br><input type="button" name="refund" id="refund" onclick="RequestRefund()" value="Request Refund">';
 		}
-		if($Type == "Seller" && $ContractObj->Transaction == "On-Going" && $ContractObj->Status != "Order Cancelled" && $ContractObj->Status != "Buyer has accepted service"){
+		if($Type == "Seller" && $ContractObj->Transaction == "On-Going" && $ContractObj->Status != "Order Cancelled" && $ContractObj->Status != "Buyer has accepted service" && $ContractObj->Status != "Seller has accepted service"){
 				
 				echo'</br><input type="button" name="cancel" id="cancel" onclick="CancelOrder()" value="Cancel Order">';
 			
 				
 		}
 		
+	
+
 ?>
 <button id="Accept" name="Accept" value="Accept" onclick="Accept()">Sign Contract</button>
 <button id="Reject" name="Reject" value="Reject" onclick="Reject()">Reject Contract</button>
+<script>
+document.getElementById('Accept').style.display = "None";
+document.getElementById('Reject').style.display = "None";
+</script>
 <?php 
+
+if($ContractObj->Status == "Seller has accepted" || $Type=="Seller"){
+?> 
+<script>
+	document.getElementById('Accept').style.display = "block";
+	document.getElementById('Reject').style.display = "block";
+</script>
+<?php
+}
 if($Type=="Admin"){
 if($ContractObj->Status == "Requested Refund"){
 	echo'<button id="Refund_Admin" name="Refund_Admin" value="Refund Buyer" onclick="Refund_Admin()">Refund Buyer</button>';
@@ -290,7 +305,7 @@ if(isset($_POST['ResumeTranasction'])){
 	<p>Press enter to send message</p>
 </div>
 <?php
-if($Type=="Admin" || $ContractObj->Status == "Admin has halted this transaction"|| $ContractObj->Status == "Buyer has accepted" && $Type == "Buyer" || $ContractObj->Status == "Rejected" ||  $ContractObj->Status == "Order Cancelled" || $ContractObj->Status ==  "Requested Refund" || $ContractObj->Status == "Deal" ||$ContractObj->Status == "Buyer has accepted service" || $ContractObj->Status == "Seller has accepted service"){
+if($Type=="Admin" ||$ContractObj->Transaction == "On-Going" || $ContractObj->Status == "Admin has halted this transaction"|| $ContractObj->Status == "Buyer has accepted" && $Type == "Buyer" || $ContractObj->Status == "Rejected" ||  $ContractObj->Status == "Order Cancelled" || $ContractObj->Status ==  "Requested Refund" || $ContractObj->Status == "Deal" ||$ContractObj->Status == "Buyer has accepted service" || $ContractObj->Status == "Seller has accepted service"){
 
 ?>
 <script>
@@ -323,6 +338,7 @@ if($ContractObj->Status == "Seller has accepted" && $Type == "Seller"){
 if($ContractObj->Transaction == "Negotiating"){
 ?>
 <script>
+
 var Intervals = setInterval(checkaccepted,3000);
 function checkaccepted(){
 
@@ -365,6 +381,7 @@ else{
 <?php	
 }
 ?>
+</body>
 <script>
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -437,7 +454,7 @@ function formsyncfunction(){
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("User=" + User + "&contractid=" + ContractID + "&message=" + " has updated the offer");
 	console.log(ajax);
-	
+	location.reload();
 	
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -469,6 +486,9 @@ function Accept(){
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function SendAccept(){
+if(UserType =="Buyer"){
+	alert("Please do not refresh,you will be forwarded automatically after 4 seconds");
+}
 document.getElementById('Accept').style.display = "None";
 document.getElementById('Reject').style.display = "None";
 document.getElementById("Offer").disabled = true;
@@ -486,7 +506,7 @@ ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 ajax.send("User=" + User + "&contractid=" + ContractID + "&message=" + " has accepted the offer");
 console.log(ajax);
 console.log(ajax);
-	
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -539,6 +559,9 @@ else{
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function SendAcceptService(){
+if(UserType =="Buyer"){
+	alert("Please do not refresh,you will be forwarded automatically after 4 seconds");
+}
 	document.getElementById('service').style.display = "none";
 	var ajax = new XMLHttpRequest();
 	ajax.open("POST", "ContractPageController.php", true);
@@ -678,13 +701,16 @@ connection.onmessage = function (message) {
 			document.getElementById("message-box").appendChild(div);
 			}
 			if (typeof data.offer != 'undefined') {
+				
 				document.getElementById('Accept').style.display = "inline";
 				document.getElementById('Reject').style.display = "inline";
 				document.getElementById("Offer").disabled = false;
 				document.getElementById("DateRequired").disabled = false;
-				document.getElementById('PaymentMode3').disabled = false;
-				document.getElementById('PaymentMode2').disabled = false;
-				document.getElementById('PaymentMode1').disabled = false;
+				if(UserType=="Buyer"){
+					document.getElementById('PaymentMode3').disabled = false;
+					document.getElementById('PaymentMode2').disabled = false;
+					document.getElementById('PaymentMode1').disabled = false;
+				}
 				document.getElementById('Offer').value = data.offer;
 				document.getElementById('DateRequired').value = data.daterequired;
 				console.log(data.paymentmode);
@@ -700,7 +726,7 @@ connection.onmessage = function (message) {
 						document.getElementById('PaymentMode3').checked = true;
 				 
 				}
-
+				
 			}
 			
 			
@@ -786,9 +812,11 @@ connection.onmessage = function (message) {
 					}
 					
 					document.getElementById('statusmessage').innerHTML = "Status:"+ data.Type + " has accepted service";
+					location.reload();
 				}
 				if (data.REPLY == 'AcceptOffer') {
 					document.getElementById('statusmessage').innerHTML = "Status:"+ data.Type + " has accepted offer";
+					location.reload();
 				}
 				if (data.REPLY == 'AdminRefund') {
 					location.replace("MyContractsPage.php");
@@ -803,5 +831,5 @@ objDiv.scrollTop = objDiv.scrollHeight;
 
 	
 </script>
-</body>
+
 <?php require_once("Footer.php");?>

@@ -752,6 +752,7 @@ class StandardUser extends BaseUser
 		$port    = 8080;
 		if($this->getUID()==$Transferfrom){
 		date_default_timezone_set('UTC');
+		$this->getEscrow();
 		$textToEncrypt = $this->getEscrowPrivate();;
 		$encryptionMethod = "AES-256-CBC";
 		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
@@ -775,7 +776,7 @@ class StandardUser extends BaseUser
 			$TransactionData = $row['TransactionID'];
 		}
 		$TransactionData = json_decode($TransactionData, true);
-		$NewData= array($data['TransactionHash']);
+		$NewData= array($data['TransactionHash'],date("d-m-Y"));
 		array_push($TransactionData,$NewData);
 		$JData = json_encode($TransactionData);
 		$sql = " UPDATE `contracts` SET `TransactionID`= '".$JData ."' WHERE `ContractID`= '".$ContractID."' ";
@@ -796,8 +797,9 @@ class StandardUser extends BaseUser
 		{
 			
 			$NumOfAccepted = $row['TotalAccepted'];
+			$Buyer = $row['BuyerUserID'];
 		}
-		if($NumOfAccepted==2){
+		if($NumOfAccepted==2 && $Buyer == $this->getUID()){
 			$sql = " UPDATE `contracts` SET `Status`= 'Deal' , `Transaction` = 'On-Going', `TotalAccepted`= 0 WHERE `ContractID`= '".$ContractID."' ";
 			$result = $this->connect()->query($sql) or die($this->connect()->error);
 		}
@@ -815,7 +817,7 @@ class StandardUser extends BaseUser
 		}
 		$Data = array($Buyer,$Seller);
 		$Jdata = json_encode($Data);
-		if($NumOfAccepted==2){
+		if($NumOfAccepted==2 && $Buyer == $this->getUID()){
 			$sql = " UPDATE `contracts` SET `Status`= 'Transaction Complete' ,`TransactionCloseDate`= '".date("Y-m-d")."',`RatingToken` = '".$Jdata."', `Transaction` = 'Complete' WHERE `ContractID`= '".$ContractID."' ";
 			$result = $this->connect()->query($sql) or die($this->connect()->error);
 		}
@@ -869,15 +871,15 @@ class StandardUser extends BaseUser
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		$Transferfrom = '';
 		$Transferto = '';
+		
 		while($row = $result->fetch_assoc())
 		{
 			$Transferto = $row['SellerUserID'];
 			$Transferfrom = $row['BuyerUserID'];
 		}
+		echo $Transferfrom;
 		if($this->getUID()==$Transferfrom){
-	
-		
-		
+			
 		$sql = "SELECT * FROM users WHERE UserID ='".$Transferto."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		while($row = $result->fetch_assoc())
@@ -897,7 +899,8 @@ class StandardUser extends BaseUser
 		$port    = 8080;
 
 		date_default_timezone_set('UTC');
-		$textToEncrypt = $this->getEscrowPrivate();;
+		$this->getEscrow();
+		$textToEncrypt = $this->getEscrowPrivate();
 		$encryptionMethod = "AES-256-CBC";
 		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
 		$iv = substr($secret, 0, 16);
@@ -920,7 +923,7 @@ class StandardUser extends BaseUser
 			$TransactionData = $row['TransactionID'];
 		}
 		$TransactionData = json_decode($TransactionData, true);
-		$NewData= array($data['TransactionHash']);
+		$NewData= array($data['TransactionHash'],date("d-m-Y"));
 		array_push($TransactionData,$NewData);
 		$JData = json_encode($TransactionData);
 		$sql = " UPDATE `contracts` SET `TransactionID`= '".$JData ."' WHERE `ContractID`= '".$ContractID."' ";
@@ -1068,6 +1071,7 @@ class StandardUser extends BaseUser
 		$host    = "localhost";
 		$port    = 8080;
 		date_default_timezone_set('UTC');
+		$this->getEscrow();
 		$textToEncrypt = $this->getEscrowPrivate();
 		$encryptionMethod = "AES-256-CBC";
 		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
@@ -1257,6 +1261,7 @@ class Admin extends StandardUser
 		$port    = 8080;
 
 		date_default_timezone_set('UTC');
+		$this->getEscrow();
 		$textToEncrypt = $this->getEscrowPrivate();;
 		$encryptionMethod = "AES-256-CBC";
 		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
@@ -1280,7 +1285,7 @@ class Admin extends StandardUser
 			$TransactionData = $row['TransactionID'];
 		}
 		$TransactionData = json_decode($TransactionData, true);
-		$NewData= array($data['TransactionHash']);
+		$NewData= array($data['TransactionHash'],date("d-m-Y"));
 		array_push($TransactionData,$NewData);
 		$JData = json_encode($TransactionData);
 		$sql = " UPDATE `contracts` SET `TransactionID`= '".$JData ."',`Status`='Refunded Transaction' ,`Transaction`='Complete',`TransactionCloseDate`='".date("Y-m-d")."'  WHERE `ContractID`= '".$ContractID."' ";
