@@ -133,7 +133,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['LoginButton'])){
 <label>Password:</label><input type="password" name="Login_Password">
 <span class="error"><?php echo $PasswordPassworderror;?></span><br /><br />
 <input type="Submit" name="LoginButton" value="Login"/><br />
-<a href="ForgetPassword.php">Forgot password?</a>
+<a href="ForgetPasswordPage.php">Forgot password?</a>
 </form>
 <form action="SignUpPage.php" method="post">
 <input type = "Submit" name="SignupButotn" value ="Sign Up"/>
