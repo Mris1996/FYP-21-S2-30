@@ -29,6 +29,8 @@ class BaseUser
 	public function LoginValidate($ID,$Pass)
 	{	$ID = filter_var($ID, FILTER_SANITIZE_STRING);
 		$Pass = filter_var($Pass, FILTER_SANITIZE_STRING);
+		$ID = preg_replace('/(\'|&#0*39;)/', '', $ID);
+		$Pass = preg_replace('/(\'|&#0*39;)/', '', $Pass);
 		$sql = "SELECT * FROM users WHERE UserID='".$ID."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		if ($result->num_rows == 0) 
@@ -72,29 +74,6 @@ class BaseUser
 	
 	public function ForgetPassword ($userid, $email)
 	{	
-		/*
-		User Story: 
-		#71 As a base user, I want to retrieve or change my password as I have lost my password.
-		
-		Method is called from "ForgetPasswordPage.php"
-		
-		Core Design Goals:
-		
-		1) Will generate temporary password                                           [DONE]
-		  (no need salt as hashing code does it implicitly and appends to final hash)
-		2) Hash Password                                                              [DONE]
-		3) Store username, hashed temporary password in database                      [DONE]
-			- Before storing, can validate if temporary password table has rows with 
-			  the corresponding user ID, this to prevent duplicate records.           [DONE]
-			- If have duplicate can delete that one off first then add in new record  [DONE]
-		
-		4) Send temporary password to specified email address                         [DONE]
-		
-		Additional Design Goals:	
-		- Validate if "UserID" keyed in exists in database (users)                    [DONE]
-		*/
-		
-		// Initialize variables
 		$data            = "";
 		$hashed_password = "";
 		$header          = "";
@@ -198,21 +177,6 @@ class BaseUser
 	
 	public function ResetPassword ($userid, $temporary_password, $new_password)
 	{
-		/*
-		User Story: 
-		#71 As a base user, I want to retrieve or change my password as I have lost my password.
-		
-		Method is called from "PasswordResetPage.php"
-		
-		Core Design Goals:
-		1) Temporary password is verified in the database with username                   [DONE]
-		2) All temporary passwords associated with the username are cleared from database [DONE]
-		3) If matches, new password is hashed and overwrites                              [DONE]
-		
-		Additional Design Goals:
-		- Validate if UserID and hashed temporary password matches in database            [DONE]
-		- Validate if "UserID" keyed in exists in database (users) when inserting         [DONE]
-		*/
 		
 		// Initialize variables
 		$new_hashed_password = "";
@@ -280,20 +244,6 @@ class BaseUser
 			// Don't put unique error messages for "no" or "zero" rows. Keep them generic.
 			// This is so to prevent hackers from performing account enumeration using this system.			
 		}
-		/*
-		Links used:
-		
-		Retrieving information from an executed mysqli query
-		https://www.w3schools.com/php/func_mysqli_fetch_row.asp
-		
-		Potential PDO implementation:
-		https://www.youtube.com/watch?v=yWJFbPT3TC0
-		
-		Hashing password with salt:
-		https://www.php.net/password_hash
-		https://www.php.net/password_verify
-		https://stackoverflow.com/questions/30279321/how-to-use-phps-password-hash-to-hash-and-verify-passwords
-		*/
 	}
 	
 	public function GetAccountBalanceFromServer($PubKey){
@@ -338,6 +288,14 @@ class BaseUser
 		
 	}
 	public function SignUpValidate($ID,$Email,$Pass,$FName,$LName,$ContactNumber,$DispName,$DOB,$Address,$ProfilePicCurrent,$ProfilePicDest){
+		$ID = preg_replace('/(\'|&#0*39;)/', '', $ID);
+		$Pass = preg_replace('/(\'|&#0*39;)/', '', $Pass);
+		$Email = preg_replace('/(\'|&#0*39;)/', '', $Email);
+		$FName = preg_replace('/(\'|&#0*39;)/', '', $FName);
+		$LName = preg_replace('/(\'|&#0*39;)/', '', $LName);
+		$DispName = preg_replace('/(\'|&#0*39;)/', '', $DispName);
+		$Address = preg_replace('/(\'|&#0*39;)/', '', $Address);
+		
 		$sql = "SELECT * FROM users WHERE UserID='".$ID."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		if ($result->num_rows != 0) 
@@ -755,6 +713,7 @@ class StandardUser extends BaseUser
 		}
 		return $ArrayOfContracts;
 	}
+	/*
 	public function Chat($UserID){
 	
 		$sql = "SELECT * FROM negotiation WHERE UserID='".$UserID."' AND UserID2='".$this->getUID()."' OR UserID='".$this->getUID()."' AND UserID2='".$UserID."'";
@@ -802,10 +761,10 @@ class StandardUser extends BaseUser
 			echo'</form>';
 		}
 			
-	}
+	}*/
 	public function InsertOrdinaryChat($User1,$User2,$Message){
-
-		$Message = array("Message"=>$Message , "User"=>$User1 , "Time"=>Time());
+		$Message = preg_replace('/(\'|&#0*39;)/', '', $Message);
+	
 		$sql = "SELECT * FROM negotiation WHERE UserID='".$User1."' AND UserID2='".$User2."' OR UserID='".$User2."' AND UserID2='".$User1."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		if ($result->num_rows == 0) 
@@ -830,7 +789,7 @@ class StandardUser extends BaseUser
 	}
 
 	public function InsertChat($ContractID,$User,$Message,$Type){
-	   
+	    $Message = preg_replace('/(\'|&#0*39;)/', '', $Message);
 		$Message = array("Message"=>$Message , "User"=>$User , "Time"=>Time() ,"Type"=>$Type);
 		$sql = "SELECT * FROM contracts WHERE ContractID='".$ContractID."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
@@ -1177,6 +1136,7 @@ class StandardUser extends BaseUser
 			return $this->EscrowPrivate;
 		}
 		public function addNewReview($Review,$ProductID){
+			$Review = preg_replace('/(\'|&#0*39;)/', '', $Review);
 			$sql = "SELECT * FROM product WHERE ProductID='".$ProductID."'" ;
 			$result = $this->connect()->query($sql) or die($this->connect()->error); 
 			while($row = $result->fetch_assoc())
@@ -1191,6 +1151,7 @@ class StandardUser extends BaseUser
 			$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		}
 		public function addNewUserReview($Review,$UserID){
+			$Review = preg_replace('/(\'|&#0*39;)/', '', $Review);
 			$sql = "SELECT * FROM users WHERE UserID='".$UserID."'" ;
 			$result = $this->connect()->query($sql) or die($this->connect()->error); 
 			while($row = $result->fetch_assoc())
@@ -1322,6 +1283,10 @@ class StandardUser extends BaseUser
 	}
 	
 	public function ListProduct($Name,$Category,$Description,$Cost,$Caption,$File){
+			$Name = preg_replace('/(\'|&#0*39;)/', '', $Name);
+			$Category = preg_replace('/(\'|&#0*39;)/', '', $Category);
+			$Description = preg_replace('/(\'|&#0*39;)/', '', $Description);
+			$Caption = preg_replace('/(\'|&#0*39;)/', '', $Caption);
 			while(true){					
 					$ProductID = chr(rand(97,122)).chr(rand(97,122)).chr(rand(97,122)).str_pad(rand(0000,9999),4,0,STR_PAD_LEFT). substr(rand(0000,9999), 2, 4);
 					$result = $this->connect()->query("SELECT count(*) as 'c' FROM product WHERE ProductID='".$ProductID."'");
@@ -1337,15 +1302,22 @@ class StandardUser extends BaseUser
 	 	
 				return $ProductID;
 	}
-	public function UpdateProduct($ProductID,$Name,$Category,$Description,$Cost,$Caption,$File){
-			
+		public function UpdateProduct($ProductID,$Name,$Category,$Description,$Cost,$Caption,$File){
+				$Name = preg_replace('/(\'|&#0*39;)/', '', $Name);
+				$Category = preg_replace('/(\'|&#0*39;)/', '', $Category);
+				$Description = preg_replace('/(\'|&#0*39;)/', '', $Description);
+				$Caption = preg_replace('/(\'|&#0*39;)/', '', $Caption);
 				$sql = "UPDATE `product` SET `ProductName`= '$Name',`ProductCategory`='$Category',`ProductDescription`='$Description',`ProductCaption`='$Caption',`ProductInitialPrice`='$Cost',`Image`='$File' WHERE `ProductID` = '$ProductID'";
 				$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
 			
 				return true;
 	}
 	public function EditProfileValidate($Email,$FName,$LName,$ContactNumber,$DispName,$Address,$ProfilePicCurrent,$ProfilePicDest){
-	
+		$Email = preg_replace('/(\'|&#0*39;)/', '', $Email);
+		$FName = preg_replace('/(\'|&#0*39;)/', '', $FName);
+		$LName = preg_replace('/(\'|&#0*39;)/', '', $LName);
+		$DispName = preg_replace('/(\'|&#0*39;)/', '', $DispName);
+		$Address = preg_replace('/(\'|&#0*39;)/', '', $Address);
 		$sql = "SELECT * FROM users WHERE Email='".$Email."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		if ($result->num_rows > 1) 
@@ -1365,7 +1337,7 @@ class StandardUser extends BaseUser
 	}
 	
 	public function ChangePasswordValidate($Pass,$NewPass){
-		
+			$Pass = preg_replace('/(\'|&#0*39;)/', '', $Pass);
 			$sql = "SELECT Password FROM users WHERE UserID='".$this->getUID()."'" ;
 			$result = $this->connect()->query($sql) or die($this->connect()->error); 
 			$validated = false;
@@ -1567,6 +1539,7 @@ class Admin extends StandardUser
 		
 	}
 	public function AddEscrow($pubkey,$privatekey){
+		$privatekey = preg_replace('/(\'|&#0*39;)/', '', $privatekey);
 		while(true){					
 					$UserID = "Escrow". substr(rand(0000,9999), 2, 4);
 					$result = $this->connect()->query("SELECT count(*) as 'c' FROM users WHERE UserID='".$UserID."'");
