@@ -422,7 +422,7 @@ class BaseUser
 	}
 	public function connect(){
 		$servername= "localhost";
-		$username = "root";
+		$username = "User";
 		$password = "";
 		$dbname = "sticdb";
 		$conn = new mysqli($servername, $username, $password, $dbname);
@@ -1287,6 +1287,7 @@ class StandardUser extends BaseUser
 			$Category = preg_replace('/(\'|&#0*39;)/', '', $Category);
 			$Description = preg_replace('/(\'|&#0*39;)/', '', $Description);
 			$Caption = preg_replace('/(\'|&#0*39;)/', '', $Caption);
+			
 			while(true){					
 					$ProductID = chr(rand(97,122)).chr(rand(97,122)).chr(rand(97,122)).str_pad(rand(0000,9999),4,0,STR_PAD_LEFT). substr(rand(0000,9999), 2, 4);
 					$result = $this->connect()->query("SELECT count(*) as 'c' FROM product WHERE ProductID='".$ProductID."'");
