@@ -1123,7 +1123,7 @@ class StandardUser extends BaseUser
 				}
 	
 	
-			 mysqli_query($this->connect(),"INSERT INTO `product` (`ProductID`, `ProductCategory`, `ProductDescription`, `ProductCaption`, `ProductInitialPrice`, `ProductName`,`SellerUserID`,`Image` ) VALUES ('".$ProductID."','".$Category."','".$Description."','".$Caption."','".$Cost."','".$Name."','".$this->getDisplayName()."','".$File."')") or die(mysqli_error($this->connect()));
+			 mysqli_query($this->connect(),"INSERT INTO `product` (`ProductID`, `ProductCategory`, `ProductDescription`, `ProductCaption`, `ProductInitialPrice`, `ProductName`,`SellerUserID`,`Image` ) VALUES ('".$ProductID."','".$Category."','".$Description."','".$Caption."','".$Cost."','".$Name."','".$this->getUID()."','".$File."')") or die(mysqli_error($this->connect()));
 	 	
 				return $ProductID;
 	}
