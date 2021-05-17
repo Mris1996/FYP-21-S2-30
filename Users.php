@@ -69,23 +69,233 @@ class BaseUser
 		echo '<script> location.replace("LoginPage.php")</script> ';
 		exit();
 	}
-	public function ForgetPassword ($Email){
-		$sql = "SELECT * FROM users WHERE Email='".$Email."'";
-		$result = $this->connect()->query($sql) or die($this->connect()->error);  
-		$ID = chr(rand(97,122)).chr(rand(97,122)).chr(rand(97,122)).chr(rand(97,122)).chr(rand(97,122)).chr(rand(97,122)).str_pad(rand(0000,9999),4,0,STR_PAD_LEFT). substr(rand(0000,9999), 2, 4);
-						
-		if ($result->num_rows == 0) 
+	
+	public function ForgetPassword ($userid, $email)
+	{	
+		/*
+		User Story: 
+		#71 As a base user, I want to retrieve or change my password as I have lost my password.
+		
+		Method is called from "ForgetPasswordPage.php"
+		
+		Core Design Goals:
+		
+		1) Will generate temporary password                                           [DONE]
+		  (no need salt as hashing code does it implicitly and appends to final hash)
+		2) Hash Password                                                              [DONE]
+		3) Store username, hashed temporary password in database                      [DONE]
+			- Before storing, can validate if temporary password table has rows with 
+			  the corresponding user ID, this to prevent duplicate records.           [DONE]
+			- If have duplicate can delete that one off first then add in new record  [DONE]
+		
+		4) Send temporary password to specified email address                         [DONE]
+		
+		Additional Design Goals:	
+		- Validate if "UserID" keyed in exists in database (users)                    [DONE]
+		*/
+		
+		// Initialize variables
+		$data            = "";
+		$hashed_password = "";
+		$header          = "";
+		$msg             = "";
+		$result          = "";
+		$sql             = "";
+		$temp_password   = "";
+		$user_email      = "";
+		$user_userid     = "";
+		
+		// Validation here AGAIN just in case this method is called elsewhere which might lack validation.
+		$user_userid = filter_var($userid, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);  // Sanitize userid
+		$user_email  = filter_var($email, FILTER_SANITIZE_EMAIL);                            // Sanitize email
+		
+		// Query to check user ID if it exists in Database (Users)
+		$sql = "SELECT * FROM users WHERE UserID='".$user_userid."'";
+		
+		// Executing the query above
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+
+		// By right since UserID is unique, should only have 1 row as result
+		// Designed for Default-Deny structure
+		if ($result->num_rows == 1)
 		{
-			return "Email error";
+			// Generate temporary password 15 characters long
+			// Don't use "rand" as its not secure
+			$data = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz';
+			for ($i = 0; $i < 15; $i++) 
+			{
+				$temp_password .= substr(str_shuffle($data), 0, 1);
+			}
 			
+			// Hash temporary password
+			$hashed_password = password_hash($temp_password, PASSWORD_DEFAULT);
+			// Generating Salt is not needed as "password_hash" and "password_verify"
+			// does it automatically and adds it to hash generated. 
+			// See official command documentation for more details
+
+			
+			// Before storing temporary password, check if "temporarypassword" table has rows with 
+			// the corresponding user ID, this to prevent duplicate records.
+			$sql = "SELECT * FROM temporarypassword WHERE UserID='".$user_userid."'";
+			$result = $this->connect()->query($sql) or die($this->connect()->error);
+			
+			// Checks if number of rows is more than "0"
+			if ($result->num_rows > 0)
+			{
+				// Delete any duplicates 
+				$sql = "DELETE FROM temporarypassword WHERE UserID='".$user_userid."'";
+				$result = $this->connect()->query($sql) or die($this->connect()->error);
+			}
+			
+			// Storing of temporary password in database (temporarypassword)
+			$sql = "INSERT INTO `temporarypassword` (`UserID`, `Password`) VALUES ('".$user_userid."','".$hashed_password."')";
+			$result = $this->connect()->query($sql) or die($this->connect()->error); 
+			
+			// Crafting the email
+			// Setting headers
+			$header  = "From:fyp21s230@gmail.com \r\n";
+			$header .= "MIME-Version: 1.0\r\n";
+			$header .= "Content-type: text/html\r\n";
+			// Crafting message
+			$msg = "Your temporary password is: ".$temp_password."\nClick on the link below to reset your password:\n<a href ='http://localhost/PasswordResetPage.php'>Reset Password</a>";
+			// Tells the system to wrap words if longer than 70
+			$msg = wordwrap($msg,70);
+			
+			// Send mail
+			if(mail($user_email,"Reset Password",$msg,$header)){ return "SUCCESS"; }
+			else { return "Error occured! Please retry!"; }
 		}
-		 $header = "From:fyp21s230@gmail.com \r\n";
-         $header .= "MIME-Version: 1.0\r\n";
-         $header .= "Content-type: text/html\r\n";
-		$msg = "You have 5 minutes to reset your password before the link expires.Click on the link below to reset your password\n <a href ='http://localhost/STIC/ResetPassword.php?ID=".$ID."'>www.example.com</a>";
-		$msg = wordwrap($msg,70);
-		mail($Email,"Reset Password",$msg,$header);
+		else
+		{
+			// Triggers when:
+			// "Result" returns no rows or zero rows (UserID does not exist!)
+			// "Result" returns more than 1 row (Not Unique UserID)
+			// There is a Failed connection
+			return "Error occured! Please retry!";
+			
+			// Don't put unique error messages for "no" or "zero" rows. Keep them generic.
+			// This is so to prevent hackers from performing account enumeration using this system.			
+		}
+		/*
+		Links used:
+		
+		Preventing User Enumeration:
+		https://affinity-it-security.com/what-is-account-enumeration/
+		https://affinity-it-security.com/how-to-prevent-account-enumeration/
+		
+		Sending mail:
+		https://www.w3schools.com/php/func_mail_mail.asp
+		
+		For generating random password:
+		https://www.w3resource.com/php-exercises/php-string-exercise-9.php
+		
+		Hashing password with salt:
+		https://www.php.net/password_hash
+		https://www.php.net/password_verify
+		https://stackoverflow.com/questions/30279321/how-to-use-phps-password-hash-to-hash-and-verify-passwords
+		*/
 	}
+	
+	public function ResetPassword ($userid, $temporary_password, $new_password)
+	{
+		/*
+		User Story: 
+		#71 As a base user, I want to retrieve or change my password as I have lost my password.
+		
+		Method is called from "PasswordResetPage.php"
+		
+		Core Design Goals:
+		1) Temporary password is verified in the database with username                   [DONE]
+		2) All temporary passwords associated with the username are cleared from database [DONE]
+		3) If matches, new password is hashed and overwrites                              [DONE]
+		
+		Additional Design Goals:
+		- Validate if UserID and hashed temporary password matches in database            [DONE]
+		- Validate if "UserID" keyed in exists in database (users) when inserting         [DONE]
+		*/
+		
+		// Initialize variables
+		$new_hashed_password = "";
+		$result = "";
+		$row = "";
+		$sql = "";
+		$retrieved_hash_password = "";
+		$user_userid = "";
+		
+		// Validation for UserID
+		$user_userid = filter_var($userid, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);  // Sanitize userid
+		
+		// Unable to implement PDO due to too much complications and unfamiliar syntax
+		// Unsure but SQL Query may be prone to injection attacks.
+		
+		// Query to check user ID if it exists in Database (temporarypassword)
+		$sql = "SELECT * FROM temporarypassword WHERE UserID='".$user_userid."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);  // Executing the query 
+
+		// By right since UserID is unique, should only have 1 row as result
+		if ($result->num_rows == 1)
+		{
+			
+			$row = $result -> fetch_row();
+			$retrieved_hash_password = $row[1];
+			
+			// Compare hashed passwords
+			if (password_verify($temporary_password, $retrieved_hash_password)) 
+			{
+				// STOPPED HERE
+				// Delete all temporary passwords associated with the username from database (temporaryPassword)
+				$sql = "DELETE FROM temporarypassword WHERE UserID='".$user_userid."'";
+				$result = $this->connect()->query($sql) or die($this->connect()->error);
+			
+				// Check if UserID exists in Database (Users)	
+				$sql = "SELECT * FROM users WHERE UserID='".$user_userid."'"; 			
+				$result = $this->connect()->query($sql) or die($this->connect()->error); 
+				// By right since UserID is unique, should only have 1 row as result
+				if ($result->num_rows == 1)
+				{
+					
+					// Hash new password
+					$new_hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+			
+					// Update of new password in database (users)
+					$sql = "UPDATE `users` SET `Password`='".$new_hashed_password."' WHERE `UserID`= '".$user_userid."'";					
+					$result = $this->connect()->query($sql) or die($this->connect()->error); 
+					
+					// Once all functions successfully execute, then return "success"
+					return "SUCCESS";
+				}
+				else { return "Error occured! Please retry!"; } // User would need to obtain another Temporary Password
+				
+			} 
+			else { return "Error occured! Please retry!"; } // When Temporary password do not match			
+		}
+		else
+		{
+			// Triggers when:
+			// "Result" returns no rows or zero rows (UserID does not exist!)
+			// "Result" returns more than 1 row (Not Unique UserID)
+			// There is a Failed connection
+			return "Error occured! Please retry!";
+			
+			// Don't put unique error messages for "no" or "zero" rows. Keep them generic.
+			// This is so to prevent hackers from performing account enumeration using this system.			
+		}
+		/*
+		Links used:
+		
+		Retrieving information from an executed mysqli query
+		https://www.w3schools.com/php/func_mysqli_fetch_row.asp
+		
+		Potential PDO implementation:
+		https://www.youtube.com/watch?v=yWJFbPT3TC0
+		
+		Hashing password with salt:
+		https://www.php.net/password_hash
+		https://www.php.net/password_verify
+		https://stackoverflow.com/questions/30279321/how-to-use-phps-password-hash-to-hash-and-verify-passwords
+		*/
+	}
+	
 	public function GetAccountBalanceFromServer($PubKey){
 		$host    = "localhost";
 		$port    = 8080;
