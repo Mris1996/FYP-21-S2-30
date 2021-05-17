@@ -128,7 +128,10 @@ $query = http_build_query(['data' => $jsonData]);
 if(isset($_POST['CheckAccepted'])){
 	
 if($_SESSION['Object']->CheckAccepted($_POST['CheckAccepted'])==2){
-	
+if($_SESSION['Object']->ToTransfer($_POST['CheckAccepted'])){
+		$_SESSION['Object']->TransferAmount($_POST['CheckAccepted'],$_SESSION['Object']->AmountToTransfer($_POST['CheckAccepted']));
+}
+$_SESSION['Object']->UpdateStatusDeal($_POST['CheckAccepted']);		
 $jsonData = json_encode([
 	'REPLY'=>'CheckAccepted',
 	'Deal' => "set",
@@ -152,7 +155,10 @@ $query = http_build_query(['data' => $jsonData]);
 if(isset($_POST['CheckServiceAccepted'])){
 	
 if($_SESSION['Object']->CheckServiceAccepted($_POST['CheckServiceAccepted'])==2){
-	
+if($_SESSION['Object']->ToTransfer($_POST['CheckServiceAccepted'])){
+		$_SESSION['Object']->TransferAmount($_POST['CheckServiceAccepted'],$_SESSION['Object']->AmountToTransfer($_POST['CheckServiceAccepted']));
+}
+$_SESSION['Object']->UpdateStatusComplete($_POST['CheckServiceAccepted']);	
 $jsonData = json_encode([
 	'REPLY'=>'CheckServiceAccepted',
 	'DealComplete' => "set",
@@ -171,15 +177,6 @@ else{
 	
 }
 $query = http_build_query(['data' => $jsonData]);	
-}
-
-
-//#############################################################
-if(isset($_POST['Transfer'])&&$_POST['Transfer']==$_SESSION['ContractID']){
-	
-	if($_SESSION['Object']->ToTransfer($_POST['Transfer'])){
-		$_SESSION['Object']->TransferAmount($_POST['Transfer'],$_SESSION['Object']->AmountToTransfer($_POST['Transfer']));
-	}
 }
 
 

@@ -15,12 +15,9 @@ if($ContractObj->BuyerUserID!=$_SESSION['ID']&&$ContractObj->SellerUserID!=$_SES
 }
 }
 $TransactionsArr = json_decode($ContractObj->TransactionID,true);
-if($ContractObj->PaymentMode=="Half STICoins"){
-	$Amount = $ContractObj->NewOffer/2;
-}
-else{
-	$Amount = $ContractObj->NewOffer;
-}
+
+
+echo '<center><h1>Invoice</h1></center><hr>';
 for($x=0;$x<sizeof($TransactionsArr);$x++) {
 
 ?>
@@ -45,9 +42,9 @@ for($x=0;$x<sizeof($TransactionsArr);$x++) {
 <h2>TransactionID:<?php echo  $TransactionsArr[$x][0] ?></h2><hr>
 <b>ContractID:<?php echo   $ContractObj->ContractID; ?></b>
 <b>ProductID:<?php echo   $ContractObj->ProductID; ?></b>
-<b>Amount:<?php echo  $Amount ?></b>
-<b>Sender:<?php echo  $ContractObj->BuyerUserID ?></b>
-<b>Reciever:<?php echo $ContractObj->SellerUserID ?></b>
+<b>Amount:<?php echo  $TransactionsArr[$x][2] ?></b>
+<b>Sender:<?php echo  $TransactionsArr[$x][3] ?></b>
+<b>Reciever:<?php echo $TransactionsArr[$x][4] ?></b>
 <b>Transaction Date:<?php  echo $TransactionsArr[$x][1]?></b>
 </div></br>
 <?php

@@ -776,7 +776,7 @@ class StandardUser extends BaseUser
 			$TransactionData = $row['TransactionID'];
 		}
 		$TransactionData = json_decode($TransactionData, true);
-		$NewData= array($data['TransactionHash'],date("d-m-Y"));
+		$NewData= array($data['TransactionHash'],date("d-m-Y"),$Amount,$Transferfrom,$Transferto);
 		array_push($TransactionData,$NewData);
 		$JData = json_encode($TransactionData);
 		$sql = " UPDATE `contracts` SET `TransactionID`= '".$JData ."' WHERE `ContractID`= '".$ContractID."' ";
@@ -790,18 +790,31 @@ class StandardUser extends BaseUser
 			
 		
 	}
+	public function UpdateStatusDeal($ContractID){
+		$sql = " UPDATE `contracts` SET `Status`= 'Deal' , `Transaction` = 'On-Going', `TotalAccepted`= 0 WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);
+	}
+	public function UpdateStatusComplete($ContractID){
+			$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
+			$result = $this->connect()->query($sql) or die($this->connect()->error); 
+			while($row = $result->fetch_assoc())
+			{
+				$Buyer = $row['BuyerUserID'];
+				$Seller = $row['SellerUserID'];
+			}
+			$Data = array($Buyer,$Seller);
+			$Jdata = json_encode($Data);
+			$sql = " UPDATE `contracts` SET `Status`= 'Transaction Complete' ,`TransactionCloseDate`= '".date("Y-m-d")."',`RatingToken` = '".$Jdata."', `Transaction` = 'Complete' WHERE `ContractID`= '".$ContractID."' ";
+			$result = $this->connect()->query($sql) or die($this->connect()->error);
+		
+	}
 	public function CheckAccepted($ContractID){
 		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		while($row = $result->fetch_assoc())
 		{
-			
 			$NumOfAccepted = $row['TotalAccepted'];
 			$Buyer = $row['BuyerUserID'];
-		}
-		if($NumOfAccepted==2 && $Buyer == $this->getUID()){
-			$sql = " UPDATE `contracts` SET `Status`= 'Deal' , `Transaction` = 'On-Going', `TotalAccepted`= 0 WHERE `ContractID`= '".$ContractID."' ";
-			$result = $this->connect()->query($sql) or die($this->connect()->error);
 		}
 		return $NumOfAccepted ;
 	}
@@ -817,10 +830,7 @@ class StandardUser extends BaseUser
 		}
 		$Data = array($Buyer,$Seller);
 		$Jdata = json_encode($Data);
-		if($NumOfAccepted==2 && $Buyer == $this->getUID()){
-			$sql = " UPDATE `contracts` SET `Status`= 'Transaction Complete' ,`TransactionCloseDate`= '".date("Y-m-d")."',`RatingToken` = '".$Jdata."', `Transaction` = 'Complete' WHERE `ContractID`= '".$ContractID."' ";
-			$result = $this->connect()->query($sql) or die($this->connect()->error);
-		}
+		
 		return $NumOfAccepted ;
 	}
 	
@@ -829,8 +839,12 @@ class StandardUser extends BaseUser
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		while($row = $result->fetch_assoc())
 		{
+			$Seller = $row['SellerUserID'];
 			$Type = $row['Payment Mode'];
 			$TransactionMessage = $row['Transaction'];
+		}
+		if($Seller==$this->getUID()){
+			return True;
 		}
 		if($Type == "Half-STICoins")
 		{
@@ -923,7 +937,7 @@ class StandardUser extends BaseUser
 			$TransactionData = $row['TransactionID'];
 		}
 		$TransactionData = json_decode($TransactionData, true);
-		$NewData= array($data['TransactionHash'],date("d-m-Y"));
+		$NewData= array($data['TransactionHash'],date("d-m-Y"),$Amount,$Transferfrom,$Transferto);
 		array_push($TransactionData,$NewData);
 		$JData = json_encode($TransactionData);
 		$sql = " UPDATE `contracts` SET `TransactionID`= '".$JData ."' WHERE `ContractID`= '".$ContractID."' ";
@@ -1285,7 +1299,7 @@ class Admin extends StandardUser
 			$TransactionData = $row['TransactionID'];
 		}
 		$TransactionData = json_decode($TransactionData, true);
-		$NewData= array($data['TransactionHash'],date("d-m-Y"));
+		$NewData= array($data['TransactionHash'],date("d-m-Y"),$Amount,$Transferfrom,$Transferto);
 		array_push($TransactionData,$NewData);
 		$JData = json_encode($TransactionData);
 		$sql = " UPDATE `contracts` SET `TransactionID`= '".$JData ."',`Status`='Refunded Transaction' ,`Transaction`='Complete',`TransactionCloseDate`='".date("Y-m-d")."'  WHERE `ContractID`= '".$ContractID."' ";

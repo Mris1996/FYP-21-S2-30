@@ -701,9 +701,10 @@ connection.onmessage = function (message) {
 			document.getElementById("message-box").appendChild(div);
 			}
 			if (typeof data.offer != 'undefined') {
-				
-				document.getElementById('Accept').style.display = "inline";
-				document.getElementById('Reject').style.display = "inline";
+				if(UserType=="Seller"){
+					document.getElementById('Accept').style.display = "inline";
+					document.getElementById('Reject').style.display = "inline";
+				}
 				document.getElementById("Offer").disabled = false;
 				document.getElementById("DateRequired").disabled = false;
 				if(UserType=="Buyer"){
@@ -736,15 +737,10 @@ connection.onmessage = function (message) {
 					if(data.Deal=="set")
 					{
 						clearInterval(Intervals);
-						var ajax = new XMLHttpRequest();
-						ajax.open("POST", "ContractPageController.php", true);
-						ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-						ajax.send("Transfer=" + ContractID);
-						console.log(ajax);
-						var delayInMilliseconds = 1000; //1 second
+						var delayInMilliseconds = 1000; 
 
 						setTimeout(function() {
-						//your code to be executed after 1 second
+						
 						}, delayInMilliseconds);
 						location.replace("MyContractsPage.php");
 
@@ -756,14 +752,8 @@ connection.onmessage = function (message) {
 
 					clearInterval(Intervals2);
 					var ajax = new XMLHttpRequest();
-					ajax.open("POST", "ContractPageController.php", true);
-					ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-					ajax.send("Transfer=" + ContractID);
-					console.log(ajax);
-					var delayInMilliseconds = 2000; //1 second
-
+					var delayInMilliseconds = 2000; 
 					setTimeout(function() {
-					//your code to be executed after 1 second
 					}, delayInMilliseconds);
 					location.replace("RatingPage.php?ID="+ContractID);
 					

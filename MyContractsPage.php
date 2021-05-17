@@ -90,7 +90,7 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 		echo'
 		<td><form  method="post" action="RatingPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="Review"></form></td>';
 		}
-		if($ContractsObj->Status=="Transaction Complete"){
+		if($ContractsObj->Status=="Transaction Complete" || $ContractsObj->Transaction=="Transaction Declined"){
 		echo'
 		<td><form  method="post" action="RecieptPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="View Reciept"></form></td>';
 		}
@@ -174,9 +174,13 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 		echo'
 		<td><form  method="post" action="RatingPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="Review"></form></td>';
 		}
+		if($ContractsObj->Status=="Transaction Complete" || $ContractsObj->Transaction=="Transaction Declined"){
+		echo'
+		<td><form  method="post" action="RecieptPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="View Reciept"></form></td>';
+		}
 		echo'
 		<td><form  method="post" action="ContractPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="View Contract"></form></td>
-	</tr>';
+		</tr>';
 	}
 }
 echo'</table>';
@@ -257,9 +261,13 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 		echo'
 		<td><form  method="post" action="RatingPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="Review"></form></td>';
 		}
+		if($ContractsObj->Status=="Transaction Complete" || $ContractsObj->Transaction=="Transaction Declined"){
+		echo'
+		<td><form  method="post" action="RecieptPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="View Reciept"></form></td>';
+		}
 		echo'
 		<td><form  method="post" action="ContractPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="View Contract"></form></td>
-	</tr>';
+		</tr>';
 		
 	}
 }
