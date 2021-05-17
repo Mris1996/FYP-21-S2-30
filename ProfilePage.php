@@ -122,7 +122,9 @@ $BaseUserObj->ViewAllUserProduct("DateOfListing","ASC",$ID);
 <div style="float:left;width:100%">
 <hr>
 <h1>Reviews</h1>
-<?php $BaseUserObj->viewReview($ID,"User");?>
+<?php $BaseUserObj->viewReview($ID,"User");
+if($BaseUserObj->getUID()!=$_SESSION['ID']){
+?>
 </div>
 
 <form method="post" style="float:left;width:100%;text-align:center;">
@@ -131,7 +133,7 @@ $BaseUserObj->ViewAllUserProduct("DateOfListing","ASC",$ID);
 </form>
 
 <?php
-
+}
 if(isset($_POST['reviewtextsubmit'])){
 	
 	$_SESSION['Object']->addNewUserReview($_POST['reviewtext'],$BaseUserObj->getUID());

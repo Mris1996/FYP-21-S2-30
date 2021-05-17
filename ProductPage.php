@@ -16,10 +16,7 @@ if(isset($_SESSION['ID'])){
 $Owner = $_SESSION['Object']->getProductOwner($ProductID);
 echo'
 <div class="ProductPage" >
-<div class="buttons">
-<form method="post" >
-<input type="submit" name="SendOffer" value="Send Offer">
-</form>';
+<div class="buttons">';
 
 if($_SESSION['ID'] == $Owner){
 
@@ -31,6 +28,12 @@ echo'
 <input type="submit" name="Remove" value="Remove">
 </form>';
 
+}
+else{
+echo'
+<form method="post" >
+<input type="submit" name="SendOffer" value="Send Offer">
+</form>';
 }
 }
 
@@ -56,7 +59,9 @@ echo'
 <div style="float:left;width:100%">
 <hr>
 <h1>Reviews</h1>
-<?php $BaseUserOBJ->viewReview($ProductID,"Product");?>
+<?php $BaseUserOBJ->viewReview($ProductID,"Product");
+if($_SESSION['ID'] != $Owner){
+?>
 <form method="post" style="text-align:center;">
 <input type="text" name="reviewtext" style="width:1000px;height:100px;" placeholder="Review Product">
 <input type="hidden" name="reviewtextsubmit">
@@ -65,7 +70,7 @@ echo'
 </div>
 </div>
 <?php
-
+}
 if(isset($_POST['reviewtextsubmit'])){
 	
 	$_SESSION['Object']->addNewReview($_POST['reviewtext'],$ProductID);
