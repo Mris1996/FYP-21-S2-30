@@ -45,6 +45,10 @@
 	width:300px;
 	
 }
+.dropbtn{
+	margin-left:110px;
+	border-radius: 50%;
+}
 .dropdown-content a:hover {background-color: #ddd;}
 
 .dropdown:hover .dropdown-content {display: block;}
@@ -77,7 +81,7 @@
 	<nav class="navbar">
 	<form method="post">
 		<input type="submit" class="btn btn-white"  name="Nav_Main" id="Main"  value=""/>
-</form>	
+</form>		
 <?php 
 
 
@@ -114,7 +118,7 @@ echo'<style> input[name="Nav_LogOut"]{display:visible;}</style>';
 echo'
 <form method="post">
 	<div class="dropdown">
-	<img class="dropbtn" src="'.$_SESSION['Object']->ProfilePic.'" height="65" width="65" style="margin-right:200px;border-radius: 50%;">
+	<img class="dropbtn" src="'.$_SESSION['Object']->ProfilePic.'" height="65" width="65">
 	<div class="dropdown-content">
 	<a href="ProfilePage.php?ID='.$_SESSION['ID'].'">Profile</a>
 	<a href="ListPage.php">List a product</a>

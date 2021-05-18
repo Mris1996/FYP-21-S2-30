@@ -136,7 +136,7 @@ class BaseUser
 			$header .= "MIME-Version: 1.0\r\n";
 			$header .= "Content-type: text/html\r\n";
 			// Crafting message
-			$msg = "Your temporary password is: ".$temp_password."\nClick on the link below to reset your password:\n<a href ='http://localhost/PasswordResetPage.php'>Reset Password</a>";
+			$msg = "Your temporary password is: ".$temp_password."\nClick on the link below to reset your password:\n<a href ='http://0621eb739b7e.ngrok.io/FYP-21-S2-30/PasswordResetPage.php'>Reset Password</a>";
 			// Tells the system to wrap words if longer than 70
 			$msg = wordwrap($msg,70);
 			
