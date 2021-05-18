@@ -213,7 +213,7 @@ input[type="text"]{
 		<br />
 		
 		
-		<input type="submit" name="submit" value="Submit">
+		<input type="submit" name="submit" value="List">
     </form>
 </div>
 
@@ -237,6 +237,7 @@ if(isset($_POST['submit'])&& $submit){
 			<center style="color:red">Head over to it\'s page now!</center>
 			<a href="ProductPage.php?ID='.$ProductID.'">Product.php?ID='.$ProductID.'</a>
 		</div>';
+		echo $fileTmpName;
 	echo'<script>history.pushState({}, "", "")</script>';
 	exit();
 	

@@ -489,10 +489,10 @@ class BaseUser
 	public function ViewAllProduct($sortby,$Order,$Category,$page,$pagename){
 			
 			if($Category=="All"){
-					$sql = "SELECT * FROM product ORDER BY $sortby $Order" ;
+					$sql = "SELECT * FROM product WHERE Status = 'Available' ORDER BY $sortby $Order" ;
 			}
 			else{
-					$sql = "SELECT * FROM product WHERE ProductCategory = '".$Category."' ORDER BY $sortby $Order" ;
+					$sql = "SELECT * FROM product WHERE Status = 'Available' AND ProductCategory = '".$Category."' ORDER BY $sortby $Order" ;
 			}
 			$result = $this->connect()->query($sql) or die($this->connect()->error); 
 			$number_of_result = mysqli_num_rows($result);  
@@ -508,10 +508,10 @@ class BaseUser
 				return;
 			}
 			if($Category=="All"){
-					$sql = "SELECT * FROM product ORDER BY $sortby $Order LIMIT " . $page_first_result . ',' . $this->results_per_page; 
+					$sql = "SELECT * FROM product WHERE Status = 'Available' ORDER BY $sortby $Order LIMIT " . $page_first_result . ',' . $this->results_per_page; 
 			}
 			else{
-					$sql = "SELECT * FROM product WHERE ProductCategory = '".$Category."' ORDER BY $sortby $Order LIMIT " . $page_first_result . ',' . $this->results_per_page; 
+					$sql = "SELECT * FROM product WHERE Status = 'Available' AND ProductCategory = '".$Category."' ORDER BY $sortby $Order LIMIT " . $page_first_result . ',' . $this->results_per_page; 
 			}
 			$result = mysqli_query($this->connect(), $sql);  
 			while($row = $result->fetch_assoc())
@@ -1197,6 +1197,11 @@ class StandardUser extends BaseUser
 		public function RemoveProduct($ProductID){
 			
 			$sql="DELETE FROM product WHERE ProductID='$ProductID'";
+			$result = $this->connect()->query($sql) or die($this->connect()->error);  
+		}
+		public function UnlistProduct($ProductID){
+			
+			$sql="UPDATE `product` SET `Status`='Unlisted' WHERE ProductID='$ProductID'";
 			$result = $this->connect()->query($sql) or die($this->connect()->error);  
 		}
 	

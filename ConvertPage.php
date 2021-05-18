@@ -10,7 +10,10 @@ $Convert2_publickeyError = $Convert2_privatekeyError = $Convert2_amountError= ""
 $validated = true;
 $STIC = false;
 $ETH = false;
+
+
 if(isset($_POST['STIC2ETH'])){
+	
 $STIC = true;
 	
 if(empty($_POST["Convert2_publickey"]))
@@ -42,11 +45,37 @@ $Convert2_amountError = "You insufficient amount of STICoins";
 $validated = false;
 }
 }
+	
 if($validated){
-sleep(2);
+echo'
+	<form method="post" >
+	<div id="confirmation">
+	<div id="confirmationtext">
+	<b>Do you confirm?</b></br>
+		<input type="submit" name="Confirmation" value="Yes">
+		<input type="submit" name="Confirmation" value="No">
+	</form>
+	</div>
+	</div>
+	';
 
-$Convert2edAmount = $_POST["Convert2_amount"]/10000;
-$message = $_SESSION['Object'] -> ConvertToETH($_POST['Convert2_amount'],$_POST['Convert2_publickey']);
+	$_SESSION['PubKeyC2'] = $_POST["Convert2_publickey"];
+	$_SESSION['AmountC2'] = $_POST["Convert2_amount"] ;
+}
+
+}
+else{
+$_POST["Convert2_publickey"] = '';
+$_POST["Convert2_amount"] = '';
+}
+
+if(isset($_POST['Confirmation'])&& $_POST['Confirmation']=="No"){
+$validated = false;
+}
+if(isset($_POST['Confirmation'])&&$_POST['Confirmation']=="Yes"){
+sleep(2);
+$Convert2edAmount = $_SESSION['AmountC2']/10000;
+$message = $_SESSION['Object'] -> ConvertToETH($_SESSION['AmountC2'],$_SESSION['PubKeyC2']);
 echo'<style> .ETHGUI{display:none;}</style>';	
 	
 
@@ -55,13 +84,15 @@ if($message!="Success"){
 	<form method="post" action="ConvertPage.php">
 	<h1>Transaction Summary</h1>
 	<b>Operation:Convert to Ethereum</b></br>
-	<b>Initial Amount :'.$_POST["Convert2_amount"].'</b></br>
+	<b>Initial Amount :'.$_SESSION['AmountC2'].'</b></br>
 	<b>Converted Amount:'.$Convert2edAmount.'</b></br>
 	<b>Transaction: Failed </b></br>
 	<b>Reason:'.$message.'</b></br>
 	<b>STICoin Balance:'.$_SESSION['Object']->getAccountBalance().'</b></br>
 	<input type="submit" value="Try again">
 	</form>';	
+	unset($_SESSION['PubKeyC2']);
+	unset($_SESSION['AmountC2']);
 	echo'<script>history.pushState({}, "", "")</script>';
 	exit();
 }
@@ -70,24 +101,23 @@ else{
 	<form method="post" action="index.php">
 	<h1>Transaction Summary</h1>
 	<b>Operation:Convert to Ethereum</b></br>
-	<b>Initial Amount :'.$_POST["Convert2_amount"].'</b></br>
+	<b>Initial Amount :'.$_SESSION["AmountC2"].'</b></br>
 	<b>Converted Amount:'.$Convert2edAmount.'</b></br>
 	<b>Transaction: Success </br>
 	<b>STICoin Balance:'.$_SESSION['Object']->getAccountBalance().'</b></br>
 	<input type="submit" value="Return to main menu!">
 	</form>';	
+	unset($_SESSION['PubKeyC2']);
+	unset($_SESSION['AmountC2']);
 	echo'<script>history.pushState({}, "", "")</script>';
 	exit();
-}
+}	
 
 }
 
-}
-else{
-$_POST["Convert2_publickey"] = '';
-$_POST["Convert2_privatekey"] = '';
-$_POST["Convert2_amount"] = '';
-}
+
+
+
 if(!$STIC){
 echo'<style> .ETHGUI{display:none;}</style>';	
 }
@@ -131,43 +161,21 @@ $validated = false;
 }
 
 if($validated){
-sleep(2);
+echo'
+	<form method="post" >
+	<div id="confirmation">
+	<div id="confirmationtext">
+	<b>Do you confirm?</b></br>
+		<input type="submit" name="Confirmation2" value="Yes">
+		<input type="submit" name="Confirmation2" value="No">
+	</form>
+	</div>
+	</div>
+	';
 
-$ConvertedAmount = $_POST["Convert_amount"]*10000;
-$message = $_SESSION['Object'] -> ConvertToSTICOIN($_POST['Convert_amount'],$_POST['Convert_publickey'],$_POST['Convert_privatekey']);
-echo'<style> .STICGUI{display:none;}</style>';
-
-
-if($message!="Success"){
-	echo'
-	<form method="post" action="ConvertPage.php">
-	<h1>Transaction Summary</h1>
-	<b>Operation:Convert to STICoin</b></br>
-	<b>Initial Amount :'.$_POST["Convert_amount"].'</b></br>
-	<b>Converted Amount:'.$ConvertedAmount.'</b></br>
-	<b>Transaction: Failed </b></br>
-	<b>Reason:'.$message.'</b></br>
-	<b>STICoin Balance:'.$_SESSION['Object']->getAccountBalance().'</b></br>
-	<input type="submit" value="Try again">
-	</form>';	
-	echo'<script>history.pushState({}, "", "")</script>';
-	exit();
-}
-else{
-	echo'
-	<form method="post" action="index.php">
-	<h1>Transaction Summary</h1>
-	<b>Operation:Convert to STICoin</b></br>
-	<b>Initial Amount :'.$_POST["Convert_amount"].'</b></br>
-	<b>Converted Amount:'.$ConvertedAmount.'</b></br>
-	<b>Transaction: Success </br>
-	<b>STICoin Balance:'.$_SESSION['Object']->getAccountBalance().'</b></br>
-	<input type="submit" value="Get Buying!">
-	</form>';	
-	echo'<script>history.pushState({}, "", "")</script>';
-	exit();
-}
-
+	$_SESSION['PubKeyC1'] = $_POST["Convert_publickey"];
+	$_SESSION['AmountC1'] = $_POST["Convert_amount"] ;
+	$_SESSION['PrivKeyC1'] =$_POST['Convert_privatekey'] ;
 }
 
 }
@@ -179,6 +187,53 @@ $_POST["Convert_amount"] = '';
 if(!$ETH){
 echo'<style> .STICGUI{display:none;}</style>';	
 }
+if(isset($_POST['Confirmation2'])&& $_POST['Confirmation2']=="No"){
+$validated = false;
+}
+if(isset($_POST['Confirmation2'])&&$_POST['Confirmation2']=="Yes"){
+sleep(2);
+$Convert2edAmount =$_SESSION['AmountC1'] *10000;
+$message = $_SESSION['Object'] -> ConvertToSTICOIN($_SESSION['AmountC1'] ,$_SESSION['PubKeyC1'],$_SESSION['PrivKeyC1']);
+echo'<style> .ETHGUI{display:none;}</style>';	
+	
+
+if($message!="Success"){
+	echo'
+	<form method="post" action="ConvertPage.php">
+	<h1>Transaction Summary</h1>
+	<b>Operation:Convert to STIcoin</b></br>
+	<b>Initial Amount :'.$_SESSION['AmountC1'].'</b></br>
+	<b>Converted Amount:'.$Convert2edAmount.'</b></br>
+	<b>Transaction: Failed </b></br>
+	<b>Reason:'.$message.'</b></br>
+	<b>STICoin Balance:'.$_SESSION['Object']->getAccountBalance().'</b></br>
+	<input type="submit" value="Try again">
+	</form>';	
+	unset($_SESSION['PubKeyC1']);
+	unset($_SESSION['AmountC2']);
+	unset($_SESSION['Convert_privatekey']);
+	echo'<script>history.pushState({}, "", "")</script>';
+	exit();
+}
+else{
+	echo'
+	<form method="post" action="index.php">
+	<h1>Transaction Summary</h1>
+	<b>Operation:Convert to STIcoin</b></br>
+	<b>Initial Amount :'.$_SESSION["AmountC1"].'</b></br>
+	<b>Converted Amount:'.$Convert2edAmount.'</b></br>
+	<b>Transaction: Success </br>
+	<b>STICoin Balance:'.$_SESSION['Object']->getAccountBalance().'</b></br>
+	<input type="submit" value="Return to main menu!">
+	</form>';	
+	unset($_SESSION['PubKeyC1']);
+	unset($_SESSION['AmountC2']);
+	unset($_SESSION['Convert_privatekey']);
+	echo'<script>history.pushState({}, "", "")</script>';
+	exit();
+}	
+
+}
 ?> 
 
 <style>
@@ -187,6 +242,24 @@ span{
 	color:red;
 }
 
+#confirmation{
+	
+	position:fixed;
+    padding:0;
+    margin:auto;
+    top:0;
+    left:0;
+
+    width: 100%;
+    height: 100%;
+    background:rgba(255,255,255,0.8);
+}
+#confirmationtext{
+	width:200px;
+    margin:auto;
+	margin-top:20%;
+   
+}
 </style>
 <button class="STIC">STIC to ETH</button>
 <button class="ETH">ETH to STIC</button>

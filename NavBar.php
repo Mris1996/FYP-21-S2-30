@@ -120,6 +120,7 @@ echo'
 	<div class="dropdown">
 	<img class="dropbtn" src="'.$_SESSION['Object']->ProfilePic.'" height="65" width="65">
 	<div class="dropdown-content">
+	<a>'.$_SESSION['ID'].'</a>
 	<a href="ProfilePage.php?ID='.$_SESSION['ID'].'">Profile</a>
 	<a href="ListPage.php">List a product</a>
 	<a href="MyContractsPage.php">My Contracts</a>

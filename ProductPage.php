@@ -1,7 +1,24 @@
 <?php require_once("NavBar.php");?>
 
 <style>
+#confirmation{
+	
+	position:fixed;
+    padding:0;
+    margin:auto;
+    top:0;
+    left:0;
 
+    width: 100%;
+    height: 100%;
+    background:rgba(255,255,255,0.8);
+}
+#confirmationtext{
+	width:200px;
+    margin:auto;
+	margin-top:20%;
+   
+}
 </style>
 <?php
 
@@ -14,6 +31,7 @@ if(!$ProductObj->InitialiseProduct($ProductID)){
 }
 if(isset($_SESSION['ID'])){
 $Owner = $_SESSION['Object']->getProductOwner($ProductID);
+
 echo'
 <div class="ProductPage" >
 <div class="buttons">';
@@ -27,13 +45,20 @@ echo'
 <form method="post">
 <input type="submit" name="Remove" value="Remove">
 </form>';
-
+if($ProductObj->Status=="Available"){
+echo'
+<form method="post">
+<input type="submit" name="Unlist" value="Unlist">
+</form>';
+}
 }
 else{
+if($ProductObj->Status=="Available"){
 echo'
 <form method="post" >
 <input type="submit" name="SendOffer" value="Send Offer">
 </form>';
+}
 }
 }
 echo'
@@ -78,18 +103,36 @@ if(isset($_POST['reviewtextsubmit'])){
 }
 if(isset($_POST['Remove'])){
 	
-	echo'<style> .ProductPage{display:none;}</style>';
+
 	echo'
 	<form method="post" >
-
+	<div id="confirmation">
+	<div id="confirmationtext">
 	<b>Are you sure you want to remove this product?</b></br>
 		<input type="submit" name="Confirmation" value="Yes">
 		<input type="submit" name="Confirmation" value="No">
 	</form>
+	</div>
+	</div>
 	';
 	
 }
+if(isset($_POST['Unlist'])){
 
+
+	echo'
+	<form method="post" >
+	<div id="confirmation">
+	<div id="confirmationtext">
+	<b>Are you sure you want to unlist this product?</b></br>
+		<input type="submit" name="ConfirmationUnlist" value="Yes">
+		<input type="submit" name="ConfirmationUnlist" value="No">
+	</form>
+	</div>
+	</div>
+	';
+	
+}
 if(isset($_POST['Confirmation'])&& $_POST['Confirmation']=="No"){
 exit();
 header("Refresh:0");
@@ -98,6 +141,14 @@ if(isset($_POST['Confirmation'])&&$_POST['Confirmation']=="Yes"){
 
 $_SESSION['Object']->RemoveProduct($ProductID);
 echo '<script> location.replace("index.php")</script> ';		
+}
+if(isset($_POST['ConfirmationUnlist'])&& $_POST['ConfirmationUnlist']=="No"){
+exit();
+header("Refresh:0");
+}
+if(isset($_POST['ConfirmationUnlist'])&&$_POST['ConfirmationUnlist']=="Yes"){
+$_SESSION['Object']->UnlistProduct($ProductID);
+header("Refresh:0");	
 }
 if(isset($_POST['SendOffer'])){
 $_SESSION['Temp_Product']=$_GET['ID'];

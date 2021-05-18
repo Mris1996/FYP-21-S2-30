@@ -151,7 +151,7 @@ $BaseUserOBJ->ViewAllProduct("ProductCategory",$_POST['Order'],"All",$page,"inde
 }
 if(!isset($_POST['SortCat'])&&!isset($_POST['SortPrice'])&&!isset($_POST['SortDate'])){
 
-$BaseUserOBJ->ViewAllProduct("DateOfListing","ASC","All",$page,"index.php");	
+$BaseUserOBJ->ViewAllProduct("DateOfListing","DESC","All",$page,"index.php");	
 }
 
    
