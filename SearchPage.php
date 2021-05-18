@@ -95,3 +95,4 @@ $BaseUserOBJ->ViewSearchProduct("DateOfListing","ASC", $_SESSION['Searchquery'],
 }
 
 ?>
+<?php require_once("Footer.php");?> 

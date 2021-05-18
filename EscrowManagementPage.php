@@ -114,3 +114,4 @@ $(document).ready(function(){
 </form> 
 </div>
 </center>
+<?php require_once("Footer.php");?>

@@ -50,3 +50,4 @@ for($x=0;$x<sizeof($TransactionsArr);$x++) {
 <?php
 }
 ?>
+<?php require_once("Footer.php");?>

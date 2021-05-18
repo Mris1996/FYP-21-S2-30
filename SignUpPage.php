@@ -310,3 +310,4 @@ $_POST["SignUpConfirmPassword"]  = "";
 </form>
 </div>
 </html>
+<?php require_once("Footer.php");?>

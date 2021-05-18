@@ -365,3 +365,4 @@ echo'<style> .ChangePassword_GUI{display:none;}</style>';
 </form>
 </div>
 <hr>
+<?php require_once("Footer.php");?>

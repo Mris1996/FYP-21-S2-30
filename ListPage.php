@@ -247,3 +247,4 @@ if(isset($_POST['submit'])&& $submit){
 
 
 ?>
+<?php require_once("Footer.php");?> 

@@ -24,12 +24,7 @@ echo '<script> location.replace("index.php")</script> ';
 	font-family: arial;
 }
 
-a 
-{
-	text-decoration: none;
-	font-size: 22px;
-	color: black;
-}
+
 .fa {
   font-size: 25px;
 }
@@ -142,3 +137,4 @@ if(isset($_POST['reviewtextsubmit'])){
 	exit();	
 }
 ?>
+<?php require_once("Footer.php");?>

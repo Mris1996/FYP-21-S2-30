@@ -139,4 +139,4 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['LoginButton'])){
 <input type = "Submit" name="SignupButotn" value ="Sign Up"/>
 </form>
 </div>
-
+<?php require_once("Footer.php");?>
