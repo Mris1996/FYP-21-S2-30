@@ -1136,7 +1136,7 @@ class StandardUser extends BaseUser
 			return $this->EscrowPrivate;
 		}
 		public function addNewReview($Review,$ProductID){
-			$Review = preg_replace('/(\'|&#0*39;)/', '', $Review);
+			$Review = filter_var($Review,FILTER_SANITIZE_SPECIAL_CHARS);
 			$sql = "SELECT * FROM product WHERE ProductID='".$ProductID."'" ;
 			$result = $this->connect()->query($sql) or die($this->connect()->error); 
 			while($row = $result->fetch_assoc())
@@ -1151,7 +1151,7 @@ class StandardUser extends BaseUser
 			$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		}
 		public function addNewUserReview($Review,$UserID){
-			$Review = preg_replace('/(\'|&#0*39;)/', '', $Review);
+			$Review = filter_var($Review,FILTER_SANITIZE_SPECIAL_CHARS);
 			$sql = "SELECT * FROM users WHERE UserID='".$UserID."'" ;
 			$result = $this->connect()->query($sql) or die($this->connect()->error); 
 			while($row = $result->fetch_assoc())
@@ -1283,10 +1283,10 @@ class StandardUser extends BaseUser
 	}
 	
 	public function ListProduct($Name,$Category,$Description,$Cost,$Caption,$File){
-			$Name = preg_replace('/(\'|&#0*39;)/', '', $Name);
-			$Category = preg_replace('/(\'|&#0*39;)/', '', $Category);
-			$Description = preg_replace('/(\'|&#0*39;)/', '', $Description);
-			$Caption = preg_replace('/(\'|&#0*39;)/', '', $Caption);
+			$Name = filter_var($Name,FILTER_SANITIZE_SPECIAL_CHARS);
+			$Category = filter_var($Category,FILTER_SANITIZE_SPECIAL_CHARS);
+			$Description = filter_var($Description,FILTER_SANITIZE_SPECIAL_CHARS);
+			$Caption = filter_var($Caption,FILTER_SANITIZE_SPECIAL_CHARS);
 			
 			while(true){					
 					$ProductID = chr(rand(97,122)).chr(rand(97,122)).chr(rand(97,122)).str_pad(rand(0000,9999),4,0,STR_PAD_LEFT). substr(rand(0000,9999), 2, 4);
@@ -1304,10 +1304,10 @@ class StandardUser extends BaseUser
 				return $ProductID;
 	}
 		public function UpdateProduct($ProductID,$Name,$Category,$Description,$Cost,$Caption,$File){
-				$Name = preg_replace('/(\'|&#0*39;)/', '', $Name);
-				$Category = preg_replace('/(\'|&#0*39;)/', '', $Category);
-				$Description = preg_replace('/(\'|&#0*39;)/', '', $Description);
-				$Caption = preg_replace('/(\'|&#0*39;)/', '', $Caption);
+				$Name = filter_var($Name,FILTER_SANITIZE_SPECIAL_CHARS);
+				$Category = filter_var($Category,FILTER_SANITIZE_SPECIAL_CHARS);
+				$Description = filter_var($Description,FILTER_SANITIZE_SPECIAL_CHARS);
+				$Caption = filter_var($Caption,FILTER_SANITIZE_SPECIAL_CHARS);
 				$sql = "UPDATE `product` SET `ProductName`= '$Name',`ProductCategory`='$Category',`ProductDescription`='$Description',`ProductCaption`='$Caption',`ProductInitialPrice`='$Cost',`Image`='$File' WHERE `ProductID` = '$ProductID'";
 				$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
 			
