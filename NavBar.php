@@ -41,7 +41,7 @@
   background-color:white;
    margin:auto;
 }
-.dropbtn{
+.dropdown-content{
 	width:300px;
 	
 }
@@ -75,22 +75,11 @@
 </head>
 <div class="topnavbg">
 	<nav class="navbar">
-		<form method="post">
+	<form method="post">
 		<input type="submit" class="btn btn-white"  name="Nav_Main" id="Main"  value=""/>
-		</form>
+</form>	
 <?php 
-if (!file_exists('Categories.txt')) 
-{
-	fopen("Categories.txt", "w");
-}
-$myfile = fopen("Categories.txt", "r") or die("Unable to open file!");
-while(($line = fgets($myfile)) !== false) {
-echo 
-"<form method='post' action='CategoryPage.php?Category=".$line."'>
-<input type='submit' class='btn btn-white' id='Main'  value='".$line."'/>
-</form>";
-}
-fclose($myfile);
+
 
 
 
@@ -120,22 +109,16 @@ if(isset($_SESSION['ID'])){
 echo'<style> input[name="Nav_SignUp"]{display:none;}</style>';
 echo'<style> input[name="Nav_Login"]{display:none;}</style>';
 echo'<style> input[name="Nav_LogOut"]{display:visible;}</style>';
-echo '<h2>STICOIN BALANCE: '.$_SESSION['Object']->getAccountBalance().'</h2>';
-echo '<form method="post"><input type="submit" name="Refresh" value="Refresh Balance"></form>';
-echo'
-<form action="ListPage.php">
-<input type="submit" value="List a product"/>
-</form>';
-echo'
-<form action="MyContractsPage.php">
-<input type="submit" value="My Contracts"/>
-</form>';
+
+  
 echo'
 <form method="post">
 	<div class="dropdown">
-	<button class="dropbtn"><h2>'.$_SESSION['ID'].'</h2></button>
+	<img class="dropbtn" src="'.$_SESSION['Object']->ProfilePic.'" height="65" width="65" style="margin-right:200px;border-radius: 50%;">
 	<div class="dropdown-content">
 	<a href="ProfilePage.php?ID='.$_SESSION['ID'].'">Profile</a>
+	<a href="ListPage.php">List a product</a>
+	<a href="MyContractsPage.php">My Contracts</a>
 	<a href="SettingsPage.php">Settings</a>
 	<a href="ConvertPage.php">Top-Up</a>';
 if($_SESSION['Object']->getAccountType()=="Administrator"){
@@ -149,7 +132,11 @@ echo'
 	</div>
 </div>
 </form>';
-
+echo '<h2>STICOIN BALANCE: '.$_SESSION['Object']->getAccountBalance().'</h2>';
+echo '<form method="post">
+		<input type="image" src="systemimages/reload.png" alt="Submit" width="30" height="30" style="float:left" />
+		<input type="hidden" name="Refresh"/>
+	  </form>';
 $BaseUserOBJ = new BaseUser("check status");
 $BaseUserOBJ->setUID_Admin($_SESSION["ID"]);
 if(json_decode($BaseUserOBJ->Status)[0]=="Suspended"){
@@ -168,14 +155,27 @@ if(isset($_POST['Nav_LogOut'])){
 $_SESSION["Object"]->LogOut();
 }
 if(isset($_POST['Refresh'])){
+
 $_SESSION["Object"]->UpdateBalance();
 }
 
 if(isset($_POST['searchfunction'])){
 	echo '<script> location.replace("SearchPage.php?query='.$_POST['SearchBar'].'")</script> ';
 }
-
+if (!file_exists('Categories.txt')) 
+{
+	fopen("Categories.txt", "w");
+}
+$myfile = fopen("Categories.txt", "r") or die("Unable to open file!");
+while(($line = fgets($myfile)) !== false) {
+echo 
+"<form method='post' action='CategoryPage.php?Category=".$line."'>
+<input type='submit' class='btn btn-white' id='Main'  value='".$line."'/>
+</form>";
+}
+fclose($myfile);
 ?>	
+
 <form method="post">
 			<input type="submit" class="btn btn-white"   name="Nav_Login"  value="Login"/>
 			<input type="submit" class="btn btn-white"  name="Nav_SignUp"  value="SignUp"/>		
