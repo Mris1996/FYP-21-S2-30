@@ -138,10 +138,11 @@ if (!isset ($_GET['page']) ) {
 }
 $BaseUserOBJ = new BaseUser("index page");	
 if(isset($_POST['Order'])){
-echo '<script>document.getElementByID("'.$_POST['Order'].'").checked = true; </script>';	
+echo '<script>
+document.getElementById("'.$_POST['Order'].'").checked = true; </script>';	
 }
 else{
-	echo '<script>document.getElementByID("ASC").checked = true;</script>';
+	echo '<script>document.getElementById("ASC").checked = true;</script>';
 }
 if(isset($_POST['SortDate'])){
 
