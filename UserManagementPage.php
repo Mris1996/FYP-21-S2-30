@@ -62,7 +62,7 @@ $page_num_min = $page_num_max - $Data_per_page;
 for($x = $page_num_min;$x<$page_num_max;$x++){
 	$BaseUserObj = new BaseUser("Account Management");
 	if (array_key_exists($x,$ArrayOfUsers)){
-	$BaseUserObj->setUID_Admin($ArrayOfUsers[$x]);
+	//$BaseUserObj->setUID_Admin($ArrayOfUsers[$x]);
 	sleep(1);
 	echo'<tr><td>'.$BaseUserObj->getUID().'</td>
 	<td>'.$BaseUserObj->getDisplayName().'</td>
