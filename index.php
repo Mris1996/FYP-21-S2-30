@@ -122,7 +122,7 @@
 <div class="sorter">
 <form method="post" style="margin-top:20px">
 <Label>Sort By:</Label></br>
-<input type="radio" id="ASC" name="Order" value="ASC"><label for="ASC">Ascending</label><br>
+<input type="radio" id="ASC" name="Order" checked = "true" value="ASC"><label for="ASC">Ascending</label><br>
 <input type="radio" id="DESC" name="Order" value="DESC"><label for="DESC">Descending</label><br>
 <input type="submit" name="SortCat" value="Category">
 <input type="submit" name="SortPrice" value="Price">
@@ -136,29 +136,39 @@ if (!isset ($_GET['page']) ) {
 } else {  
 	$page = $_GET['page'];  
 }
+if (!isset ($_GET['Ord']) ) {  
+	$Order = "ASC";  
+} else {  
+	$Order =$_GET['Ord'];  
+}
+if (!isset ($_GET['Sb']) ) {  
+	$Sortby = "DateOfListing";	
+} else {  
+	$Sortby = $_GET['Sb'];
+}
+if (!isset ($_GET['Cat']) ) {  
+	$Category = "All";	
+} else {  
+	$Category = "All";	
+}
 $BaseUserOBJ = new BaseUser("index page");	
-if(isset($_POST['Order'])){
-echo '<script>
-document.getElementById("'.$_POST['Order'].'").checked = true; </script>';	
-}
-else{
-	echo '<script>document.getElementById("ASC").checked = true;</script>';
-}
+
 if(isset($_POST['SortDate'])){
 
-$BaseUserOBJ->ViewAllProduct("DateOfListing",$_POST['Order'],"All",$page,"index.php");
+$BaseUserOBJ->ViewAllProduct("DateOfListing",$_POST['Order'],"All",1,"index.php");
 }
 if(isset($_POST['SortPrice'])){
 	
-$BaseUserOBJ->ViewAllProduct("ProductInitialPrice",$_POST['Order'],"All",$page,"index.php");
+$BaseUserOBJ->ViewAllProduct("ProductInitialPrice",$_POST['Order'],"All",1,"index.php");
 }
 if(isset($_POST['SortCat'])){
 	
-$BaseUserOBJ->ViewAllProduct("ProductCategory",$_POST['Order'],"All",$page,"index.php");
+$BaseUserOBJ->ViewAllProduct("ProductCategory",$_POST['Order'],"All",1,"index.php");
 }
-if(!isset($_POST['SortCat'])&&!isset($_POST['SortPrice'])&&!isset($_POST['SortDate'])){
 
-$BaseUserOBJ->ViewAllProduct("DateOfListing","DESC","All",$page,"index.php");	
+
+if(!isset($_POST['SortCat'])&&!isset($_POST['SortPrice'])&&!isset($_POST['SortDate'])){
+$BaseUserOBJ->ViewAllProduct($Sortby,$Order,$Category,$page,"index.php");	
 }
 
    

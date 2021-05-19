@@ -146,33 +146,12 @@ class BaseUser
 		}
 		else
 		{
-			// Triggers when:
-			// "Result" returns no rows or zero rows (UserID does not exist!)
-			// "Result" returns more than 1 row (Not Unique UserID)
-			// There is a Failed connection
+			
 			return "Error occured! Please retry!";
 			
-			// Don't put unique error messages for "no" or "zero" rows. Keep them generic.
-			// This is so to prevent hackers from performing account enumeration using this system.			
+				
 		}
-		/*
-		Links used:
-		
-		Preventing User Enumeration:
-		https://affinity-it-security.com/what-is-account-enumeration/
-		https://affinity-it-security.com/how-to-prevent-account-enumeration/
-		
-		Sending mail:
-		https://www.w3schools.com/php/func_mail_mail.asp
-		
-		For generating random password:
-		https://www.w3resource.com/php-exercises/php-string-exercise-9.php
-		
-		Hashing password with salt:
-		https://www.php.net/password_hash
-		https://www.php.net/password_verify
-		https://stackoverflow.com/questions/30279321/how-to-use-phps-password-hash-to-hash-and-verify-passwords
-		*/
+	
 	}
 	
 	public function ResetPassword ($userid, $temporary_password, $new_password)
@@ -235,10 +214,7 @@ class BaseUser
 		}
 		else
 		{
-			// Triggers when:
-			// "Result" returns no rows or zero rows (UserID does not exist!)
-			// "Result" returns more than 1 row (Not Unique UserID)
-			// There is a Failed connection
+	
 			return "Error occured! Please retry!";
 			
 			// Don't put unique error messages for "no" or "zero" rows. Keep them generic.
@@ -487,10 +463,10 @@ class BaseUser
 			}
 	}
 	public function ViewAllProduct($sortby,$Order,$Category,$page,$pagename){
-			
 			if($Category=="All"){
 					$sql = "SELECT * FROM product WHERE Status = 'Available' ORDER BY $sortby $Order" ;
 			}
+			
 			else{
 					$sql = "SELECT * FROM product WHERE Status = 'Available' AND ProductCategory = '".$Category."' ORDER BY $sortby $Order" ;
 			}
@@ -507,6 +483,7 @@ class BaseUser
 					<b>No products in this category</b>';
 				return;
 			}
+			
 			if($Category=="All"){
 					$sql = "SELECT * FROM product WHERE Status = 'Available' ORDER BY $sortby $Order LIMIT " . $page_first_result . ',' . $this->results_per_page; 
 			}
@@ -514,6 +491,7 @@ class BaseUser
 					$sql = "SELECT * FROM product WHERE Status = 'Available' AND ProductCategory = '".$Category."' ORDER BY $sortby $Order LIMIT " . $page_first_result . ',' . $this->results_per_page; 
 			}
 			$result = mysqli_query($this->connect(), $sql);  
+			
 			while($row = $result->fetch_assoc())
 			{ 
 
@@ -536,18 +514,18 @@ class BaseUser
 			if($number_of_page>1){
 			echo'<div class = "pagination" >';			
 			echo'<b style="bottom: 20;">Page</b></BR></BR>';
-			echo '<a href = "'.$pagename.'?page=1">First </a>'; 
+			echo '<a href = "'.$pagename.'?Ord='.$Order.'&Sb='.$sortby.'&page=1">First </a>'; 
 			for($page = 1; $page<= $number_of_page; $page++) { 
 				if($page==1){
 
-				echo '<a href = "'.$pagename.'?page=' . $page . '">' . $page . ' </a>';  
+				echo '<a href = "'.$pagename.'?Ord='.$Order.'&Sb='.$sortby.'&page=' . $page . '">' . $page . ' </a>';  
 				
 				}
 				else{
-				echo '<a href = "'.$pagename.'?page=' . $page . '">' . $page . ' </a>';  
+				echo '<a href = "'.$pagename.'?Ord='.$Order.'&Sb='.$sortby.'&page=' . $page . '">' . $page . ' </a>';  
 				}
 			} 
-			echo '<a href = "'.$pagename.'?page=' . $number_of_page . '">Last </a>';  
+			echo '<a href = "'.$pagename.'?Ord='.$Order.'&Sb='.$sortby.'&page=' . $number_of_page . '">Last </a>';  
 			echo'</div>';
 			}
 			
@@ -589,24 +567,24 @@ class BaseUser
 			</div>
 			</div>';
 		
-			}	
+			}
 			if($number_of_page>1){
-			echo'<div class = "pagination" >';	
-			echo'<b style="bottom: 20;">Page</b></BR>';
-			echo '<a href ="SearchPage.php?query='.$Query.'&page=1">First </a>'; 
+			echo'<div class = "pagination" >';			
+			echo'<b style="bottom: 20;">Page</b></BR></BR>';
+			echo '<a href = "SearchPage.php?query='.$Query.'&Ord='.$Order.'&Sb='.$sortby.'&page=1">First </a>'; 
 			for($page = 1; $page<= $number_of_page; $page++) { 
 				if($page==1){
 
-				echo '<a href = "SearchPage.php?query='.$Query.'&page=' . $page . '">' . $page . ' </a>';  
+				echo '<a href = "SearchPage.php?query='.$Query.'&Ord='.$Order.'&Sb='.$sortby.'&page=' . $page . '">' . $page . ' </a>';  
 				
 				}
 				else{
-				echo '<a href = "SearchPage.php?query='.$Query.'&page=' . $page . '">' . $page . ' </a>';  
+				echo '<a href = "SearchPage.php?query='.$Query.'&Ord='.$Order.'&Sb='.$sortby.'&page=' . $page . '">' . $page . ' </a>';  
 				}
 			} 
-			echo '<a href = "SearchPage.php?query='.$Query.'&page=' . $number_of_page . '">Last </a>';  
+			echo '<a href = "SearchPage.php?query='.$Query.'&Ord='.$Order.'&Sb='.$sortby.'&page=' . $number_of_page . '">Last </a>';  
 			echo'</div>';
-			}
+			}			
 			
 	}
 	
@@ -1289,7 +1267,6 @@ class StandardUser extends BaseUser
 	
 	public function ListProduct($Name,$Category,$Description,$Cost,$Caption,$File){
 			$Name = filter_var($Name,FILTER_SANITIZE_SPECIAL_CHARS);
-			$Category = filter_var($Category,FILTER_SANITIZE_SPECIAL_CHARS);
 			$Description = filter_var($Description,FILTER_SANITIZE_SPECIAL_CHARS);
 			$Caption = filter_var($Caption,FILTER_SANITIZE_SPECIAL_CHARS);
 			

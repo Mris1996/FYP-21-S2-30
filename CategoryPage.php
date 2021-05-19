@@ -80,27 +80,45 @@ echo '<script> location.replace("index.php")</script> ';
 </div>
 <hr>
 <?php
+
 if (!isset ($_GET['page']) ) {  
 	$page = 1;  
 } else {  
 	$page = $_GET['page'];  
 }
-$BaseUserOBJ = new BaseUser("Category page");	
+if (!isset ($_GET['Ord']) ) {  
+	$Order = "ASC";  
+} else {  
+	$Order =$_GET['Ord'];  
+}
+if (!isset ($_GET['Sb']) ) {  
+	$Sortby = "DateOfListing";	
+} else {  
+	$Sortby = $_GET['Sb'];
+}
+if (!isset ($_GET['Cat']) ) {  
+	$Category = $Category;	
+} else {  
+	$Category = $Category;	
+}
+$BaseUserOBJ = new BaseUser("CategoryPage page");	
+
 if(isset($_POST['SortDate'])){
 
-$BaseUserOBJ->ViewAllProduct("DateOfListing",$_POST['Order'],$Category,$page,"CategoryPage.php");
+$BaseUserOBJ->ViewAllProduct("DateOfListing",$_POST['Order'],$Category,1,"CategoryPage.php");
 }
 if(isset($_POST['SortPrice'])){
 	
-$BaseUserOBJ->ViewAllProduct("ProductInitialPrice",$_POST['Order'],$Category,$page,"CategoryPage.php");
+$BaseUserOBJ->ViewAllProduct("ProductInitialPrice",$_POST['Order'],$Category,1,"CategoryPage.php");
 }
 if(isset($_POST['SortCat'])){
-
-$BaseUserOBJ->ViewAllProduct("ProductCategory",$_POST['Order'],$Category,$page,"CategoryPage.php");
-}
-if(!isset($_POST['SortCat'])&&!isset($_POST['SortPrice'])&&!isset($_POST['SortDate'])){
 	
-$BaseUserOBJ->ViewAllProduct("DateOfListing","ASC",$Category,$page,"CategoryPage.php");	
+$BaseUserOBJ->ViewAllProduct("ProductCategory",$_POST['Order'],$Category,1,"CategoryPage.php");
+}
+
+
+if(!isset($_POST['SortCat'])&&!isset($_POST['SortPrice'])&&!isset($_POST['SortDate'])){
+$BaseUserOBJ->ViewAllProduct($Sortby,$Order,$Category,$page,"CategoryPage.php");	
 }
 ?>
 <?php require_once("Footer.php");?> 

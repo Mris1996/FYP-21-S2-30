@@ -13,7 +13,7 @@ $submit = true;
 
 if(isset($_POST['submit'])){
 $Name = test_input($_POST["Name"]);
-$Category = test_input($_POST["Category"]);
+$Category = $_POST["Category"];
 $Caption = test_input($_POST["Caption"]); 
 $Description = test_input($_POST["Description"]); 
 $Cost = test_input($_POST["Cost"]);
@@ -189,8 +189,9 @@ input[type="text"]{
 			<?php
 			$myfile = fopen("Categories.txt", "r") or die("Unable to open file!");
 			while(($line = fgets($myfile)) !== false) {
+
 			echo 
-			"<option style='background-color:black;color:white;' value=".$line.">".$line."</option>";
+			"<option style='background-color:black;color:white;' value='".$line."'>".$line."</option>";
 			}fclose($myfile);
 			?>
 		  </select><br />
@@ -200,7 +201,6 @@ input[type="text"]{
 		<label>Product Caption:</label>
 		<textarea id="Caption" name="Caption" rows="1" cols="50" value=""><?php echo $Caption;?></textarea>
 		<span class="error"><?php echo $CaptionErr;?></span><br />
-	
 		<label style=" vertical-align: middle;">Product Description:</label>
 		<textarea style=" vertical-align: middle;" id="Description" name="Description" rows="4" cols="50" value=""><?php echo $Description;?></textarea>
 		<span class="error"><?php echo $DescriptionErr;?></span><br /><br />
@@ -220,13 +220,12 @@ input[type="text"]{
 <?php
 
 if(isset($_POST['submit'])&& $submit){
-	
+
 	$fileDestination = 'images/'.$FileNew;
 	move_uploaded_file($fileTmpName, $fileDestination);
 	$File = $fileDestination;
 	echo'<style> .List_GUI{display:none;}</style>';
 	$ProductID = $_SESSION['Object']->ListProduct($Name,$Category,$Description,round($Cost, 0),$Caption,$File);
-	echo'<script>history.pushState({}, "", "")</script>';
 	echo'<div class="Post_Insert_GUI">
 			</br>
 			<center>Successfully Listed product!</center>
@@ -237,7 +236,7 @@ if(isset($_POST['submit'])&& $submit){
 			<center style="color:red">Head over to it\'s page now!</center>
 			<a href="ProductPage.php?ID='.$ProductID.'">Product.php?ID='.$ProductID.'</a>
 		</div>';
-		echo $fileTmpName;
+	
 	echo'<script>history.pushState({}, "", "")</script>';
 	exit();
 	
