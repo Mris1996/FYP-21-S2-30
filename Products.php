@@ -26,6 +26,8 @@ class Products
 
 	public $Review;
 	
+	public $Reported;
+	
 	public function connect(){
 		$servername= "localhost";
 		$username = "root";
@@ -69,7 +71,9 @@ class Products
 			$this->Status = $row["Status"];		
 
 			$this->Image  = $row["Image"];				
-
+			
+			$this->Reported  = $row["Reported"];
+			
 			$this->Review  = $row["Review"];
 	
 	}

@@ -32,6 +32,8 @@ class Contracts
 	
 	public $RatingToken; 
 	
+	public $Reported; 
+	
 	public function connect(){
 		$servername= "localhost";
 		$username = "root";
@@ -81,7 +83,9 @@ class Contracts
 			$this->TotalAccepted = $row["TotalAccepted"];	
 			
 			$this->Transaction = $row["Transaction"];	
-	
+			
+			$this->Reported = $row["Reported"];	
+			
 			$this->RatingToken = json_decode($row["RatingToken"],true);
 	}
 

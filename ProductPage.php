@@ -29,14 +29,27 @@ $ProductObj = new Products();
 if(!$ProductObj->InitialiseProduct($ProductID)){
 	echo '<script> location.replace("index.php")</script> ';
 }
-if(isset($_SESSION['ID'])){
-$Owner = $_SESSION['Object']->getProductOwner($ProductID);
-
 echo'
 <div class="ProductPage" >
 <div class="buttons">';
 
-if($_SESSION['ID'] == $Owner){
+
+
+if(isset($_SESSION['ID'])){
+$Owner = $_SESSION['Object']->getProductOwner($ProductID);
+if($ProductObj->Reported>0 && $_SESSION['Object']->getAccountType()=="Administrator"&& $_SESSION['ID'] != $Owner ){
+	echo'
+<form method="post">
+<input type="submit" name="Unreport" value="Unreport">
+</form>';
+}
+if($ProductObj->Reported==0&& $_SESSION['Object']->getAccountType()!="Administrator" && $_SESSION['ID'] != $Owner ){
+echo'
+<form method="post">
+<input type="submit" name="Report" value="Report">
+</form>';	
+}
+if($_SESSION['ID'] == $Owner || $_SESSION['Object']->getAccountType()=="Administrator"){
 
 echo'
 <form method="post" action="EditProductPage.php?ID='.$ProductID.'">
@@ -119,6 +132,38 @@ if(isset($_POST['Remove'])){
 	';
 	
 }
+if(isset($_POST['Report'])){
+	
+
+	echo'
+	<form method="post" >
+	<div id="confirmation">
+	<div id="confirmationtext">
+	<b>Are you sure you want to report this product?</b></br>
+		<input type="submit" name="Confirmationreport" value="Yes">
+		<input type="submit" name="Confirmationreport" value="No">
+	</form>
+	</div>
+	</div>
+	';
+	
+}
+if(isset($_POST['Unreport'])){
+	
+
+	echo'
+	<form method="post" >
+	<div id="confirmation">
+	<div id="confirmationtext">
+	<b>Are you sure you want to unreport this product?</b></br>
+		<input type="submit" name="Confirmationunreport" value="Yes">
+		<input type="submit" name="Confirmationunreport" value="No">
+	</form>
+	</div>
+	</div>
+	';
+	
+}
 if(isset($_POST['Unlist'])){
 
 
@@ -142,6 +187,26 @@ header("Refresh:0");
 if(isset($_POST['Confirmation'])&&$_POST['Confirmation']=="Yes"){
 
 $_SESSION['Object']->RemoveProduct($ProductID);
+echo '<script> location.replace("index.php")</script> ';		
+}
+if(isset($_POST['Confirmationreport'])&& $_POST['Confirmationreport']=="No"){
+exit();
+header("Refresh:0");
+}
+if(isset($_POST['Confirmationreport'])&&$_POST['Confirmationreport']=="Yes"){
+
+$_SESSION['Object']->ReportProduct($ProductID);
+echo '<script> alert("Thank you for your vigilance,rest assured, the administrators will look into the matter");</script> ';		
+echo '<script> location.replace("index.php")</script> ';	
+
+}
+if(isset($_POST['Confirmationunreport'])&& $_POST['Confirmationunreport']=="No"){
+exit();
+header("Refresh:0");
+}
+if(isset($_POST['Confirmationunreport'])&&$_POST['Confirmationunreport']=="Yes"){
+$_SESSION['Object']->UnreportProduct($ProductID);
+echo '<script> alert("Product unreported");</script> ';
 echo '<script> location.replace("index.php")</script> ';		
 }
 if(isset($_POST['ConfirmationUnlist'])&& $_POST['ConfirmationUnlist']=="No"){

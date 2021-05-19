@@ -65,11 +65,93 @@ echo '<script> location.replace("index.php")</script> ';
 .container:hover .middle {
   opacity: 1;
 }
+#confirmation{
+	
+	position:fixed;
+    padding:0;
+    margin:auto;
+    top:0;
+    left:0;
 
+    width: 100%;
+    height: 100%;
+    background:rgba(255,255,255,0.8);
+}
+#confirmationtext{
+	width:200px;
+    margin:auto;
+	margin-top:20%;
+   
+}
 
 </style>
 <?php 
+if(isset( $_SESSION['Object'])){
+if($BaseUserObj->Reported==0&& $_SESSION['Object']->getAccountType()!="Administrator" && $_SESSION['ID'] != $ID ){
+echo'
+<form method="post">
+<input type="submit" name="Report" value="Report">
+</form>';	
+}
+if($BaseUserObj->Reported>0 && $_SESSION['Object']->getAccountType()=="Administrator"&& $_SESSION['ID'] != $ID ){
+	echo'
+<form method="post">
+<input type="submit" name="Unreport" value="Unreport">
+</form>';
+}
+}
+if(isset($_POST['Report'])){
+	
 
+	echo'
+	<form method="post" >
+	<div id="confirmation">
+	<div id="confirmationtext">
+	<b>Are you sure you want to report this user?</b></br>
+		<input type="submit" name="Confirmationreport" value="Yes">
+		<input type="submit" name="Confirmationreport" value="No">
+	</form>
+	</div>
+	</div>
+	';
+	
+}
+if(isset($_POST['Unreport'])){
+	
+
+	echo'
+	<form method="post" >
+	<div id="confirmation">
+	<div id="confirmationtext">
+	<b>Are you sure you want to unreport this user?</b></br>
+		<input type="submit" name="Confirmationunreport" value="Yes">
+		<input type="submit" name="Confirmationunreport" value="No">
+	</form>
+	</div>
+	</div>
+	';
+	
+}
+if(isset($_POST['Confirmationreport'])&& $_POST['Confirmationreport']=="No"){
+exit();
+header("Refresh:0");
+}
+if(isset($_POST['Confirmationreport'])&&$_POST['Confirmationreport']=="Yes"){
+
+$_SESSION['Object']->ReportUser($ID);
+echo '<script> alert("Thank you for your vigilance,rest assured, the administrators will look into the matter");</script> ';	
+echo '<script> location.replace("index.php")</script> ';	
+}
+if(isset($_POST['Confirmationunreport'])&& $_POST['Confirmationunreport']=="No"){
+exit();
+header("Refresh:0");
+}
+if(isset($_POST['Confirmationunreport'])&&$_POST['Confirmationunreport']=="Yes"){
+
+$_SESSION['Object']->UnreportUser($ID);
+echo '<script> alert("User unreported");</script> ';
+echo '<script> location.replace("index.php")</script> ';	
+}
 echo'<div class="card" style="margin-top:200px;">
 		<h1>'.$BaseUserObj->getDisplayName().'</h1>
 		<center><img src="'.$BaseUserObj->ProfilePic.'" height="200" width="200"></center>

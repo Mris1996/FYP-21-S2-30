@@ -18,6 +18,7 @@ class BaseUser
 	public $Status;
 	public $ProfilePic;
 	public $results_per_page = 12;  
+	public $Reported;  
 	
 	public function __construct($Operation)
 	{
@@ -321,7 +322,7 @@ class BaseUser
 			$this->Rating = json_decode($row["Rating"],true);
 			$this->Status = $row["Status"];
 			$this->ProfilePic = $row["ProfilePicture"];
-		
+			$this->Reported = $row["Reported"];
 
 	}
 	
@@ -351,6 +352,7 @@ class BaseUser
 			$this->Rating = json_decode($row["Rating"],true);
 			$this->Status = $row["Status"];
 			$this->ProfilePic = $row["ProfilePicture"];
+			$this->Reported = $row["Reported"];
 	}
 	
 	return true;
@@ -649,6 +651,7 @@ class StandardUser extends BaseUser
 		$this->AccountType =  $Object->getAccountType();
 		$this->AccountBalance = $Object->getAccountBalance();
 		$this->ProfilePic = $Object->ProfilePic;
+		$this->Reported = $Object->Reported;
 		}
 	
 	public function NewOffer($Offer,$DateRequired,$SellerID,$ProductID,$InitialOffer){
@@ -1178,12 +1181,36 @@ class StandardUser extends BaseUser
 			$sql="DELETE FROM product WHERE ProductID='$ProductID'";
 			$result = $this->connect()->query($sql) or die($this->connect()->error);  
 		}
+		public function UnreportProduct($ProductID){
+			$sql="UPDATE `product` SET `Reported`= '0' WHERE ProductID='$ProductID'";
+			$result = $this->connect()->query($sql) or die($this->connect()->error);  
+		}
+		public function ReportProduct($ProductID){
+			$sql="UPDATE `product` SET `Reported`=`Reported`+1 WHERE ProductID='$ProductID'";
+			$result = $this->connect()->query($sql) or die($this->connect()->error);  
+		}
+		public function UnreportUser($UID){
+			$sql="UPDATE `users` SET `Reported`= '0' WHERE UserID='$UID'";
+			$result = $this->connect()->query($sql) or die($this->connect()->error);  
+		}
+		public function ReportUser($UID){
+			$sql="UPDATE `users` SET `Reported`=`Reported`+1 WHERE UserID='$UID'";
+			$result = $this->connect()->query($sql) or die($this->connect()->error);  
+		}
+		public function UnreportContract($CID){
+			$sql="UPDATE `contracts` SET `Reported`= '0' WHERE ContractID='$CID'";
+			$result = $this->connect()->query($sql) or die($this->connect()->error);  
+		}
+		public function ReportContract($CID){
+			$sql="UPDATE `contracts` SET `Reported`=`Reported`+1 WHERE ContractID='$CID'";
+			$result = $this->connect()->query($sql) or die($this->connect()->error);  
+		}
 		public function UnlistProduct($ProductID){
 			
 			$sql="UPDATE `product` SET `Status`='Unlisted' WHERE ProductID='$ProductID'";
 			$result = $this->connect()->query($sql) or die($this->connect()->error);  
 		}
-	
+		
 		public function checkAccountInNetwork($WalletPubKey){
 			$host    = "localhost";
 			$port    = 8080;
@@ -1365,6 +1392,7 @@ class Admin extends StandardUser
 		$this->AccountType =  $Object->getAccountType();
 		$this->AccountBalance = $Object->getAccountBalance();
 		$this->ProfilePic = $Object->ProfilePic;
+		$this->Reported = $Object->Reported;
 	
 	}
 	public function HaltTransaction($ContractID){
@@ -1494,6 +1522,42 @@ class Admin extends StandardUser
 			array_push($pubkeysarray,$row['PublicKey']);
 		}
 		return $pubkeysarray;
+	}
+	public function ListOfReportedProducts(){
+		
+		$sql = "SELECT * FROM product where `Reported` >0 ORDER BY `Reported` DESC";
+		$arrayret = array();
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		while($row = $result->fetch_assoc())
+		{ 	
+			array_push($arrayret,$row['ProductID']);
+		}
+		return $arrayret;
+		
+	}
+	public function ListOfReportedUsers(){
+		
+		$sql = "SELECT * FROM users where `Reported` >0 ORDER BY `Reported` DESC";
+		$arrayret = array();
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		while($row = $result->fetch_assoc())
+		{ 	
+			array_push($arrayret,$row['UserID']);
+		}
+		return $arrayret;
+		
+	}
+	public function ListOfReportedContracts(){
+		
+		$sql = "SELECT * FROM contracts where `Reported` >0 ORDER BY `Reported` DESC";
+		$arrayret = array();
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		while($row = $result->fetch_assoc())
+		{ 	
+			array_push($arrayret,$row['ContractID']);
+		}
+		return $arrayret;
+		
 	}
 	public function suspendUser($ID,$SuspensionDate){
 		$data = array('Suspended',$SuspensionDate);

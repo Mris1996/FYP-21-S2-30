@@ -127,6 +127,7 @@ echo'
 	<a href="SettingsPage.php">Settings</a>
 	<a href="ConvertPage.php">Top-Up</a>';
 if($_SESSION['Object']->getAccountType()=="Administrator"){
+	echo'<a href="ReportManagementPage.php">Manage reports</a>';
 	echo'<a href="EscrowManagementPage.php">Manage escrows</a>';
 	echo'<a href="UserManagementPage.php">Manage accounts</a>';
 	echo'<a href="ContractManagementPage.php">Manage contracts</a>';
