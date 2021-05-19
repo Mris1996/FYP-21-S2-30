@@ -83,7 +83,7 @@ echo'
 <hr>
 <h1>Reviews</h1>
 <?php $BaseUserOBJ->viewReview($ProductID,"Product");
-if($_SESSION['ID'] != $Owner){
+if($_SESSION['ID'] != $Owner && isset($_SESSION['ID'])){
 ?>
 <form method="post" style="text-align:center;">
 <input type="text" name="reviewtext" style="width:1000px;height:100px;" placeholder="Review Product">

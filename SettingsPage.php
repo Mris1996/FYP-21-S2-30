@@ -143,7 +143,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['EditProfileButton'])){
 		
 		$fileExt = explode('.',$File);
 		$fileActualExt = strtolower(end($fileExt));
-		$allowed = array('jpg','jpeg','png','pdf');
+		$allowed = array('jpg','jpeg','png');
 		
 		if(in_array($fileActualExt, $allowed)){
 		
