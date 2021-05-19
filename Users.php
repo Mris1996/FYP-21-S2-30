@@ -814,12 +814,12 @@ class StandardUser extends BaseUser
 					echo'<div id="User2">';
 				}
 				if($Msg [$x]['Type']=="Admin"){
-					echo'<span class="author">'.$Msg [$x]['User'].'(Administrator):</span>
+					echo'<span class="author">'.$this->getUserDisplayName($Msg [$x]['User']).'(Administrator):</span>
 						 <span class="messsage-text">'.$Msg [$x]['Message'].'</span></br>';
 					echo'</div>';
 				}
 				else{
-					echo'<span class="author">'.$Msg [$x]['User'].':</span>
+					echo'<span class="author">'.$this->getUserDisplayName($Msg [$x]['User']).':</span>
 						 <span class="messsage-text">'.$Msg [$x]['Message'].'</span></br>';
 					echo'</div>';
 				}
