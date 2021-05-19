@@ -122,7 +122,7 @@
 <div class="sorter">
 <form method="post" style="margin-top:20px">
 <Label>Sort By:</Label></br>
-<input type="radio" id="ASC" name="Order" checked="checked" value="ASC"><label for="ASC">Ascending</label><br>
+<input type="radio" id="ASC" name="Order" value="ASC"><label for="ASC">Ascending</label><br>
 <input type="radio" id="DESC" name="Order" value="DESC"><label for="DESC">Descending</label><br>
 <input type="submit" name="SortCat" value="Category">
 <input type="submit" name="SortPrice" value="Price">
@@ -137,6 +137,12 @@ if (!isset ($_GET['page']) ) {
 	$page = $_GET['page'];  
 }
 $BaseUserOBJ = new BaseUser("index page");	
+if(isset($_POST['Order'])){
+echo '<script>document.getElementByID("'.$_POST['Order'].'").checked = true; </script>';	
+}
+else{
+	echo '<script>document.getElementByID("ASC").checked = true;</script>';
+}
 if(isset($_POST['SortDate'])){
 
 $BaseUserOBJ->ViewAllProduct("DateOfListing",$_POST['Order'],"All",$page,"index.php");
