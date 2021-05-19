@@ -282,13 +282,13 @@ if(isset($_POST['ResumeTranasction'])){
 <div id="chatbox">
 	<h1>Contract ID:<?php echo $ContractID?></h1>
 <?php if($Type!="Admin"){ ?>
-	<h1>Dealing with:<?php  if(isset($_SESSION['OtherUser'])){echo $_SESSION['OtherUser'];}?></h1>
+	<h1>Dealing with:<?php  if(isset($_SESSION['OtherUser'])){ echo $_SESSION['Object']->getUserDisplayName($_SESSION['OtherUser']);}?></h1>
 	<h1>Your Party Type:<?php echo $Type?></h1>
 <?php }
 	 else{
 ?>
-		<h1>Dealing with Buyer:<?php echo $ContractObj->BuyerUserID?></h1> 
-		<h1>Dealing with Seller:<?php echo $ContractObj->SellerUserID?></h1> 
+		<h1>Dealing with Buyer:<?php echo $_SESSION['Object']->getUserDisplayName($ContractObj->BuyerUserID)?></h1> 
+		<h1>Dealing with Seller:<?php echo $_SESSION['Object']->getUserDisplayName($ContractObj->SellerUserID)?></h1> 
 <?php
 	 }
 

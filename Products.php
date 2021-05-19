@@ -60,7 +60,7 @@ class Products
 
 			$this->ProductInitialPrice	= $row["ProductInitialPrice"];
 
-			$this->DateOfListing  = $row["DateOfListing"];
+			$this->DateOfListing  = date('d-m-Y',$row["DateOfListing"]);
 
 			$this->DateOfExpiry  = $row["DateOfExpiry"];			
 

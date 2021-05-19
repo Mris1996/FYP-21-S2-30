@@ -19,6 +19,7 @@ fclose($myfile);
 if($count==0){
 echo '<script> location.replace("index.php")</script> ';	
 }
+
 ?> 
 
 <style>
@@ -73,7 +74,6 @@ echo '<script> location.replace("index.php")</script> ';
 <Label>Sort By:</Label></br>
 <input type="radio" id="ASC" name="Order" checked="checked" value="ASC"><label for="ASC">Ascending</label><br>
 <input type="radio" id="DESC" name="Order" value="DESC"><label for="DESC">Descending</label><br>
-<input type="submit" name="SortCat" value="Category">
 <input type="submit" name="SortPrice" value="Price">
 <input type="submit" name="SortDate" value="Date">
 </form>
@@ -87,7 +87,7 @@ if (!isset ($_GET['page']) ) {
 	$page = $_GET['page'];  
 }
 if (!isset ($_GET['Ord']) ) {  
-	$Order = "ASC";  
+	$Order = "DESC";  
 } else {  
 	$Order =$_GET['Ord'];  
 }
@@ -111,13 +111,9 @@ if(isset($_POST['SortPrice'])){
 	
 $BaseUserOBJ->ViewAllProduct("ProductInitialPrice",$_POST['Order'],$Category,1,"CategoryPage.php");
 }
-if(isset($_POST['SortCat'])){
-	
-$BaseUserOBJ->ViewAllProduct("ProductCategory",$_POST['Order'],$Category,1,"CategoryPage.php");
-}
 
 
-if(!isset($_POST['SortCat'])&&!isset($_POST['SortPrice'])&&!isset($_POST['SortDate'])){
+if(!isset($_POST['SortPrice'])&&!isset($_POST['SortDate'])){
 $BaseUserOBJ->ViewAllProduct($Sortby,$Order,$Category,$page,"CategoryPage.php");	
 }
 ?>

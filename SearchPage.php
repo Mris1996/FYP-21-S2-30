@@ -75,7 +75,7 @@ if (!isset ($_GET['page']) ) {
 	$page = $_GET['page'];  
 }
 if (!isset ($_GET['Ord']) ) {  
-	$Order = "ASC";  
+	$Order = "DESC";  
 } else {  
 	$Order =$_GET['Ord'];  
 }

@@ -463,6 +463,7 @@ class BaseUser
 			}
 	}
 	public function ViewAllProduct($sortby,$Order,$Category,$page,$pagename){
+	
 			if($Category=="All"){
 					$sql = "SELECT * FROM product WHERE Status = 'Available' ORDER BY $sortby $Order" ;
 			}
@@ -494,7 +495,7 @@ class BaseUser
 			
 			while($row = $result->fetch_assoc())
 			{ 
-
+			
 			echo'
 			<div class="container">
 			<img src="'.$row["Image"].'" class="image" style="width:500px;height:400px">
@@ -502,7 +503,7 @@ class BaseUser
 			<div class="text">Seller:<a href="ProfilePage.php?ID='.$row["SellerUserID"].'">'.$row["SellerUserID"].'</a></div>
 			<div class="text">Product Name:'.$row["ProductName"].'</div>
 			<div class="text">Category:'.$row["ProductCategory"].'</div>
-			<div class="text">Date Listed:<i>'.date('d-m-Y',strtotime($row["DateOfListing"])).'</i></div>
+			<div class="text">Date Listed:<i>'.date('d-m-Y',$row["DateOfListing"]).'</i></div>
 			<div class="text">Initial Price:'.$row["ProductInitialPrice"].'</div>
 			<form action="ProductPage.php?ID='.$row["ProductID"].'" method="post"></br>
 			<input type="submit" value="Product Page"/>
@@ -559,7 +560,7 @@ class BaseUser
 			<div class="text">Seller:<a href="ProfilePage.php?ID='.$row["SellerUserID"].'">'.$row["SellerUserID"].'</a></div>
 			<div class="text">Product Name:'.$row["ProductName"].'</div>
 			<div class="text">Category:'.$row["ProductCategory"].'</div>
-			<div class="text">Date Listed:<i>'.date('d-m-Y',strtotime($row["DateOfListing"])).'</i></div>
+			<div class="text">Date Listed:<i>'.date('d-m-Y',$row["DateOfListing"]).'</i></div>
 			<div class="text">Initial Price:'.$row["ProductInitialPrice"].'</div>
 			<form action="ProductPage.php?ID='.$row["ProductID"].'" method="post"></br>
 			<input type="submit" value="Product Page"/>
@@ -608,7 +609,7 @@ class BaseUser
 			<div class="middle">
 			<div class="text">Product Name:'.$row["ProductName"].'</div>
 			<div class="text">Category:'.$row["ProductCategory"].'</div>
-			<div class="text">Date Listed:<i>'.date('d-m-Y',strtotime($row["DateOfListing"])).'</i></div>
+			<div class="text">Date Listed:<i>'.date('d-m-Y',$row["DateOfListing"]).'</i></div>
 			<div class="text">Initial Price:'.$row["ProductInitialPrice"].'</div>
 			<form action="ProductPage.php?ID='.$row["ProductID"].'" method="post"></br>
 			<input type="submit" value="Product Page"/>
@@ -1281,7 +1282,7 @@ class StandardUser extends BaseUser
 				}
 	
 	
-			 mysqli_query($this->connect(),"INSERT INTO `product` (`ProductID`, `ProductCategory`, `ProductDescription`, `ProductCaption`, `ProductInitialPrice`, `ProductName`,`SellerUserID`,`Image` ) VALUES ('".$ProductID."','".$Category."','".$Description."','".$Caption."','".$Cost."','".$Name."','".$this->getUID()."','".$File."')") or die(mysqli_error($this->connect()));
+			 mysqli_query($this->connect(),"INSERT INTO `product` (`ProductID`, `ProductCategory`, `ProductDescription`, `ProductCaption`, `ProductInitialPrice`, `ProductName`,`SellerUserID`,`Image`,`DateOfListing`) VALUES ('".$ProductID."','".$Category."','".$Description."','".$Caption."','".$Cost."','".$Name."','".$this->getUID()."','".$File."','".time()."')") or die(mysqli_error($this->connect()));
 	 	
 				return $ProductID;
 	}

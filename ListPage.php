@@ -13,7 +13,7 @@ $submit = true;
 
 if(isset($_POST['submit'])){
 $Name = test_input($_POST["Name"]);
-$Category = $_POST["Category"];
+$Category = test_input($_POST["Category"]);
 $Caption = test_input($_POST["Caption"]); 
 $Description = test_input($_POST["Description"]); 
 $Cost = test_input($_POST["Cost"]);

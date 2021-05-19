@@ -324,7 +324,7 @@ $(document).ready(function(){
   <input type="text" id="Convert_privatekey" name="Convert_privatekey"value=<?php echo $_POST["Convert_privatekey"];?>><br><br>
   <span class="error"><?php echo $Convert_privatekeyError;?></span><br /><br />
   <label for="Convert_amount">Amount:</label><br/>
-  <input type="Number" id="Convert_amount" name="Convert_amount"value=<?php echo $_POST["Convert_amount"];?>><br><br>
+  <input type="Number" step="any" id="Convert_amount" name="Convert_amount"value=<?php echo $_POST["Convert_amount"];?>><br><br>
   <span class="error"><?php echo $Convert_amountError;?></span><br /><br />
   <input type="submit"  name="ETH2STIC" value="Convert">
 </form> 
