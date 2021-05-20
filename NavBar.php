@@ -138,7 +138,7 @@ echo'
 	</div>
 </div>
 </form>';
-echo '<h2>STICOIN BALANCE: '.$_SESSION['Object']->getAccountBalance().'</h2>';
+echo '<h2>Account balance: SGD$'.$_SESSION['Object']->getAccountBalance().' </h2>';
 echo '<form method="post">
 		<input type="image" src="systemimages/reload.png" alt="Submit" width="30" height="30" style="float:left" />
 		<input type="hidden" name="Refresh"/>

@@ -8,13 +8,13 @@ if(!isset($_SESSION['ID'])){
 $Convert_publickeyError = $Convert_privatekeyError = $Convert_amountError= "";
 $Convert2_publickeyError = $Convert2_privatekeyError = $Convert2_amountError= "";
 $validated = true;
-$STIC = false;
+$FIAT = false;
 $ETH = false;
 
 
-if(isset($_POST['STIC2ETH'])){
+if(isset($_POST['FIAT2ETH'])){
 	
-$STIC = true;
+$FIAT = true;
 	
 if(empty($_POST["Convert2_publickey"]))
 {
@@ -41,7 +41,7 @@ $validated = false;
 else{
 	
 if($_POST["Convert2_amount"]>$_SESSION['Object']->getAccountBalance()){
-$Convert2_amountError = "You insufficient amount of STICoins";	
+$Convert2_amountError = "You insufficient amount of FIAToins";	
 $validated = false;
 }
 }
@@ -73,13 +73,14 @@ if(isset($_POST['Confirmation'])&& $_POST['Confirmation']=="No"){
 $validated = false;
 }
 if(isset($_POST['Confirmation'])&&$_POST['Confirmation']=="Yes"){
-sleep(2);
-$Convert2edAmount = $_SESSION['AmountC2']/10000;
+
+$Convert2edAmount = $_SESSION['AmountC2']/$_SESSION['Object'] ->getCurrencyValue('SGD');
 $message = $_SESSION['Object'] -> ConvertToETH($_SESSION['AmountC2'],$_SESSION['PubKeyC2']);
 echo'<style> .ETHGUI{display:none;}</style>';	
-	
+sleep(2);
 
 if($message!="Success"){
+	$_SESSION['Object']->updateBalance();
 	echo'
 	<form method="post" action="ConvertPage.php">
 	<h1>Transaction Summary</h1>
@@ -88,7 +89,7 @@ if($message!="Success"){
 	<b>Converted Amount:'.$Convert2edAmount.'</b></br>
 	<b>Transaction: Failed </b></br>
 	<b>Reason:'.$message.'</b></br>
-	<b>STICoin Balance:'.$_SESSION['Object']->getAccountBalance().'</b></br>
+	<b>Account Balance:SGD$'.$_SESSION['Object']->getAccountBalance().'</b></br>
 	<input type="submit" value="Try again">
 	</form>';	
 	unset($_SESSION['PubKeyC2']);
@@ -97,6 +98,7 @@ if($message!="Success"){
 	exit();
 }
 else{
+	$_SESSION['Object']->updateBalance();
 	echo'
 	<form method="post" action="index.php">
 	<h1>Transaction Summary</h1>
@@ -104,7 +106,7 @@ else{
 	<b>Initial Amount :'.$_SESSION["AmountC2"].'</b></br>
 	<b>Converted Amount:'.$Convert2edAmount.'</b></br>
 	<b>Transaction: Success </br>
-	<b>STICoin Balance:'.$_SESSION['Object']->getAccountBalance().'</b></br>
+	<b>Account Balance:SGD$'.$_SESSION['Object']->getAccountBalance().'</b></br>
 	<input type="submit" value="Return to main menu!">
 	</form>';	
 	unset($_SESSION['PubKeyC2']);
@@ -118,10 +120,10 @@ else{
 
 
 
-if(!$STIC){
+if(!$FIAT){
 echo'<style> .ETHGUI{display:none;}</style>';	
 }
-if(isset($_POST['ETH2STIC'])){
+if(isset($_POST['ETH2FIAT'])){
 $ETH = true;
 if(empty($_POST["Convert_publickey"]))
 {
@@ -185,28 +187,29 @@ $_POST["Convert_privatekey"] = '';
 $_POST["Convert_amount"] = '';
 }
 if(!$ETH){
-echo'<style> .STICGUI{display:none;}</style>';	
+echo'<style> .FIATGUI{display:none;}</style>';	
 }
 if(isset($_POST['Confirmation2'])&& $_POST['Confirmation2']=="No"){
 $validated = false;
 }
 if(isset($_POST['Confirmation2'])&&$_POST['Confirmation2']=="Yes"){
-sleep(2);
-$Convert2edAmount =$_SESSION['AmountC1'] *10000;
-$message = $_SESSION['Object'] -> ConvertToSTICOIN($_SESSION['AmountC1'] ,$_SESSION['PubKeyC1'],$_SESSION['PrivKeyC1']);
+
+$Convert2edAmount =$_SESSION['AmountC1']*$_SESSION['Object'] ->getCurrencyValue('SGD');
+$message = $_SESSION['Object'] -> ConvertToFIATOIN($_SESSION['AmountC1'] ,$_SESSION['PubKeyC1'],$_SESSION['PrivKeyC1']);
 echo'<style> .ETHGUI{display:none;}</style>';	
-	
+sleep(2);
 
 if($message!="Success"){
+	$_SESSION['Object']->updateBalance();
 	echo'
 	<form method="post" action="ConvertPage.php">
 	<h1>Transaction Summary</h1>
-	<b>Operation:Convert to STIcoin</b></br>
+	<b>Operation:Convert to SGD</b></br>
 	<b>Initial Amount :'.$_SESSION['AmountC1'].'</b></br>
 	<b>Converted Amount:'.$Convert2edAmount.'</b></br>
 	<b>Transaction: Failed </b></br>
 	<b>Reason:'.$message.'</b></br>
-	<b>STICoin Balance:'.$_SESSION['Object']->getAccountBalance().'</b></br>
+	<b>Account Balance:SGD$'.$_SESSION['Object']->getAccountBalance().'</b></br>
 	<input type="submit" value="Try again">
 	</form>';	
 	unset($_SESSION['PubKeyC1']);
@@ -216,14 +219,15 @@ if($message!="Success"){
 	exit();
 }
 else{
+	$_SESSION['Object']->updateBalance();
 	echo'
 	<form method="post" action="index.php">
 	<h1>Transaction Summary</h1>
-	<b>Operation:Convert to STIcoin</b></br>
+	<b>Operation:Convert to SGD</b></br>
 	<b>Initial Amount :'.$_SESSION["AmountC1"].'</b></br>
 	<b>Converted Amount:'.$Convert2edAmount.'</b></br>
 	<b>Transaction: Success </br>
-	<b>STICoin Balance:'.$_SESSION['Object']->getAccountBalance().'</b></br>
+	<b>Account Balance:SGD$'.$_SESSION['Object']->getAccountBalance().'</b></br>
 	<input type="submit" value="Return to main menu!">
 	</form>';	
 	unset($_SESSION['PubKeyC1']);
@@ -261,18 +265,18 @@ span{
    
 }
 </style>
-<button class="STIC">STIC to ETH</button>
-<button class="ETH">ETH to STIC</button>
+<button class="FIAT">SGD to ETH</button>
+<button class="ETH">ETH to SGD</button>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
 $(document).ready(function(){
-  $(".STIC").click(function(){
+  $(".FIAT").click(function(){
     $(".ETHGUI").show();
-	$(".STICGUI").hide();
+	$(".FIATGUI").hide();
   });
   $(".ETH").click(function(){
-    $(".STICGUI").show();
+    $(".FIATGUI").show();
 	$(".ETHGUI").hide();
   });
 });
@@ -282,8 +286,8 @@ $(document).ready(function(){
     // check form input values
     //
 
-    form.STIC2ETH.style.display = "none";
-    form.STIC2ETH.value = "Please wait...";
+    form.FIAT2ETH.style.display = "none";
+    form.FIAT2ETH.value = "Please wait...";
     return true;
   }
  function check2Form(form) // Submit button clicked
@@ -292,8 +296,8 @@ $(document).ready(function(){
     // check form input values
     //
 
-    form.ETH2STIC.style.display = "none";
-    form.ETH2STIC.value = "Please wait...";
+    form.ETH2FIAT.style.display = "none";
+    form.ETH2FIAT.value = "Please wait...";
     return true;
   }
 
@@ -301,22 +305,22 @@ $(document).ready(function(){
 <hr>
 <div class="ETHGUI">
 	
-<form method="post" id="formSTIC" onsubmit="return checkForm(this);">
+<form method="post" id="formFIAT" onsubmit="return checkForm(this);">
   <?php echo '<b>Convert to Ethereum</b></br>';?>
   <label for="Convert2_publickey">Public Key:</label><br>
   <input type="text" id="Convert2_publickey" name="Convert2_publickey" value=<?php echo $_POST["Convert2_publickey"];?>><br>
   <span class="error"><?php echo $Convert2_publickeyError;?></span><br /><br />
   <label for="Convert2_amount">Amount:</label><br>
-  <input type="Number" id="Convert2_amount" name="Convert2_amount"value=<?php echo $_POST["Convert2_amount"];?>><br><br>
+  <input type="Number"  step="any" id="Convert2_amount" name="Convert2_amount"value=<?php echo $_POST["Convert2_amount"];?>><br><br>
   <span class="error"><?php echo $Convert2_amountError;?></span><br /><br />
-  <input type="submit" name="STIC2ETH" value="Convert">
+  <input type="submit" name="FIAT2ETH" value="Convert">
 
 </form> 
 </div>
-<div class="STICGUI">
+<div class="FIATGUI">
 	
 <form method="post" id="formETH" onsubmit="return check2Form(this);">
-  <?php echo '<b>Convert to STICoin</b></br>';?>
+  <?php echo '<b>Convert to SGD</b></br>';?>
   <label for="Convert_publickey">Public Key:</label><br>
   <input type="text" id="Convert_publickey" name="Convert_publickey" value=<?php echo $_POST["Convert_publickey"];?>><br/>
   <span class="error"><?php echo $Convert_publickeyError;?></span><br /><br />
@@ -326,7 +330,7 @@ $(document).ready(function(){
   <label for="Convert_amount">Amount:</label><br/>
   <input type="Number" step="any" id="Convert_amount" name="Convert_amount"value=<?php echo $_POST["Convert_amount"];?>><br><br>
   <span class="error"><?php echo $Convert_amountError;?></span><br /><br />
-  <input type="submit"  name="ETH2STIC" value="Convert">
+  <input type="submit"  name="ETH2FIAT" value="Convert">
 </form> 
 
 

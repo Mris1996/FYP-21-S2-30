@@ -129,14 +129,23 @@ if(isset($_POST['CheckAccepted'])){
 	
 if($_SESSION['Object']->CheckAccepted($_POST['CheckAccepted'])==2){
 if($_SESSION['Object']->ToTransfer($_POST['CheckAccepted'])){
-		$_SESSION['Object']->TransferAmount($_POST['CheckAccepted'],$_SESSION['Object']->AmountToTransfer($_POST['CheckAccepted']));
+		if($_SESSION['Object']->TransferAmount($_POST['CheckAccepted'],$_SESSION['Object']->AmountToTransfer($_POST['CheckAccepted']))){
+			$_SESSION['Object']->UpdateStatusDeal($_POST['CheckAccepted']);		
+			$jsonData = json_encode([
+			'REPLY'=>'CheckAccepted',
+			'Deal' => "set",
+			'ContractID' => $_POST['CheckAccepted']
+			]);	
+		}
+		else{
+			$jsonData = json_encode([
+			'REPLY'=>'CheckAccepted',
+			'Deal' => "error",
+			'ContractID' => $_POST['CheckAccepted']
+			]);	
+		}
 }
-$_SESSION['Object']->UpdateStatusDeal($_POST['CheckAccepted']);		
-$jsonData = json_encode([
-	'REPLY'=>'CheckAccepted',
-	'Deal' => "set",
-	'ContractID' => $_POST['CheckAccepted']
-]);	
+
 
 }
 else{
@@ -156,16 +165,26 @@ if(isset($_POST['CheckServiceAccepted'])){
 	
 if($_SESSION['Object']->CheckServiceAccepted($_POST['CheckServiceAccepted'])==2){
 if($_SESSION['Object']->ToTransfer($_POST['CheckServiceAccepted'])){
-		$_SESSION['Object']->TransferAmount($_POST['CheckServiceAccepted'],$_SESSION['Object']->AmountToTransfer($_POST['CheckServiceAccepted']));
-}
-$_SESSION['Object']->UpdateStatusComplete($_POST['CheckServiceAccepted']);	
-$jsonData = json_encode([
-	'REPLY'=>'CheckServiceAccepted',
-	'DealComplete' => "set",
-	'Type' => $_POST['usertype'],
-	'ContractID' => $_POST['CheckServiceAccepted']
-	
+		if($_SESSION['Object']->TransferAmount($_POST['CheckServiceAccepted'],$_SESSION['Object']->AmountToTransfer($_POST['CheckServiceAccepted']))){
+			$_SESSION['Object']->UpdateStatusComplete($_POST['CheckServiceAccepted']);		
+			$jsonData = json_encode([
+			'REPLY'=>'CheckServiceAccepted',
+			'DealComplete' => "set",
+			'Type' => $_POST['usertype'],
+			'ContractID' => $_POST['CheckServiceAccepted']
 ]);	
+		}
+		else{
+			$jsonData = json_encode([
+			'REPLY'=>'CheckServiceAccepted',
+			'DealComplete' => "error",
+			'Type' => $_POST['usertype'],
+			'ContractID' => $_POST['CheckServiceAccepted']
+		]);	
+		}
+}
+
+
 
 }
 else{

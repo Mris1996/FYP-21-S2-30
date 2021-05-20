@@ -222,7 +222,18 @@ class BaseUser
 			// This is so to prevent hackers from performing account enumeration using this system.			
 		}
 	}
-	
+	public function getCurrencyValue($Currency){
+		$ch = curl_init('https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=SGD,USD,EUR');
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER , false);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$response = curl_exec($ch);
+		$retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		$CurrencyVal = json_decode($response,true);
+		curl_close($ch);
+		return $CurrencyVal[$Currency];
+		
+	}
 	public function GetAccountBalanceFromServer($PubKey){
 		$host    = "localhost";
 		$port    = 8080;
@@ -242,9 +253,15 @@ class BaseUser
 	
 		while($row = $result->fetch_assoc())
 		{ 	
-			return $row['AccountBalance'];
+			$Bal = $row['AccountBalance'];
 		}
+
+		 	
+		 $Bal = ($Bal * $this->getCurrencyValue('SGD'));
+		 $returnval = number_format($Bal, 2, '.', '');
+		 return $returnval;
 	}
+	
 	public function createEthereumAccount(){
 		
 		$host    = "localhost";
@@ -908,6 +925,7 @@ class StandardUser extends BaseUser
 		$encryptionMethod = "AES-256-CBC";
 		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
 		$iv = substr($secret, 0, 16);
+		$Amount = $Amount/$this->getCurrencyValue('SGD');
 		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
 		$arr = array('REQUEST' => "TransferSTICoins",'AMOUNT'=>$Amount,'BUYERPUBLICKEY'=>$TransferfromPubkey,'SELLERPUBLICKEY'=> $TransfertoPubkey ,'ESCROWPRIVATE'=>$encryptedMessage);
 		$message = json_encode($arr);
@@ -1069,6 +1087,7 @@ class StandardUser extends BaseUser
 		$encryptionMethod = "AES-256-CBC";
 		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
 		$iv = substr($secret, 0, 16);
+		$Amount = $Amount/$this->getCurrencyValue('SGD');
 		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
 		$arr = array('REQUEST' => "TransferSTICoins",'AMOUNT'=>$Amount,'BUYERPUBLICKEY'=>$TransferfromPubkey,'SELLERPUBLICKEY'=> $TransfertoPubkey ,'ESCROWPRIVATE'=>$encryptedMessage);
 		$message = json_encode($arr);
@@ -1098,7 +1117,7 @@ class StandardUser extends BaseUser
 			sleep(4);
 			
 		}
-		return;
+		return true;
 	}
 	
 		public function getEscrow(){
@@ -1235,6 +1254,7 @@ class StandardUser extends BaseUser
 			
 			
 		}
+		
 		public function ConvertToSTICOIN($amount,$WalletPubkey,$WalletPrivateKey){
 		$host    = "localhost";
 		$port    = 8080;
@@ -1256,7 +1276,6 @@ class StandardUser extends BaseUser
 		$raw_data = file_get_contents('http://localhost:3000/ConvertToSTICoin');
 		$data = json_decode($raw_data, true);
 		if($data['Transaction']== "Success"){
-			$this->AccountBalance  = $data['sticoin'];
 			return $data['Transaction'];
 		}
 		else{
@@ -1266,6 +1285,7 @@ class StandardUser extends BaseUser
 		public function ConvertToETH($amount,$WalletPubkey){
 		$host    = "localhost";
 		$port    = 8080;
+		$amount = $amount/$this->getCurrencyValue('SGD');
 		date_default_timezone_set('UTC');
 		$this->getEscrow();
 		$textToEncrypt = $this->getEscrowPrivate();
@@ -1285,7 +1305,6 @@ class StandardUser extends BaseUser
 		$raw_data = file_get_contents('http://localhost:3000/ConvertToETH');
 		$data = json_decode($raw_data, true);
 		if($data['Transaction']== "Success"){
-			$this->AccountBalance  = $data['sticoin'];
 			return $data['Transaction'];
 		}
 		else{
@@ -1474,6 +1493,7 @@ class Admin extends StandardUser
 		$encryptionMethod = "AES-256-CBC";
 		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
 		$iv = substr($secret, 0, 16);
+		$Amount = $Amount/$this->getCurrencyValue('SGD');
 		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
 		$arr = array('REQUEST' => "TransferSTICoins",'AMOUNT'=>$Amount,'BUYERPUBLICKEY'=>$TransferfromPubkey,'SELLERPUBLICKEY'=> $TransfertoPubkey ,'ESCROWPRIVATE'=>$encryptedMessage);
 		$message = json_encode($arr);

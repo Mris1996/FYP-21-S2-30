@@ -826,6 +826,11 @@ connection.onmessage = function (message) {
 						location.replace("MyContractsPage.php");
 
 					}
+					if(data.Deal=="error")
+					{
+						document.getElementById('statusmessage').innerHTML = "Server Error";
+
+					}
 				}
 				if (data.REPLY == 'CheckServiceAccepted') {
 
@@ -840,6 +845,11 @@ connection.onmessage = function (message) {
 					
 
 				}
+				if(data.DealComplete=="error")
+					{
+						document.getElementById('statusmessage').innerHTML = "Server Error";
+
+					}
 
 
 				}
