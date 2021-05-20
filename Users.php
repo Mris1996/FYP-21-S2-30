@@ -1255,7 +1255,7 @@ class StandardUser extends BaseUser
 			
 		}
 		
-		public function ConvertToSTICOIN($amount,$WalletPubkey,$WalletPrivateKey){
+		public function ConvertToFIATCurrency($amount,$WalletPubkey,$WalletPrivateKey){
 		$host    = "localhost";
 		$port    = 8080;
 		date_default_timezone_set('UTC');

@@ -237,7 +237,7 @@ else if($ContractObj->Status == "Transaction Complete"){
 	echo 'Transaction Complete';	
 }
 else if($ContractObj->Status == "Order Cancelled"){
-	echo 'Seller has cancelled the order, sorry for any inconvenience caused,STICoins will be returned to the buyer , as soon as possible.';	
+	echo 'Seller has cancelled the order, sorry for any inconvenience caused,amount will be returned to the buyer , as soon as possible.';	
 }
 else if($ContractObj->Status == "Rejected"){
 	echo 'Transaction declined,offer is rejected';	
@@ -280,7 +280,7 @@ echo 'Terms are being negotiated';
 	
 	
 		<br />
-		<label>Offer(STICoins):</label>
+		<label>Offer(SGD):</label>
 		<input type="number" id="Offer" name="Offer" min="0.00" step="any" oninput="formsyncfunction()" value="<?php echo $ContractObj->NewOffer;?>" required>
 		<br />
 <?php 
@@ -288,11 +288,11 @@ echo 'Terms are being negotiated';
 		echo'
 		<label>Offer will be rounded up to whole number</label><br /><br />
 		<label> Payment Mode</label><br>
-		<label for="Half">Half-STICoins now:</label>
+		<label for="Half">Half-Amount now:</label>
 		<input type="radio"  id="PaymentMode1" onclick="formsyncfunction()" name="PaymentMode" value="Half-STICoins" ><br>
-		<label for="female">Full-STICoins now:</label>
+		<label for="female">Full-Amount now:</label>
 		<input type="radio"  id="PaymentMode2" onclick="formsyncfunction()" name="PaymentMode" value="Full-STICoins"><br>
-		<label for="FullLater">Full-STICoins later :</label>
+		<label for="FullLater">Full-Amount later :</label>
 		<input type="radio" id="PaymentMode3" onclick="formsyncfunction()" name="PaymentMode" value="Full-STICoins_Later"><br>
 		<br>';
 		}
@@ -300,11 +300,11 @@ echo 'Terms are being negotiated';
 			echo'
 		<label>Offer will be rounded up to whole number</label><br /><br />
 		<label> Payment Mode</label><br>
-		<label for="Half">Half-STICoins now:</label>
+		<label for="Half">Half-Amount now:</label>
 		<input type="radio"  id="PaymentMode1" onclick="formsyncfunction()" name="PaymentMode" value="Half-STICoins"  disabled><br>
-		<label for="FullNow">Full-STICoins now:</label>
+		<label for="FullNow">Full-Amount now:</label>
 		<input type="radio"  id="PaymentMode2" onclick="formsyncfunction()" name="PaymentMode" value="Full-STICoins" disabled><br>
-		<label for="FullLater">Full-STICoins later :</label>
+		<label for="FullLater">Full-Amount later :</label>
 		<input type="radio" id="PaymentMode3" onclick="formsyncfunction()" name="PaymentMode" value="Full-STICoins_Later" disabled><br>
 		<br>';
 			
@@ -543,7 +543,7 @@ function Accept(){
 
 	if(document.getElementById('PaymentMode2').checked && UserType =="Buyer"){
 		if(Balance < document.getElementById("Offer").value){
-			alert("You have insufficient balance,please top up STICoins");
+			alert("You have insufficient balance,please top up");
 		}
 		else{
 			SendAccept();
@@ -554,7 +554,7 @@ function Accept(){
 
 		if(Balance < (document.getElementById("Offer").value/2)){
 			
-			alert("You have insufficient balance,please top up STICoins");
+			alert("You have insufficient balance,please top up");
 		}
 		else{
 			SendAccept();
@@ -616,7 +616,7 @@ function Reject(){
 function AcceptService(){
 if(document.getElementById('PaymentMode3').checked && UserType =="Buyer"){
 	if(Balance < document.getElementById("Offer").value){
-		alert("You have insufficient balance,please top up STICoins");
+		alert("You have insufficient balance,please top up");
 	}
 	else{
 		SendAcceptService();
@@ -627,7 +627,7 @@ else if(document.getElementById('PaymentMode1').checked && UserType =="Buyer"){
 
 	if(Balance < (document.getElementById("Offer").value/2)){
 		
-		alert("You have insufficient balance,please top up STICoins");
+		alert("You have insufficient balance,please top up");
 	}
 	else{
 		SendAcceptService();
@@ -675,7 +675,7 @@ function RequestRefund(){
 function CancelOrder(){
 	if(document.getElementById('PaymentMode2').checked && UserType =="Seller"){
 	if(Balance < document.getElementById("Offer").value){
-		alert("You have insufficient balance,please top up STICoins");
+		alert("You have insufficient balance,please top up");
 	}
 	else{
 		SendCancelOrder();
@@ -686,7 +686,7 @@ else if(document.getElementById('PaymentMode1').checked && UserType =="Seller"){
 
 	if(Balance < (document.getElementById("Offer").value/2)){
 		
-		alert("You have insufficient balance,please top up STICoins");
+		alert("You have insufficient balance,please top up");
 	}
 	else{
 		SendCancelOrder();
@@ -707,14 +707,14 @@ function SendCancelOrder(){
 	var ajax = new XMLHttpRequest();
 	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	ajax.send("message=" + " has cancelled order.Sorry for the inconvenience,your STICoins will return to you shortly." + "&contractid=" + ContractID + "&usertype=" + UserType + "&User=" + User );
+	ajax.send("message=" + " has cancelled order.Sorry for the inconvenience,your amount will return to you shortly." + "&contractid=" + ContractID + "&usertype=" + UserType + "&User=" + User );
 	console.log(ajax);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function Refund_Admin(){
 
 	if(Number(SellerBalance) < document.getElementById("Offer").value){
-		alert("You have insufficient balance,please top up STICoins");
+		alert("You have insufficient balance,please top up");
 	}
 	else{
 		SendRefund_Admin();
@@ -873,7 +873,7 @@ connection.onmessage = function (message) {
 					document.getElementById('PaymentMode3').disabled = true;
 					document.getElementById('PaymentMode2').disabled = true;
 					document.getElementById('PaymentMode1').disabled = true;
-					document.getElementById('statusmessage').innerHTML = "Status:Seller has cancelled the order, sorry for any inconvenience caused,STICoins will be returned to the buyer , as soon as possible.";
+					document.getElementById('statusmessage').innerHTML = "Status:Seller has cancelled the order, sorry for any inconvenience caused,amount will be returned to the buyer , as soon as possible.";
 					location.replace("MyContractsPage.php");
 				}
 				if(data.REPLY=='Refund'){

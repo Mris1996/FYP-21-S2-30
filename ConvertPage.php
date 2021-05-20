@@ -41,7 +41,7 @@ $validated = false;
 else{
 	
 if($_POST["Convert2_amount"]>$_SESSION['Object']->getAccountBalance()){
-$Convert2_amountError = "You insufficient amount of FIAToins";	
+$Convert2_amountError = "You insufficient amount of money";	
 $validated = false;
 }
 }
@@ -195,7 +195,7 @@ $validated = false;
 if(isset($_POST['Confirmation2'])&&$_POST['Confirmation2']=="Yes"){
 
 $Convert2edAmount =$_SESSION['AmountC1']*$_SESSION['Object'] ->getCurrencyValue('SGD');
-$message = $_SESSION['Object'] -> ConvertToFIATOIN($_SESSION['AmountC1'] ,$_SESSION['PubKeyC1'],$_SESSION['PrivKeyC1']);
+$message = $_SESSION['Object'] -> ConvertToFIATCurrency($_SESSION['AmountC1'] ,$_SESSION['PubKeyC1'],$_SESSION['PrivKeyC1']);
 echo'<style> .ETHGUI{display:none;}</style>';	
 sleep(2);
 
