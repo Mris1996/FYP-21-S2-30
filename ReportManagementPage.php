@@ -132,7 +132,7 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 		<td>'.$ProductObj->SellerUserID.'</td>
 		<td>'.$ProductObj->Reported.'</td>
 		<td>'.$ProductObj->Status.'</td>
-		<td><form  method="post" action="ContractPage.php?ID='.$ProductObj->ProductID.'"><input type="submit" value="Go to page"></form></td>
+		<td><form  method="post" action="ProductPage.php?ID='.$ProductObj->ProductID.'"><input type="submit" value="Go to page"></form></td>
 	</tr>';
 	}
 }

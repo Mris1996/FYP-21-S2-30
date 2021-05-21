@@ -129,7 +129,7 @@ if(isset($_POST['submit'])&& $submit){
 			</br>
 			<center>Successfully sent Offer!</center>
 			<center>Check the status of your offer in the page below</center>
-			<center><a href="ContractPage.php?ID='.$ContractID.'">ContractPage.php?ID='.$ContractID.'</a><center>
+			<center><a href="MyContractsPage.php">Go to MyContracts Page</a><center>
 		</div>';
 	echo'<script>history.pushState({}, "", "")</script>';
 	exit();
