@@ -834,12 +834,12 @@ class StandardUser extends BaseUser
 					echo'<div id="User2">';
 				}
 				if($Msg [$x]['Type']=="Admin"){
-					echo'<span class="author">'.$this->getUserDisplayName($Msg [$x]['User']).'(Administrator):</span>
+					echo'<span class="author">'.$Msg [$x]['User'].'(Administrator):</span>
 						 <span class="messsage-text">'.$Msg [$x]['Message'].'</span></br>';
 					echo'</div>';
 				}
 				else{
-					echo'<span class="author">'.$this->getUserDisplayName($Msg [$x]['User']).':</span>
+					echo'<span class="author">'.$Msg [$x]['User'].':</span>
 						 <span class="messsage-text">'.$Msg [$x]['Message'].'</span></br>';
 					echo'</div>';
 				}
@@ -1012,20 +1012,25 @@ class StandardUser extends BaseUser
 			$Type = $row['Payment Mode'];
 			$TransactionMessage = $row['Transaction'];
 		}
+	
 		if($Seller==$this->getUID()){
+		
 			return True;
 		}
-		if($Type == "Half-STICoins")
-		{
+		if($Type == "Half-STICoins"){
+	
 			return True;
 		}
-		if($Type == "Full-STICoins"&& $TransactionMessage == "On-Going"){
+		if($Type == "Full-STICoins" && $TransactionMessage == "Negotiating"){
+			
 			return True;
 		}
 		if($Type == "Full-STICoins_Later" && $TransactionMessage == "Complete"){
+				
 				return True;
 		}
 		else{
+
 			return False;
 		}
 		
@@ -1049,7 +1054,7 @@ class StandardUser extends BaseUser
 		return $Amount;
 	}
 	public function TransferAmount($ContractID,$Amount){
-	
+		echo $Amount.'</br>';
 		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		$Transferfrom = '';
@@ -1060,7 +1065,7 @@ class StandardUser extends BaseUser
 			$Transferto = $row['SellerUserID'];
 			$Transferfrom = $row['BuyerUserID'];
 		}
-		echo $Transferfrom;
+	
 		if($this->getUID()==$Transferfrom){
 			
 		$sql = "SELECT * FROM users WHERE UserID ='".$Transferto."'";
@@ -1088,6 +1093,7 @@ class StandardUser extends BaseUser
 		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
 		$iv = substr($secret, 0, 16);
 		$Amount = $Amount/$this->getCurrencyValue('SGD');
+		echo $Amount;
 		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
 		$arr = array('REQUEST' => "TransferSTICoins",'AMOUNT'=>$Amount,'BUYERPUBLICKEY'=>$TransferfromPubkey,'SELLERPUBLICKEY'=> $TransfertoPubkey ,'ESCROWPRIVATE'=>$encryptedMessage);
 		$message = json_encode($arr);
@@ -1112,12 +1118,16 @@ class StandardUser extends BaseUser
 		$JData = json_encode($TransactionData);
 		$sql = " UPDATE `contracts` SET `TransactionID`= '".$JData ."' WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		if(!empty($TransactionData)){
+			return true;
 		}
 		else{
-			sleep(4);
-			
+			return false;
 		}
-		return true;
+		
+		}
+			return true;
+		
 	}
 	
 		public function getEscrow(){

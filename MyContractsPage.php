@@ -27,6 +27,10 @@ $(document).ready(function(){
   });
 
 });
+function opencontract(ID){
+
+window.open("ContractPage.php?ID="+ID,"winname","width=1500,height=900");
+}
 </script>
 <button class="All">All Contracts</button>
 <button class="Seller">Contracts as seller</button>
@@ -95,10 +99,11 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 		<td><form  method="post" action="RecieptPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="View Reciept"></form></td>';
 		}
 		echo'
-		<td><form  method="post" action="ContractPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="View Contract"></form></td>
+		<td><input type="button" id="'.$ContractsObj->ContractID.'" onclick="opencontract(this.id)" value="Open Contract"/></td>
 		</tr>';
 	}
 }
+
 echo'</table>';
 
 echo'<div style="margin-top:10px;width:1000px;margin-left:auto;margin-right:auto;text-align:center">';			
@@ -179,7 +184,7 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 		<td><form  method="post" action="RecieptPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="View Reciept"></form></td>';
 		}
 		echo'
-		<td><form  method="post" action="ContractPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="View Contract"></form></td>
+		<td><input type="button" id="'.$ContractsObj->ContractID.'" onclick="opencontract(this.id)" value="Open Contract"/></td>
 		</tr>';
 	}
 }
@@ -266,7 +271,7 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 		<td><form  method="post" action="RecieptPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="View Reciept"></form></td>';
 		}
 		echo'
-		<td><form  method="post" action="ContractPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="View Contract"></form></td>
+		<td><input type="button" id="'.$ContractsObj->ContractID.'" onclick="opencontract(this.id)" value="Open Contract"/></td>
 		</tr>';
 		
 	}

@@ -27,6 +27,10 @@ $(document).ready(function(){
   });
 
 });
+function opencontract(ID){
+
+window.open("ContractPage.php?ID="+ID,"winname","width=1500,height=900");
+}
 </script>
 <button class="All">All Contracts</button>
 <button class="Refund">Refunded Contracts</button>
@@ -87,7 +91,7 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 		<td>'.$ContractsObj->InitialOffer.'</td>
 		<td>'.$ContractsObj->NewOffer.'</td>
 		<td>'.$ContractsObj->Status.'</td>
-		<td><form method="post" action="ContractPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="Go to page"></form></td>
+		<td><input type="button" id="'.$ContractsObj->ContractID.'" onclick="opencontract(this.id)" value="Open Contract"/></td>
 		<td><form  method="post"><input type="hidden" name="HaltContractID" value="'.$ContractsObj->ContractID.'"><input type="submit" name="Halt" value="Halt Transaction"></form></td>
 	</tr>';
 	}
@@ -163,7 +167,7 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 		<td>'.$ContractsObj->InitialOffer.'</td>
 		<td>'.$ContractsObj->NewOffer.'</td>
 		<td>'.$ContractsObj->Status.'</td>
-		<td><form  method="post" action="ContractPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="Go to page"></form></td>
+		<td><input type="button" id="'.$ContractsObj->ContractID.'" onclick="opencontract(this.id)" value="Open Contract"/></td>
 		<td><form  method="post"><input type="hidden" name="HaltContractID" value="'.$ContractsObj->ContractID.'"><input type="submit" name="Halt" value="Halt Transaction"></form></td>
 	</tr>';
 	}
@@ -242,7 +246,7 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 		<td>'.$ContractsObj->InitialOffer.'</td>
 		<td>'.$ContractsObj->NewOffer.'</td>
 		<td>'.$ContractsObj->Status.'</td>
-		<td><form  method="post" action="ContractPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="Go to page"></form></td>
+		<td><input type="button" id="'.$ContractsObj->ContractID.'" onclick="opencontract(this.id)" value="Open Contract"/></td>
 		<td><form  method="post"><input type="hidden" name="HaltContractID" value="'.$ContractsObj->ContractID.'"><input type="submit" name="Halt" value="Halt Transaction"></form></td>
 	</tr>';
 	}

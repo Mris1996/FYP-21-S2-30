@@ -1,5 +1,8 @@
 <?php
-require_once("NavBar.php");
+require_once("Users.php");
+require_once("Products.php");
+require_once("Contracts.php");
+session_start();
 if(!isset($_SESSION['ID'])){
 	echo '<script> location.replace("index.php")</script> ';
 }
@@ -420,14 +423,14 @@ if($ContractObj->Transaction == "Negotiating"){
 ?>
 <script>
 
-var Intervals = setInterval(checkaccepted,3000);
+var Intervals = setInterval(checkaccepted,1000);
 function checkaccepted(){
 
 	var ajax = new XMLHttpRequest();
 	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("&CheckAccepted=" + ContractID);
-	console.log(ajax);
+	//console.log(ajax);
 
 }
 </script>
@@ -436,13 +439,13 @@ function checkaccepted(){
 else if($ContractObj->Transaction == "On-Going"){
 ?>
 <script>
-var Intervals2 = setInterval(checkserviceaccepted,3000);
+var Intervals2 = setInterval(checkserviceaccepted,1000);
 function checkserviceaccepted(){
 	var ajax = new XMLHttpRequest();
 	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("&CheckServiceAccepted=" + ContractID);
-	console.log(ajax);
+	//console.log(ajax);
 
 }
 </script>
@@ -503,7 +506,7 @@ function sendMessage() {
 	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("User=" + User + "&message=" + message + "&contractid=" + ContractID + "&usertype=" + UserType );
-	console.log(ajax);
+	//console.log(ajax);
 	messageInput.value = "";
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -568,7 +571,7 @@ function Accept(){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function SendAccept(){
 if(UserType =="Buyer"){
-	alert("Please do not refresh,you will be forwarded automatically after 4 seconds");
+	alert("Please do not refresh,this window will close automatically");
 }
 document.getElementById('Accept').style.display = "None";
 document.getElementById('Reject').style.display = "None";
@@ -641,7 +644,7 @@ else{
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function SendAcceptService(){
 if(UserType =="Buyer"){
-	alert("Please do not refresh,you will be forwarded automatically after 4 seconds");
+	alert("Please do not refresh,this window will close automatically");
 }
 	document.getElementById('service').style.display = "none";
 	var ajax = new XMLHttpRequest();
@@ -823,7 +826,7 @@ connection.onmessage = function (message) {
 						setTimeout(function() {
 						
 						}, delayInMilliseconds);
-						location.replace("MyContractsPage.php");
+						window.close('','_parent','');
 
 					}
 					if(data.Deal=="error")
@@ -841,7 +844,8 @@ connection.onmessage = function (message) {
 					var delayInMilliseconds = 2000; 
 					setTimeout(function() {
 					}, delayInMilliseconds);
-					location.replace("RatingPage.php?ID="+ContractID);
+					alert("Kindly leave a review at MyContracts Page,this window is closing");
+					window.close('','_parent','');
 					
 
 				}
@@ -862,7 +866,7 @@ connection.onmessage = function (message) {
 					document.getElementById('PaymentMode2').disabled = true;
 					document.getElementById('PaymentMode1').disabled = true;
 					document.getElementById('statusmessage').innerHTML = "Status:Offer Rejected, Transaction declined.";
-					location.replace("MyContractsPage.php");
+					window.close('','_parent','');
 				}
 				
 				if(data.REPLY=='Cancel'){
@@ -874,7 +878,7 @@ connection.onmessage = function (message) {
 					document.getElementById('PaymentMode2').disabled = true;
 					document.getElementById('PaymentMode1').disabled = true;
 					document.getElementById('statusmessage').innerHTML = "Status:Seller has cancelled the order, sorry for any inconvenience caused,amount will be returned to the buyer , as soon as possible.";
-					location.replace("MyContractsPage.php");
+					//window.close('','_parent','');
 				}
 				if(data.REPLY=='Refund'){
 					document.getElementById('Accept').disabled = true;
@@ -885,7 +889,7 @@ connection.onmessage = function (message) {
 					document.getElementById('PaymentMode2').disabled = true;
 					document.getElementById('PaymentMode1').disabled = true;
 					document.getElementById('statusmessage').innerHTML = "Status:Buyer refunded,await Admin assistance.";
-					
+					//window.close('','_parent','');
 				}
 				if (data.REPLY == 'AcceptService') {
 					if(UserType == "Seller"){
@@ -900,7 +904,7 @@ connection.onmessage = function (message) {
 					location.reload();
 				}
 				if (data.REPLY == 'AdminRefund') {
-					location.replace("MyContractsPage.php");
+					//window.close('','_parent','');
 				}
 			}
 			
@@ -912,5 +916,3 @@ objDiv.scrollTop = objDiv.scrollHeight;
 
 	
 </script>
-
-<?php require_once("Footer.php");?>
