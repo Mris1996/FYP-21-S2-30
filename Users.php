@@ -29,9 +29,7 @@ class BaseUser
 	
 	public function LoginValidate($ID,$Pass)
 	{	$ID = filter_var($ID, FILTER_SANITIZE_STRING);
-		$Pass = filter_var($Pass, FILTER_SANITIZE_STRING);
 		$ID = preg_replace('/(\'|&#0*39;)/', '', $ID);
-		$Pass = preg_replace('/(\'|&#0*39;)/', '', $Pass);
 		$sql = "SELECT * FROM users WHERE UserID='".$ID."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		if ($result->num_rows == 0) 
