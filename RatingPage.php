@@ -46,7 +46,7 @@ if($ContractsObj->SellerUserID!=$_SESSION['ID']){
 	$Type = "Buyer";
 }
 if($ContractsObj->BuyerUserID!=$_SESSION['ID']){
-	$_SESSION['OtherUser'] = $ContractsObj->SellerUserID;
+	$_SESSION['OtherUser'] = $ContractsObj->BuyerUserID;
 	$Type = "Seller";
 }
 
