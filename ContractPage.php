@@ -367,13 +367,13 @@ if(isset($_POST['ResumeTranasction'])){
 <div id="chatbox">
 	<h1>Contract ID:<?php echo $ContractID?></h1>
 <?php if($Type!="Admin"){ ?>
-	<h1>Dealing with:<a href="ProfilePage.php?ID=<?php if(isset($_SESSION['OtherUser'])){ echo $_SESSION['OtherUser'];}?>"><?php  if(isset($_SESSION['OtherUser'])){ echo $_SESSION['Object']->getUserDisplayName($_SESSION['OtherUser']);}?></a></h1>
+	<h1>Dealing with:<a onclick="OpenWindow(this.id)" href="" id="ProfilePage.php?ID=<?php if(isset($_SESSION['OtherUser'])){ echo $_SESSION['OtherUser'];}?>"><?php  if(isset($_SESSION['OtherUser'])){ echo $_SESSION['Object']->getUserDisplayName($_SESSION['OtherUser']);}?></a></h1>
 	<h1>Your Party Type:<?php echo $Type?></h1>
 <?php }
 	 else{
 ?>
-		<h1>Dealing with Buyer:<a href="ProfilePage.php?ID=<?php echo $ContractObj->BuyerUserID?>"><?php echo $_SESSION['Object']->getUserDisplayName($ContractObj->BuyerUserID)?></a></h1> 
-		<h1>Dealing with Seller:<a href="ProfilePage.php?ID=<?php echo $ContractObj->SellerUserID?>"><?php echo $_SESSION['Object']->getUserDisplayName($ContractObj->SellerUserID)?></a></h1> 
+		<h1>Dealing with Buyer:<a onclick="OpenWindow(this.id)" href=""  id="ProfilePage.php?ID=<?php echo $ContractObj->BuyerUserID?>"><?php echo $_SESSION['Object']->getUserDisplayName($ContractObj->BuyerUserID)?></a></h1> 
+		<h1>Dealing with Seller:<a onclick="OpenWindow(this.id)" href="" id="ProfilePage.php?ID=<?php echo $ContractObj->SellerUserID?>"><?php echo $_SESSION['Object']->getUserDisplayName($ContractObj->SellerUserID)?></a></h1> 
 <?php
 	 }
 
@@ -457,6 +457,10 @@ document.getElementById('PaymentMode1').disabled = true;
 ?>
 </body>
 <script>
+function OpenWindow(ID){
+	window,opener.close();window.open(ID);
+
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if (document.getElementById('PaymentMode1').value == document.getElementById("Payment").value) {
