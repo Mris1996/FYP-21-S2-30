@@ -41,7 +41,7 @@ $query = http_build_query(['data' => $jsonData]);
 
 //#############################################################
 if(isset($_POST['AcceptService'])){
-$_SESSION['RatingToken']=1;
+
 $_SESSION['Object']->AcceptService($_POST['contractid'],$_POST['usertype']);
 
 $jsonData = json_encode([
@@ -132,7 +132,7 @@ if($_SESSION['Object']->CheckAccepted($_POST['CheckAccepted'])==2){
 
 if($_SESSION['Object']->ToTransfer($_POST['CheckAccepted'])){
 	
-		if($_SESSION['Object']->TransferAmount($_POST['CheckAccepted'],$_SESSION['Object']->AmountToTransfer($_POST['CheckAccepted']))){
+		if($_SESSION['Object']->TransferAmountAccept($_POST['CheckAccepted'],$_SESSION['Object']->AmountToTransfer($_POST['CheckAccepted']))){
 				
 	
 		}
@@ -144,7 +144,6 @@ if($_SESSION['Object']->ToTransfer($_POST['CheckAccepted'])){
 			]);	
 		}
 }
-$_SESSION['Object']->UpdateStatusDeal($_POST['CheckAccepted']);	
 $jsonData = json_encode([
 'REPLY'=>'CheckAccepted',
 'Deal' => "set",
@@ -167,8 +166,10 @@ $query = http_build_query(['data' => $jsonData]);
 if(isset($_POST['CheckServiceAccepted'])){
 
 if($_SESSION['Object']->CheckServiceAccepted($_POST['CheckServiceAccepted'])==2){
+			echo"asd";
 if($_SESSION['Object']->ToTransfer($_POST['CheckServiceAccepted'])){
-		if($_SESSION['Object']->TransferAmount($_POST['CheckServiceAccepted'],$_SESSION['Object']->AmountToTransfer($_POST['CheckServiceAccepted']))){
+
+		if($_SESSION['Object']->TransferAmountAcceptService($_POST['CheckServiceAccepted'],$_SESSION['Object']->AmountToTransfer($_POST['CheckServiceAccepted']))){
 			
 		}
 		else{
@@ -180,7 +181,6 @@ if($_SESSION['Object']->ToTransfer($_POST['CheckServiceAccepted'])){
 		]);	
 		}
 }
-$_SESSION['Object']->UpdateStatusComplete($_POST['CheckServiceAccepted']);	
 $jsonData = json_encode([
 'REPLY'=>'CheckServiceAccepted',
 'DealComplete' => "set",

@@ -150,7 +150,7 @@ class BaseUser
 			
 				
 		}
-	
+		
 	}
 	
 	public function ResetPassword ($userid, $temporary_password, $new_password)
@@ -864,7 +864,6 @@ class StandardUser extends BaseUser
 		$sql = " UPDATE `contracts` SET `Status`= '".$Type." has accepted service', `TotalAccepted`=  `TotalAccepted` +1 WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		
-		
 	}
 	public function RejectContract($ContractID){
 
@@ -1050,6 +1049,151 @@ class StandardUser extends BaseUser
 			$Amount= $Amount;
 		}
 		return $Amount;
+	}
+	public function TransferAmountAccept($ContractID,$Amount){
+		echo $Amount.'</br>';
+		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		$Transferfrom = '';
+		$Transferto = '';
+		
+		while($row = $result->fetch_assoc())
+		{
+			$Transferto = $row['SellerUserID'];
+			$Transferfrom = $row['BuyerUserID'];
+		}
+	
+		if($this->getUID()==$Transferfrom){
+			
+		$sql = "SELECT * FROM users WHERE UserID ='".$Transferto."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		while($row = $result->fetch_assoc())
+		{
+			$TransfertoPubkey = $row['PublicKey'];
+			
+		}
+		$sql = "SELECT * FROM users WHERE UserID ='".$Transferfrom."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		while($row = $result->fetch_assoc())
+		{
+			
+			$TransferfromPubkey = $row['PublicKey'];
+			
+		}
+		$host    = "localhost";
+		$port    = 8080;
+
+		date_default_timezone_set('UTC');
+		$this->getEscrow();
+		$textToEncrypt = $this->getEscrowPrivate();
+		$encryptionMethod = "AES-256-CBC";
+		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
+		$iv = substr($secret, 0, 16);
+		$Amount = $Amount/$this->getCurrencyValue('SGD');
+		echo $Amount;
+		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
+		$arr = array('REQUEST' => "TransferSTICoins",'AMOUNT'=>$Amount,'BUYERPUBLICKEY'=>$TransferfromPubkey,'SELLERPUBLICKEY'=> $TransfertoPubkey ,'ESCROWPRIVATE'=>$encryptedMessage);
+		$message = json_encode($arr);
+		$socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
+		$result = socket_connect($socket, $host, $port) or die("Could not connect to server\n");  
+		if($result) { 
+		socket_write($socket, $message, strlen($message)) or die("Could not send data to server\n");
+		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
+		}
+		socket_close($socket);
+		$raw_data = file_get_contents('http://localhost:3000/TransferAmount');
+		$data = json_decode($raw_data, true);
+		if(empty($data)){
+			return false;
+		}
+		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		while($row = $result->fetch_assoc())
+		{ 
+			$TransactionData = $row['TransactionID'];
+		}
+		$TransactionData = json_decode($TransactionData, true);
+		$NewData= array($data['TransactionHash'],date("d-m-Y"),$Amount,$Transferfrom,$Transferto);
+		array_push($TransactionData,$NewData);
+		$JData = json_encode($TransactionData);
+		$sql = " UPDATE `contracts` SET `TransactionID`= '".$JData ."' WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		$this->UpdateStatusDeal($_POST['CheckAccepted']);	
+		}
+		return true;
+	}
+	public function TransferAmountAcceptService($ContractID,$Amount){
+		echo $Amount.'</br>';
+		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		$Transferfrom = '';
+		$Transferto = '';
+		
+		while($row = $result->fetch_assoc())
+		{
+			$Transferto = $row['SellerUserID'];
+			$Transferfrom = $row['BuyerUserID'];
+		}
+	
+		if($this->getUID()==$Transferfrom){
+			
+		$sql = "SELECT * FROM users WHERE UserID ='".$Transferto."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		while($row = $result->fetch_assoc())
+		{
+			$TransfertoPubkey = $row['PublicKey'];
+			
+		}
+		$sql = "SELECT * FROM users WHERE UserID ='".$Transferfrom."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		while($row = $result->fetch_assoc())
+		{
+			
+			$TransferfromPubkey = $row['PublicKey'];
+			
+		}
+		$host    = "localhost";
+		$port    = 8080;
+
+		date_default_timezone_set('UTC');
+		$this->getEscrow();
+		$textToEncrypt = $this->getEscrowPrivate();
+		$encryptionMethod = "AES-256-CBC";
+		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
+		$iv = substr($secret, 0, 16);
+		$Amount = $Amount/$this->getCurrencyValue('SGD');
+		echo $Amount;
+		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
+		$arr = array('REQUEST' => "TransferSTICoins",'AMOUNT'=>$Amount,'BUYERPUBLICKEY'=>$TransferfromPubkey,'SELLERPUBLICKEY'=> $TransfertoPubkey ,'ESCROWPRIVATE'=>$encryptedMessage);
+		$message = json_encode($arr);
+		$socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
+		$result = socket_connect($socket, $host, $port) or die("Could not connect to server\n");  
+		if($result) { 
+		socket_write($socket, $message, strlen($message)) or die("Could not send data to server\n");
+		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
+		}
+		socket_close($socket);
+		$raw_data = file_get_contents('http://localhost:3000/TransferAmount');
+		$data = json_decode($raw_data, true);
+		if(empty($data)){
+			return false;
+		}
+		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		while($row = $result->fetch_assoc())
+		{ 
+			$TransactionData = $row['TransactionID'];
+		}
+		$TransactionData = json_decode($TransactionData, true);
+		$NewData= array($data['TransactionHash'],date("d-m-Y"),$Amount,$Transferfrom,$Transferto);
+		array_push($TransactionData,$NewData);
+		$JData = json_encode($TransactionData);
+		$sql = " UPDATE `contracts` SET `TransactionID`= '".$JData ."' WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		$this->UpdateStatusComplete($_POST['CheckServiceAccepted']);	
+		}
+		return true;
+		
 	}
 	public function TransferAmount($ContractID,$Amount){
 		echo $Amount.'</br>';
