@@ -144,6 +144,9 @@ if($_SESSION['Object']->ToTransfer($_POST['CheckAccepted'])){
 			]);	
 		}
 }
+if($_POST['paymenttype']=="Full-STICoins_Later"){
+	$_SESSION['Object']->UpdateStatusDeal($_POST['CheckAccepted']);
+}
 $jsonData = json_encode([
 'REPLY'=>'CheckAccepted',
 'Deal' => "set",
@@ -166,11 +169,9 @@ $query = http_build_query(['data' => $jsonData]);
 if(isset($_POST['CheckServiceAccepted'])){
 
 if($_SESSION['Object']->CheckServiceAccepted($_POST['CheckServiceAccepted'])==2){
-			echo"asd";
 if($_SESSION['Object']->ToTransfer($_POST['CheckServiceAccepted'])){
-
 		if($_SESSION['Object']->TransferAmountAcceptService($_POST['CheckServiceAccepted'],$_SESSION['Object']->AmountToTransfer($_POST['CheckServiceAccepted']))){
-			
+		
 		}
 		else{
 			$jsonData = json_encode([
@@ -181,13 +182,15 @@ if($_SESSION['Object']->ToTransfer($_POST['CheckServiceAccepted'])){
 		]);	
 		}
 }
+if($_POST['paymenttype']=="Full-STICoins"){
+	$_SESSION['Object']->UpdateStatusComplete($_POST['CheckServiceAccepted']);
+}
 $jsonData = json_encode([
 'REPLY'=>'CheckServiceAccepted',
 'DealComplete' => "set",
 'Type' => $_POST['usertype'],
 'ContractID' => $_POST['CheckServiceAccepted']
 ]);	
-
 
 }
 else{

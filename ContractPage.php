@@ -480,6 +480,8 @@ ContractID =  document.getElementById("contractid").value.trim(),
 Balance = Number(document.getElementById("Balance").value),
 messageInput = document.getElementById("message-input"),
 UserType =  document.getElementById("usertype").value.trim();
+PaymentType = document.getElementById("Payment").value;
+
 if (UserType=="Admin") {
 	SellerBalance = document.getElementById("SellerBalance").value;
 	
@@ -712,7 +714,7 @@ function Refund_Admin(){
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function SendRefund_Admin(){
-	document.getElementById('refund').style.display = "none";
+	document.getElementById('Refund_Admin').style.display = "none";
 	var ajax = new XMLHttpRequest();
 	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -726,7 +728,7 @@ function checkserviceaccepted(){
 	var ajax = new XMLHttpRequest();
 	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	ajax.send("&CheckServiceAccepted=" + ContractID);
+	ajax.send("&CheckServiceAccepted=" + ContractID+ "&usertype=" + UserType+"&paymenttype=" +PaymentType);
 	console.log(ajax);
 	
 }
@@ -735,14 +737,14 @@ function checkaccepted(){
 	var ajax = new XMLHttpRequest();
 	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	ajax.send("&CheckAccepted=" + ContractID);
+	ajax.send("&CheckAccepted=" + ContractID+ "&usertype=" + UserType+"&paymenttype=" +PaymentType);
 	console.log(ajax);
 
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 window.WebSocket = window.WebSocket || window.MozWebSocket;
 
-var connection =  new WebSocket('ws://localhost:3030');
+var connection =  new WebSocket('ws://0.tcp.ngrok.io:10147');
 var connectingSpan = document.getElementById("connecting");
 connection.onopen = function () {
 	
@@ -751,6 +753,7 @@ connection.onopen = function () {
 connection.onerror = function (error) {
 	connectingSpan.innerHTML = "Error occured";
 };
+
 connection.onmessage = function (message) {
 	var data = JSON.parse(message.data);
 
@@ -801,7 +804,6 @@ connection.onmessage = function (message) {
 				}
 				document.getElementById('Offer').value = data.offer;
 				document.getElementById('DateRequired').value = data.daterequired;
-				console.log(data.paymentmode);
 				if (document.getElementById('PaymentMode1').value == data.paymentmode ) {
 						document.getElementById('PaymentMode1').checked = true;
 				 
@@ -855,7 +857,7 @@ connection.onmessage = function (message) {
 					document.getElementById('PaymentMode2').disabled = true;
 					document.getElementById('PaymentMode1').disabled = true;
 					document.getElementById('statusmessage').innerHTML = "Status:Offer Rejected, Transaction declined.";
-					window.close('','_parent','');
+					location.reload();
 				}
 				
 				if(data.REPLY=='Cancel'){
@@ -867,7 +869,7 @@ connection.onmessage = function (message) {
 					document.getElementById('PaymentMode2').disabled = true;
 					document.getElementById('PaymentMode1').disabled = true;
 					document.getElementById('statusmessage').innerHTML = "Status:Seller has cancelled the order, sorry for any inconvenience caused,amount will be returned to the buyer , as soon as possible.";
-					window.close('','_parent','');
+					location.reload();
 				}
 				if(data.REPLY=='Refund'){
 					document.getElementById('Accept').disabled = true;
@@ -878,7 +880,7 @@ connection.onmessage = function (message) {
 					document.getElementById('PaymentMode2').disabled = true;
 					document.getElementById('PaymentMode1').disabled = true;
 					document.getElementById('statusmessage').innerHTML = "Status:Buyer refunded,await Admin assistance.";
-					window.close('','_parent','');
+					location.reload();
 				}
 				if (data.REPLY == 'AcceptService') {
 					checkserviceaccepted();
@@ -896,7 +898,7 @@ connection.onmessage = function (message) {
 				}
 				if (data.REPLY == 'AdminRefund') {
 					document.getElementById('statusmessage').innerHTML = "Buyer has been refunded";
-					window.close('','_parent','');
+					location.reload();
 				}
 			}
 			
@@ -912,6 +914,13 @@ objDiv.scrollTop = objDiv.scrollHeight;
 	?>
 <script>
 checkserviceaccepted();
+ </script>
+<?php
+}
+if($ContractObj->Status == "Buyer has accepted"){
+?>
+<script>
+checkaccepted();
  </script>
 <?php
 }
