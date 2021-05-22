@@ -273,7 +273,7 @@ class BaseUser
 		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
 		}
 		socket_close($socket);
-		$raw_data = file_get_contents('http://localhost:3000/GetNewAccount');
+		$raw_data = file_get_contents('http://localhost:3004/GetNewAccount');
 		$data = json_decode($raw_data, true);
 		$this->PubKey =  $data['pubkey'];
 		$this->PrivateKey = $data['privatekey'];
@@ -1322,7 +1322,7 @@ class StandardUser extends BaseUser
 			$result = socket_read ($socket, 1024) or die("Could not read server response\n");
 			}
 			socket_close($socket);
-			$raw_data = file_get_contents('http://localhost:3000/CheckAccount');
+			$raw_data = file_get_contents('http://localhost:3001/CheckAccount');
 			$data = json_decode($raw_data, true);
 			if ($data['RESPONSE']){
 				return true;
@@ -1353,7 +1353,7 @@ class StandardUser extends BaseUser
 		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
 		}
 		socket_close($socket);
-		$raw_data = file_get_contents('http://localhost:3000/ConvertToSTICoin');
+		$raw_data = file_get_contents('http://localhost:3002/ConvertToSTICoin');
 		$data = json_decode($raw_data, true);
 		if($data['Transaction']== "Success"){
 			return $data['Transaction'];
@@ -1382,7 +1382,7 @@ class StandardUser extends BaseUser
 		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
 		}
 		socket_close($socket);
-		$raw_data = file_get_contents('http://localhost:3000/ConvertToETH');
+		$raw_data = file_get_contents('http://localhost:3003/ConvertToETH');
 		$data = json_decode($raw_data, true);
 		if($data['Transaction']== "Success"){
 			return $data['Transaction'];
