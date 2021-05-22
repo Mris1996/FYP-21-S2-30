@@ -1123,23 +1123,6 @@ class StandardUser extends BaseUser
 		return true;
 		
 	}
-	public function AmountToTransfer($ContractID){
-		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
-		$result = $this->connect()->query($sql) or die($this->connect()->error); 
-		while($row = $result->fetch_assoc())
-		{
-			
-			$Amount = $row['NewOffer'];
-			$Type = $row['Payment Mode'];
-		}
-		if($Type == "Half-STICoins"){
-			$Amount= $Amount/2;
-		}
-		if($Type == "Full-STICoins" || $Type == "Full-STICoins_Later"){
-			$Amount= $Amount;
-		}
-		return $Amount;
-	}
 	public function TransferAmountAccept($ContractID,$Amount){
 		echo $Amount.'</br>';
 		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
