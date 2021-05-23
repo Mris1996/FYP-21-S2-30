@@ -25,7 +25,7 @@ if(!isset($_GET['ID'])){
 	$_GET['ID'] = '';
 }
 $ArrayOfUsers = $_SESSION['Object']->ListOFUsers();
-echo'<div class="formcontainer"><form method="post" action="AdminAction.php"></br>
+echo'<div class="formcontainer"><form method="post" action="UserManagementController.php"></br>
 <Label>UserID : </Label><input type ="text" name="hiddenval" value="'.$_GET['ID'].'"></br>
 <input type="submit" name="Ban" value="Ban user"></br>
 <input type="submit" name="Suspend" value="Suspend user"></br>
@@ -71,7 +71,7 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 	<td>'.$BaseUserObj->Rating['Rating'].'</td>
 	<td>'.json_decode($BaseUserObj->getStatus())[0].'</br>'.json_decode($BaseUserObj->getStatus())[1].'</td>
 	
-	<td><form method="post" action="AdminAction.php">
+	<td><form method="post" action="UserManagementController.php">
 		<input type="submit" name="Ban" value="Ban user">
 		<input type="submit" name="Suspend" value="Suspend user"></br>
 		<input type="submit" name="Remove" value="Unban/Unsuspend user">
