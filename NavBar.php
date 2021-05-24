@@ -142,9 +142,9 @@ if($_SESSION['Object']->getAccountType()=="Administrator"){
 	echo'<a href="ContractManagementPage.php">Manage contracts</a>';
 }
 $BalInSGD = $_SESSION['Object']->getAccountBalance() * $_SESSION['Object']->getCurrencyValue('SGD');
-echo '<a>Account balance: SGD$'.$_SESSION['Object']->getAccountBalance();
-echo '<a>Account balance: SGD$'.$BalInSGD;
 
+echo '<a>Account balance: SGD$'.$BalInSGD;
+echo '<a>Account balance: ETH'.$_SESSION['Object']->getAccountBalance();
 echo '<form method="post">
 		<input id="reload" type="image" src="systemimages/reload.png" alt="Submit" width="30" height="30" style="float:right" /> </a>
 		<input type="hidden" name="Refresh"/>
