@@ -1,5 +1,5 @@
 Home and Lifestyle:categoryicons/home.png
-Sports:categoryicons/music.png
-Music:categoryicons/sports.png
+Sports:categoryicons/sports.png
+Music:categoryicons/music.png
 Clothing:categoryicons/clothing.png
 Electronics:categoryicons/electronics.png
