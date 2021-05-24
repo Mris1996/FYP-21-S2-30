@@ -142,7 +142,7 @@ if($_SESSION['Object']->getAccountType()=="Administrator"){
 	echo'<a href="ContractManagementPage.php">Manage contracts</a>';
 }
 $BalInSGD = $_SESSION['Object']->getAccountBalance() * $_SESSION['Object']->getCurrencyValue('SGD');
-
+$BalInSGD = number_format($BalInSGD, 2, '.', '');
 echo '<a>Account balance: SGD$'.$BalInSGD;
 echo '<a>Account balance: ETH'.$_SESSION['Object']->getAccountBalance();
 echo '<form method="post">
