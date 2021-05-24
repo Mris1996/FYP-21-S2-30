@@ -257,7 +257,7 @@ class BaseUser
 		 	
 			//$Bal = ($Bal * $this->getCurrencyValue('SGD'));
 		 $Bal = number_format($Bal, 5, '.', '');
-		 return $returnval;
+		 return $Bal;
 	}
 	
 	public function createEthereumAccount(){
