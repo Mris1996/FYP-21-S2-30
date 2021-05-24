@@ -189,9 +189,9 @@ input[type="text"]{
 			<?php
 			$myfile = fopen("Categories.txt", "r") or die("Unable to open file!");
 			while(($line = fgets($myfile)) !== false) {
-
+			$arr = explode(":",$line);
 			echo 
-			"<option style='background-color:black;color:white;' value='".$line."'>".$line."</option>";
+			"<option style='background-color:black;color:white;' value='".$arr[0]."'>".$arr[0]."</option>";
 			}fclose($myfile);
 			?>
 		  </select><br />

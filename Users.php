@@ -255,8 +255,8 @@ class BaseUser
 		}
 
 		 	
-		 $Bal = ($Bal * $this->getCurrencyValue('SGD'));
-		 $returnval = number_format($Bal, 2, '.', '');
+			//$Bal = ($Bal * $this->getCurrencyValue('SGD'));
+		 $Bal = number_format($Bal, 5, '.', '');
 		 return $returnval;
 	}
 	
