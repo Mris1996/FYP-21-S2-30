@@ -265,7 +265,7 @@ echo 'Terms are being negotiated';
 <label>Product Owner:</label><b><?php echo $_SESSION['Object']->getUserDisplayName($ProductObj->SellerUserID)?></b></br>
 <label>Product Caption:</label><b><?php echo $ProductObj->ProductCaption?></b></br>
 <label>Product Description:</label><b><?php echo $ProductObj->ProductDescription?></b></br>
-<label>Product Initial Price:</label><b><?php echo $ProductObj->ProductInitialPrice?></b></br>
+<label>Product Initial Price:</label><b><?php echo number_format($ProductObj->ProductInitialPrice, 2, '.', '')?></b></br>
 
 
 <hr><center><h2>Contract Details</h2></center>
@@ -285,7 +285,7 @@ echo 'Terms are being negotiated';
 	
 		<br />
 		<label>Offer(SGD):</label>
-		<input type="number" id="Offer" name="Offer" min="0.00" step="any" oninput="formsyncfunction()" value="<?php echo $ContractObj->NewOffer;?>" required>
+		<input type="number" id="Offer" name="Offer" min="0.00" step="any" oninput="formsyncfunction()" value="<?php echo number_format($ContractObj->NewOffer, 2, '.', '');?>" required>
 		<br />
 <?php 
 		if($Type == "Buyer"){

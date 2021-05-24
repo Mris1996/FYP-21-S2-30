@@ -87,8 +87,8 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 		<td>'.$ProductObj->ProductName.'</td>
 		<td>'.$ContractsObj->SellerUserID.'</td>
 		<td>'.$ContractsObj->BuyerUserID.'</td>
-		<td>'.$ContractsObj->InitialOffer.'</td>
-		<td>'.$ContractsObj->NewOffer.'</td>
+		<td>'.number_format($ContractsObj->InitialOffer, 2, '.', '').'</td>
+		<td>'.number_format($ContractsObj->NewOffer, 2, '.', '').'</td>
 		<td>'.$ContractsObj->Status.'</td>';
 		if(in_array($_SESSION['ID'],$ContractsObj->RatingToken)){
 		echo'
@@ -172,8 +172,8 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 		<td>'.$ProductObj->ProductName.'</td>
 		<td>'.$ContractsObj->SellerUserID.'</td>
 		<td>'.$ContractsObj->BuyerUserID.'</td>
-		<td>'.$ContractsObj->InitialOffer.'</td>
-		<td>'.$ContractsObj->NewOffer.'</td>
+		<td>'.number_format($ContractsObj->InitialOffer, 2, '.', '').'</td>
+		<td>'.number_format($ContractsObj->NewOffer, 2, '.', '').'</td>
 		<td>'.$ContractsObj->Status.'</td>';
 		if(in_array($_SESSION['ID'],$ContractsObj->RatingToken)){
 		echo'
@@ -259,8 +259,8 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 		<td>'.$ProductObj->ProductName.'</td>
 		<td>'.$ContractsObj->SellerUserID.'</td>
 		<td>'.$ContractsObj->BuyerUserID.'</td>
-		<td>'.$ContractsObj->InitialOffer.'</td>
-		<td>'.$ContractsObj->NewOffer.'</td>
+		<td>'.number_format($ContractsObj->InitialOffer, 2, '.', '').'</td>
+		<td>'.number_format($ContractsObj->NewOffer, 2, '.', '').'</td>
 		<td>'.$ContractsObj->Status.'</td>';
 		if(in_array($_SESSION['ID'],$ContractsObj->RatingToken)){
 		echo'
