@@ -257,6 +257,7 @@ class BaseUser
 		 	
 			//$Bal = ($Bal * $this->getCurrencyValue('SGD'));
 		 $Bal = number_format($Bal, 5, '.', '');
+		 echo $Bal;
 		 return $Bal;
 	}
 	
