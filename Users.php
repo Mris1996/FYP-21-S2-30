@@ -578,7 +578,7 @@ class BaseUser
 			<div class="text">Product Name:'.$row["ProductName"].'</div>
 			<div class="text">Category:'.$row["ProductCategory"].'</div>
 			<div class="text">Date Listed:<i>'.date('d-m-Y',$row["DateOfListing"]).'</i></div>
-			<div class="text">Initial Price:'.$row["ProductInitialPrice"].'</div>
+			<div class="text">Initial Price:'.number_format($row["ProductInitialPrice"], 2, '.', '').'</div>
 			<form action="ProductPage.php?ID='.$row["ProductID"].'" method="post"></br>
 			<input type="submit" value="Product Page"/>
 			</form>
@@ -627,7 +627,7 @@ class BaseUser
 			<div class="text">Product Name:'.$row["ProductName"].'</div>
 			<div class="text">Category:'.$row["ProductCategory"].'</div>
 			<div class="text">Date Listed:<i>'.date('d-m-Y',$row["DateOfListing"]).'</i></div>
-			<div class="text">Initial Price:'.$row["ProductInitialPrice"].'</div>
+			<div class="text">Initial Price:'.number_format($row["ProductInitialPrice"], 2, '.', '').'</div>
 			<form action="ProductPage.php?ID='.$row["ProductID"].'" method="post"></br>
 			<input type="submit" value="Product Page"/>
 			</form>
