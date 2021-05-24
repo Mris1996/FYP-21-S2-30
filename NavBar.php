@@ -10,10 +10,11 @@
 <style>
 
 .navbar{
-	background-color:grey;
-	height:100px;
+	background-color:purple;
+	height:120px;
 	color:black;
 	font-size:30px;
+	border-radius:10px;
 	
 }
 
@@ -23,7 +24,7 @@
   position: absolute;
   z-index: 1;
 }
-.dropdown-content input {
+.dropdown-content input not(#reload){
   width:100%;
   color: black;
   padding: 12px 16px;
@@ -46,7 +47,7 @@
 	
 }
 .dropbtn{
-	margin-left:110px;
+	margin-left:100px;
 	border-radius: 50%;
 }
 .dropdown-content a:hover {background-color: #ddd;}
@@ -74,14 +75,22 @@
 	margin-left:10px;
 	
 }
+a:hover{
+	border: 5px;
+	outline: none;
+	opacity:1;	
+	transform: scale(1.1);
+	cursor:pointer;
+}
+
 </style>
 
 </head>
 <div class="topnavbg">
 	<nav class="navbar">
-	<form method="post">
-		<input type="submit" class="btn btn-white"  name="Nav_Main" id="Main"  value=""/>
-</form>		
+	<a href="index.php">
+<img src="systemimages/CompanyLogo.jpg" style="border-radius:20px" width="80" height="80">
+</a>	
 <?php 
 
 
@@ -118,7 +127,7 @@ echo'<style> input[name="Nav_LogOut"]{display:visible;}</style>';
 echo'
 <form method="post">
 	<div class="dropdown">
-	<img class="dropbtn" src="'.$_SESSION['Object']->ProfilePic.'" height="65" width="65">
+	<img class="dropbtn" src="'.$_SESSION['Object']->ProfilePic.'" height="80" width="80">
 	<div class="dropdown-content">
 	<a>'.$_SESSION['ID'].'</a>
 	<a href="ProfilePage.php?ID='.$_SESSION['ID'].'">Profile</a>
@@ -132,17 +141,18 @@ if($_SESSION['Object']->getAccountType()=="Administrator"){
 	echo'<a href="UserManagementPage.php">Manage accounts</a>';
 	echo'<a href="ContractManagementPage.php">Manage contracts</a>';
 }
-
+echo '<a>Account balance: SGD$'.$_SESSION['Object']->getAccountBalance();
+echo '<form method="post">
+		<input id="reload" type="image" src="systemimages/reload.png" alt="Submit" width="30" height="30" style="float:right" /> </a>
+		<input type="hidden" name="Refresh"/>
+	  </form>';
 echo'
 	<input type="submit" name="Nav_LogOut"  value="Log Out"/>
 	</div>
 </div>
 </form>';
-echo '<h2>Account balance: SGD$'.$_SESSION['Object']->getAccountBalance().' </h2>';
-echo '<form method="post">
-		<input type="image" src="systemimages/reload.png" alt="Submit" width="30" height="30" style="float:left" />
-		<input type="hidden" name="Refresh"/>
-	  </form>';
+
+
 $BaseUserOBJ = new BaseUser("check status");
 $BaseUserOBJ->setUID_Admin($_SESSION["ID"]);
 if(json_decode($BaseUserOBJ->Status)[0]=="Suspended"){
@@ -174,10 +184,12 @@ if (!file_exists('Categories.txt'))
 }
 $myfile = fopen("Categories.txt", "r") or die("Unable to open file!");
 while(($line = fgets($myfile)) !== false) {
-echo 
-"<form method='post' action='CategoryPage.php?Category=".$line."'>
-<input type='submit' class='btn btn-white' id='Main'  value='".$line."'/>
-</form>";
+$arr = explode(":",$line);
+//$arr[0] ->name
+//$arr[1] ->file location
+echo'<a href="CategoryPage.php?Category='.$arr[0].'">
+<img src="'.$arr[1].'" title="'.$arr[0].'"; width="80" height="80">
+</a>';
 }
 fclose($myfile);
 ?>	

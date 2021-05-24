@@ -106,11 +106,10 @@ input[type="text"]{
 		<span class="error">&nbsp;&nbsp;<?php echo $DateRequiredError;?></span><br /><br />
 	
 		
-		<label>Offer(STICoins):</label>
+		<label>Offer(SGD):</label>
 		<input type="number" id="Offer" name="Offer" min="0.00" step="any">
 		<span class="error"><?php echo $OfferError;?></span><br />
 		<br />
-		<label>Offer will be rounded up to whole number</label><br /><br />
 		
 		<input type="submit" name="submit" value="Submit">
     </form>
@@ -119,23 +118,12 @@ input[type="text"]{
 <?php
 
 if(isset($_POST['submit'])&& $submit){
-
-	
 	echo'<style> .Offer_GUI{display:none;}</style>';
-	
 	$ContractID = $_SESSION['Object']->NewOffer($_POST["Offer"],$_POST["DateRequired"],$ProductObj->SellerUserID,$ProductObj->ProductID,$ProductObj->ProductInitialPrice);
-	echo'<script>history.pushState({}, "", "")</script>';
-	echo'<div class="Post_Offer_GUI">
-			</br>
-			<center>Successfully sent Offer!</center>
-			<center>Check the status of your offer in the page below</center>
-			<center><a href="MyContractsPage.php">Go to MyContracts Page</a><center>
-		</div>';
-	echo'<script>history.pushState({}, "", "")</script>';
+	echo'<script>alert("Successfully sent offer to user");</script>
+		 <script> location.replace("MyContractsPage.php")</script>';
 	exit();
 	
-	
-
 }
 
  require_once("Footer.php");?> 

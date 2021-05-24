@@ -68,7 +68,7 @@
   <div class="carousel-inner" role="listbox">
     <div class="carousel-item active">
       <div class="view">
-        <img class="d-block w-100" src="https://mdbootstrap.com/img/Photos/Slides/img%20(68).jpg"
+        <img class="d-block w-100" src="ads/Sample.png"
           alt="First slide">
         <div class="mask rgba-black-light"></div>
       </div>
@@ -80,7 +80,7 @@
     <div class="carousel-item">
       <!--Mask color-->
       <div class="view">
-        <img class="d-block w-100" src="https://mdbootstrap.com/img/Photos/Slides/img%20(6).jpg"
+        <img class="d-block w-100" src="ads/Sample2.png"
           alt="Second slide">
         <div class="mask rgba-black-strong"></div>
       </div>
@@ -92,7 +92,7 @@
     <div class="carousel-item">
       <!--Mask color-->
       <div class="view">
-        <img class="d-block w-100" src="https://mdbootstrap.com/img/Photos/Slides/img%20(9).jpg"
+        <img class="d-block w-100" src="ads/Sample3.png"
           alt="Third slide">
         <div class="mask rgba-black-slight"></div>
       </div>

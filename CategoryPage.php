@@ -11,7 +11,8 @@ if (!file_exists('Categories.txt'))
 $count = 0;
 $myfile = fopen("Categories.txt", "r") or die("Unable to open file!");
 while(($line = fgets($myfile)) !== false) {
-if(trim($Category)==trim($line)){
+$arr = explode(":",$line);
+if(trim($Category)==trim($arr[0])){
 	$count++;
 }
 }
