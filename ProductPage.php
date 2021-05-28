@@ -73,6 +73,7 @@ echo'
 </form>';
 }
 }
+echo'<h1>Product Expiry:'.$ProductObj->DateOfExpiry.'</h1>';
 }
 echo'
 <div class="card">

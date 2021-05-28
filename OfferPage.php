@@ -3,6 +3,9 @@
 if(!isset($_SESSION['ID'])){
 	echo '<script> location.replace("index.php")</script> ';
 }
+if(!isset($_SESSION['Temp_Product'])){
+	echo '<script> location.replace("index.php")</script> ';
+}
 $submit = true;
 $ProductID = $_SESSION['Temp_Product'];
 $DateRequiredError = $OfferError = "";

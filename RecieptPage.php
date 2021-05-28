@@ -26,7 +26,7 @@ for($x=0;$x<sizeof($TransactionsArr);$x++) {
 .card {
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
   transition: 0.3s;
-  width: 70%;
+  width: 80%;
   margin:auto;
 }
 
@@ -42,7 +42,7 @@ for($x=0;$x<sizeof($TransactionsArr);$x++) {
 <h2>TransactionID:<?php echo  $TransactionsArr[$x][0] ?></h2><hr>
 <b>ContractID:<?php echo   $ContractObj->ContractID; ?></b>
 <b>ProductID:<?php echo   $ContractObj->ProductID; ?></b>
-<b>Amount:<?php echo  $TransactionsArr[$x][2] ?></b>
+<b>Amount:<?php echo   " SGD$".number_format($TransactionsArr[$x][2], 2, '.', '') ?></b>
 <b>Sender:<?php echo  $TransactionsArr[$x][3] ?></b>
 <b>Reciever:<?php echo $TransactionsArr[$x][4] ?></b>
 <b>Transaction Date:<?php  echo $TransactionsArr[$x][1]?></b>

@@ -37,7 +37,7 @@ window.open("ContractPage.php?ID="+ID,"winname","width=1500,height=900");
 <button class="Buyer">Contracts as buyer</button>
 
 <?php
-
+unset($_SESSION['Temp_Product']);
 if(!isset($_SESSION['ID'])){
 	echo '<script> location.replace("index.php")</script> ';
 }
@@ -94,7 +94,7 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 		echo'
 		<td><form  method="post" action="RatingPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="Review"></form></td>';
 		}
-		if($ContractsObj->Status=="Transaction Complete" || $ContractsObj->Transaction=="Transaction Declined"){
+		if($ContractsObj->Transaction=="Complete" || $ContractsObj->Transaction=="Transaction Declined"){
 		echo'
 		<td><form  method="post" action="RecieptPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="View Reciept"></form></td>';
 		}
@@ -179,7 +179,7 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 		echo'
 		<td><form  method="post" action="RatingPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="Review"></form></td>';
 		}
-		if($ContractsObj->Status=="Transaction Complete" || $ContractsObj->Transaction=="Transaction Declined"){
+		if($ContractsObj->Transaction=="Complete" || $ContractsObj->Transaction=="Transaction Declined"){
 		echo'
 		<td><form  method="post" action="RecieptPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="View Reciept"></form></td>';
 		}
@@ -266,7 +266,7 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 		echo'
 		<td><form  method="post" action="RatingPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="Review"></form></td>';
 		}
-		if($ContractsObj->Status=="Transaction Complete" || $ContractsObj->Transaction=="Transaction Declined"){
+		if($ContractsObj->Transaction=="Complete" || $ContractsObj->Transaction=="Transaction Declined"){
 		echo'
 		<td><form  method="post" action="RecieptPage.php?ID='.$ContractsObj->ContractID.'"><input type="submit" value="View Reciept"></form></td>';
 		}

@@ -3,3 +3,5 @@ Sports:categoryicons/sports.png
 Music:categoryicons/music.png
 Clothing:categoryicons/clothing.png
 Electronics:categoryicons/electronics.png
+Jobs and Services:categoryicons/Services.png
+Vehicles and Accessories:categoryicons/Vehicle.png

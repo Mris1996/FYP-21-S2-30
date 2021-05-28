@@ -11,6 +11,7 @@ $validated = true;
 $FIAT = false;
 $ETH = false;
 
+echo'<input type="hidden" id="convertrate" value="'.$_SESSION['Object']->getCurrencyValue('SGD').'">';
 
 if(isset($_POST['FIAT2ETH'])){
 	
@@ -300,7 +301,15 @@ $(document).ready(function(){
     form.ETH2FIAT.value = "Please wait...";
     return true;
   }
-
+var convertrate = document.getElementById("convertrate").value;
+function ConvertSGD(){
+	var amount = document.getElementById("Convert_amount").value;
+	document.getElementById("amountconverted").innerHTML = "Conversion Rate SGD/ETH: SGD$"+convertrate+"</br>"+ "Conversion Amount : SGD$"+(amount*convertrate).toFixed(2);
+}
+function ConvertETH(){
+	var amount = document.getElementById("Convert2_amount").value;
+	document.getElementById("amountconverted2").innerHTML = "Conversion Rate ETH/SGD: ETH "+(1/convertrate)+"</br>"+ "Conversion Amount : ETH "+(amount/convertrate).toFixed(5);
+}
 </script>
 <hr>
 <div class="ETHGUI">
@@ -311,8 +320,9 @@ $(document).ready(function(){
   <input type="text" id="Convert2_publickey" name="Convert2_publickey" value=<?php echo $_POST["Convert2_publickey"];?>><br>
   <span class="error"><?php echo $Convert2_publickeyError;?></span><br /><br />
   <label for="Convert2_amount">Amount:</label><br>
-  <input type="Number"  step="any" id="Convert2_amount" name="Convert2_amount"value=<?php echo $_POST["Convert2_amount"];?>><br><br>
+  <input type="Number"  onchange="ConvertETH()"step="any" id="Convert2_amount" name="Convert2_amount"value=<?php echo $_POST["Convert2_amount"];?>><br><br>
   <span class="error"><?php echo $Convert2_amountError;?></span><br /><br />
+  <p id="amountconverted2"></p>
   <input type="submit" name="FIAT2ETH" value="Convert">
 
 </form> 
@@ -328,8 +338,9 @@ $(document).ready(function(){
   <input type="text" id="Convert_privatekey" name="Convert_privatekey"value=<?php echo $_POST["Convert_privatekey"];?>><br><br>
   <span class="error"><?php echo $Convert_privatekeyError;?></span><br /><br />
   <label for="Convert_amount">Amount:</label><br/>
-  <input type="Number" step="any" id="Convert_amount" name="Convert_amount"value=<?php echo $_POST["Convert_amount"];?>><br><br>
+  <input type="Number" step="any" onchange="ConvertSGD()" id="Convert_amount" name="Convert_amount"value=<?php echo $_POST["Convert_amount"];?>><br><br>
   <span class="error"><?php echo $Convert_amountError;?></span><br /><br />
+  <p id="amountconverted"></p>
   <input type="submit"  name="ETH2FIAT" value="Convert">
 </form> 
 

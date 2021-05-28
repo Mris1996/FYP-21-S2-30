@@ -208,7 +208,7 @@ $query = http_build_query(['data' => $jsonData]);
 
 //#############################################################
 if(isset($_POST['RefundAdmin'])){
-	$_SESSION['Object']->Refund_Admin($_POST['contractid']);
+	$_SESSION['Object']->Refund_Admin($_POST['contractid'],$_SESSION['Object']->AmountToTransfer($_POST['contractid']));
 	$jsonData = json_encode([
 	'REPLY'=>'AdminRefund',
 	'ContractID' =>$_POST['contractid']
@@ -216,6 +216,39 @@ if(isset($_POST['RefundAdmin'])){
 $query = http_build_query(['data' => $jsonData]);
 }
 
+
+
+//#############################################################
+if(isset($_POST['OTP'])){
+$msg = $_SESSION['Object']->VerifyOTP($_POST['OTP']);
+if($msg=="Success"){
+$jsonData = json_encode([
+'REPLY'=>'OTPResult',
+'Result' =>'Success',
+'User' => $_SESSION['Object']->getUID(),
+'ContractID' =>$_POST['contractid']
+]);
+}
+if($msg=="Wrong OTP"){
+$jsonData = json_encode([
+'REPLY'=>'OTPResult',
+'Result' =>'Failed',
+'User' => $_SESSION['Object']->getUID(),
+'ContractID' =>$_POST['contractid']
+]);
+}
+if($msg=="Max Attempt"){
+
+$jsonData = json_encode([
+'REPLY'=>'OTPResult',
+'Result' =>'LogOut',
+'User' => $_SESSION['Object']->getUID(),
+'ContractID' =>$_POST['contractid']
+]);
+
+}
+$query = http_build_query(['data' => $jsonData]);
+}
 
 
 //#############################################################
@@ -231,4 +264,12 @@ $response = curl_exec($ch);
  $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 //echo $response;
 curl_close($ch);
+}
+if(isset($_POST['Email'])){
+	$_SESSION['Object']->SendVerfication($_POST['Email']);
+	
+	
+}
+if(isset($_POST['Logout'])){
+	$_SESSION['Object']->LogOut();
 }

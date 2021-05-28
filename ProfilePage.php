@@ -31,10 +31,11 @@ echo '<script> location.replace("index.php")</script> ';
 
 .container {
 	position: initial;
-	width: 20%;
-	height:500px;
+	width: 25%;
+	height:400px;
 	float:left;
-	margin-left:200px;
+	margin:auto;
+	margin-bottom:100px;
  
   
 }
@@ -51,8 +52,7 @@ echo '<script> location.replace("index.php")</script> ';
   transition: .5s ease;
   opacity: 0;
   position: relative;
-  
-  left: 50%;
+  left: 30%;
   transform: translate(-30%,-100%);
   -ms-transform: translate(-30%, -30%);
   text-align: center;
@@ -183,16 +183,16 @@ echo'
 
 
 if(isset($_POST['SortDate'])){
-$BaseUserObj->ViewAllUserProduct("DateOfListing",$_POST['Order'],$ID);
+$BaseUserObj->ViewAllUserProduct("DateOfListing",$_POST['Order'],$ID,$_SESSION['ID']);
 }
 if(isset($_POST['SortPrice'])){
-$BaseUserObj->ViewAllUserProduct("ProductInitialPrice",$_POST['Order'],$ID);
+$BaseUserObj->ViewAllUserProduct("ProductInitialPrice",$_POST['Order'],$ID,$_SESSION['ID']);
 }
 if(isset($_POST['SortCat'])){	
-$BaseUserObj->ViewAllUserProduct("ProductCategory",$_POST['Order'],$ID);
+$BaseUserObj->ViewAllUserProduct("ProductCategory",$_POST['Order'],$ID,$_SESSION['ID']);
 }
 if(!isset($_POST['SortCat'])&&!isset($_POST['SortPrice'])&&!isset($_POST['SortDate'])){
-$BaseUserObj->ViewAllUserProduct("DateOfListing","ASC",$ID);	
+$BaseUserObj->ViewAllUserProduct("DateOfListing","ASC",$ID,$_SESSION['ID']);	
 }
 
 ?>

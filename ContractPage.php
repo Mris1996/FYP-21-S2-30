@@ -1,8 +1,6 @@
 <?php
-require_once("Users.php");
-require_once("Products.php");
-require_once("Contracts.php");
-session_start();
+	require_once("NavBar.php");
+ 
 if(!isset($_SESSION['ID'])){
 	echo '<script> location.replace("index.php")</script> ';
 }
@@ -25,10 +23,14 @@ if($ContractObj->BuyerUserID!=$_SESSION['ID']&&$ContractObj->SellerUserID!=$_SES
 
 
 <style type="text/css">
+.topnavbg{
+	display:none;
+}
 	* {
 	box-sizing:border-box;
 }
 #sharedform{
+	font-size:15px;
 	width:45%;
 	float:left;
 	display:block;
@@ -76,7 +78,7 @@ if($ContractObj->BuyerUserID!=$_SESSION['ID']&&$ContractObj->SellerUserID!=$_SES
 }
 
 #confirmation{
-	
+
 	position:fixed;
     padding:0;
     margin:auto;
@@ -93,12 +95,118 @@ if($ContractObj->BuyerUserID!=$_SESSION['ID']&&$ContractObj->SellerUserID!=$_SES
 	margin-top:20%;
    
 }
+
+#confirmation2{
+	display:none;
+	position:fixed;
+    padding:0;
+    margin:auto;
+    top:0;
+    left:0;
+
+    width: 100%;
+    height: 100%;
+    background:rgba(255,255,255,0.8);
+}
+#confirmationtext2{
+	width:200px;
+    margin:auto;
+	margin-top:20%;
+   
+}
+#confirmation3{
+	display:none;
+	position:fixed;
+    padding:0;
+    margin:auto;
+    top:0;
+    left:0;
+
+    width: 100%;
+    height: 100%;
+    background:rgba(255,255,255,0.8);
+}
+#confirmationtext3{
+	width:200px;
+    margin:auto;
+	margin-top:20%;
+   
+}
+#confirmation4{
+	display:none;
+	position:fixed;
+    padding:0;
+    margin:auto;
+    top:0;
+    left:0;
+
+    width: 100%;
+    height: 100%;
+    background:rgba(255,255,255,0.8);
+}
+#confirmationtext4{
+	width:200px;
+    margin:auto;
+	margin-top:20%;
+   
+}
+#OTP{
+	display:none;
+	position:fixed;
+    padding:0;
+    margin:auto;
+    top:0;
+    left:0;
+
+    width: 100%;
+    height: 100%;
+    background:rgba(255,255,255,0.8);
+}
+#OTPform{
+	width:200px;
+    margin:auto;
+	margin-top:20%;
+   
+}
 </style>
 
 </head>
 <body >
+<div id="confirmation2">
+<div id="confirmationtext2">
+<b>Are you sure you?</b></br>
+<input type="submit"  id="<?php echo $_SESSION['Object']->getEmail()?>" onclick="emailverification(this.id)" value="Yes">
+<input type="submit"  onclick="location.reload()" value="No">
+</form>
+</div>
+</div>
+<div id="confirmation3">
+<div id="confirmationtext3">
+<b>Are you sure you?</b></br>
+<input type="submit"  id="<?php echo $_SESSION['Object']->getEmail()?>" onclick="emailverificationCancel(this.id)" value="Yes">
+<input type="submit"  onclick="location.reload()" value="No">
+</form>
+</div>
+</div>
+<div id="confirmation4">
+<div id="confirmationtext4">
+<b>Are you sure you?</b></br>
+<input type="submit"  id="<?php echo $_SESSION['Object']->getEmail()?>" onclick="emailverificationCancel(this.id)" value="Yes">
+<input type="submit"  onclick="location.reload()" value="No">
+</form>
+</div>
+</div>
+<div id="OTP">
+<div id="OTPform">
+<Label>OTP Code:</Label><input type="text"  id="OTPinput">
+<input type="submit" onclick="VerifyOTP()" value="Submit OTP">
+<input type="submit" id="<?php echo $_SESSION['Object']->getEmail()?>" onclick="ResendOTP(this.id)" value="Resend">
+</form>
+</div>
+</div>
 <?php
 if(isset( $_SESSION['Object'])){
+	
 if($ContractObj->Reported==0&& $_SESSION['Object']->getAccountType()!="Administrator"){
 echo'
 <form method="post">
@@ -112,6 +220,7 @@ if($ContractObj->Reported>0 && $_SESSION['Object']->getAccountType()=="Administr
 </form>';
 }
 }
+
 if(isset($_POST['Report'])){
 	echo'
 	<form method="post" >
@@ -142,26 +251,9 @@ if(isset($_POST['Unreport'])){
 	';
 	
 }
-if(isset($_POST['Confirmationreport'])&& $_POST['Confirmationreport']=="No"){
-exit();
-header("Refresh:0");
-}
-if(isset($_POST['Confirmationreport'])&&$_POST['Confirmationreport']=="Yes"){
 
-$_SESSION['Object']->ReportContract($_GET['ID']);
-echo '<script> alert("Thank you for your vigilance,rest assured, the administrators will look into the matter");</script> ';	
-echo '<script> location.replace("index.php")</script> ';	
-}
-if(isset($_POST['Confirmationunreport'])&& $_POST['Confirmationunreport']=="No"){
-exit();
-header("Refresh:0");
-}
-if(isset($_POST['Confirmationunreport'])&&$_POST['Confirmationunreport']=="Yes"){
 
-$_SESSION['Object']->UnreportContract($_GET['ID']);
-echo '<script> alert("Contract unreported");</script> ';
-echo '<script> location.replace("index.php")</script> ';	
-}
+
 $Type = ''; 
 if($ContractObj->BuyerUserID==$_SESSION['ID']){
 	$Type = "Buyer";
@@ -177,6 +269,7 @@ if($_SESSION['Object']->getAccountType()=="Administrator"){
 	$_POST["Chat_with"] = $_SESSION['ID'];
 }
 }
+
 $ProductObj = new Products();
 $ProductObj->InitialiseProduct($ContractObj->ProductID);
 if (isset($_POST["Chat_with"])){
@@ -193,8 +286,10 @@ if (isset($_POST["Chat_with"])){
 if(!isset($_SESSION['ID'])){
 	echo '<script> location.replace("index.php")</script> ';
 }
+
 $submit = true;
 $ProductID = $ProductObj->ProductID;
+$_SESSION['Temp_Product']=$ProductID;
 $DateRequiredError = $OfferError = "";
 $Owner = $_SESSION['Object']->getProductOwner($ProductID);
 $ProductObj = new Products();
@@ -207,6 +302,8 @@ $ProductObj->InitialiseProduct($ProductID);
 <input type="hidden" class="text-box" id="usertype"  value = "<?php echo $Type?>">
 <input type="hidden" class="text-box" id="Payment"  value = "<?php echo $ContractObj->PaymentMode?>">
 <input type="hidden" class="text-box" id="Balance"  value = "<?php echo $_SESSION['Object']->getAccountBalance()?>">
+<input type="hidden" class="text-box" id="TransactionStatus"  value = "<?php echo $ContractObj->Transaction?>">
+
 <?php
 if($Type=="Admin"){
 $BaseUserOBJ = new BaseUser("check balance");
@@ -258,10 +355,12 @@ echo 'Terms are being negotiated';
 }
 
 ?></h1>
+
 <div id="sharedform">
 <center><h2>Product Details</h2>
 <img src="<?php echo $ProductObj->Image;?>" style="width:50%;"></br></center>
 <label>Product Name:</label><b><?php echo $ProductObj->ProductName;?></b></br>
+<label>Product ID:</label><b><?php echo $ProductObj->ProductID;?></b></br>
 <label>Product Owner:</label><b><?php echo $_SESSION['Object']->getUserDisplayName($ProductObj->SellerUserID)?></b></br>
 <label>Product Caption:</label><b><?php echo $ProductObj->ProductCaption?></b></br>
 <label>Product Description:</label><b><?php echo $ProductObj->ProductDescription?></b></br>
@@ -315,14 +414,14 @@ echo 'Terms are being negotiated';
 		}
 		echo'</br>';
 		if($Type=="Buyer" && $ContractObj->Status == "Seller has accepted service"||$Type=="Seller" && $ContractObj->Status == "Deal"){
-			echo'<input type="button" name="service" id="service" onclick="AcceptService()" value="Service fullfilled">';
+			echo'<input type="button" name="service" id="service" onclick="AcceptConfirm()" value="Service fullfilled">';
 		}
-		if($Type == "Buyer" && $ContractObj->Status == "Transaction Complete"){
+		if($Type == "Buyer" && $ContractObj->Transaction == "Complete" &&  $ContractObj->Status!="Refunded Transaction" || $Type == "Buyer" && $ContractObj->Transaction == "On-Going" &&  $ContractObj->Status!="Refunded Transaction" ){
 			echo'</br><input type="button" name="refund" id="refund" onclick="RequestRefund()" value="Request Refund">';
 		}
 		if($Type == "Seller" && $ContractObj->Transaction == "On-Going" && $ContractObj->Status != "Order Cancelled" && $ContractObj->Status != "Buyer has accepted service" && $ContractObj->Status != "Seller has accepted service"){
 				
-				echo'</br><input type="button" name="cancel" id="cancel" onclick="CancelOrder()" value="Cancel Order">';
+				echo'</br><input type="button" name="cancel" id="cancel" onclick="CancelConfirm()" value="Cancel Order">';
 			
 				
 		}
@@ -330,7 +429,7 @@ echo 'Terms are being negotiated';
 	
 
 ?>
-<button id="Accept" name="Accept" value="Accept" onclick="Accept()">Sign Contract</button>
+<button id="Accept" name="Accept" value="Accept" onclick="AcceptConfirm()">Sign Contract</button>
 <button id="Reject" name="Reject" value="Reject" onclick="Reject()">Reject Contract</button>
 <script>
 document.getElementById('Accept').style.display = "None";
@@ -341,11 +440,20 @@ document.getElementById('Reject').style.display = "None";
 if($ContractObj->Status == "Seller has accepted" || $Type=="Seller"){
 ?> 
 <script>
+	
 	document.getElementById('Accept').style.display = "block";
 	document.getElementById('Reject').style.display = "block";
 </script>
 <?php
 }
+if($ContractObj->Status == "Seller has accepted" && $Type=="Seller"){
+?> 
+<script>
+	document.getElementById("Offer").disabled = false;
+</script>
+<?php
+}
+
 if($Type=="Admin"){
 if($ContractObj->Status == "Requested Refund"){
 	echo'<button id="Refund_Admin" name="Refund_Admin" value="Refund Buyer" onclick="Refund_Admin()">Refund Buyer</button>';
@@ -355,6 +463,9 @@ echo'<form action="UserManagementPage.php?ID='.$ContractObj->BuyerUserID.'"metho
 if($ContractObj->Status == "Admin has halted this transaction"){
 echo'<form method="post"><input type="submit" name="ResumeTranasction" value="Resume Transaction"></form>';	
 }
+}
+else{
+	echo'<input type="submit" onclick="OpenWindow(this.id)" id="OfferPage.php" value="Make a new contract">';
 }
 if(isset($_POST['ResumeTranasction'])){
 	$_SESSION['Object']->ResumeTranasction($ContractObj->ContractID,$ContractObj->Transaction);
@@ -456,6 +567,7 @@ document.getElementById('PaymentMode1').disabled = true;
 }
 ?>
 </body>
+ <script src="https://smtpjs.com/v3/smtp.js"></script>  
 <script>
 function OpenWindow(ID){
 	window,opener.close();window.open(ID);
@@ -475,13 +587,15 @@ if (document.getElementById('PaymentMode3').value == document.getElementById("Pa
 	document.getElementById('PaymentMode3').checked = true;
 } 
 //initialise all required variables from php -> Js
+var cancelled = false;
+var adminrefund = false;
 var User = document.getElementById("UserID").value.trim(),
 ContractID =  document.getElementById("contractid").value.trim(),
 Balance = Number(document.getElementById("Balance").value),
 messageInput = document.getElementById("message-input"),
 UserType =  document.getElementById("usertype").value.trim();
 PaymentType = document.getElementById("Payment").value;
-
+TransactionStatus = document.getElementById("TransactionStatus").value;
 if (UserType=="Admin") {
 	SellerBalance = document.getElementById("SellerBalance").value;
 	
@@ -523,7 +637,10 @@ function formsyncfunction(){
 	  PaymentMode = document.getElementById('PaymentMode3').value;
 	 
 	}
-	
+	if(UserType=="Buyer"){
+	document.getElementById('Accept').style.display = "none";
+	document.getElementById('Reject').style.display = "none";
+	}
 	var ajax = new XMLHttpRequest();
 	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -534,15 +651,75 @@ function formsyncfunction(){
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("User=" + User + "&contractid=" + ContractID + "&message=" + " has updated the offer");
 	console.log(ajax);
-	location.reload();
 	
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function Accept(){
+function AcceptConfirm(){
+	document.getElementById('confirmation2').style.display = "block";
+}
+
+function emailverification(email){
+	if(UserType=="Seller"){
+		AcceptConfirmed(TransactionStatus);
+		return;
+	}
+	if(UserType=="Buyer")
+	{
+	if (document.getElementById('PaymentMode3').checked && TransactionStatus =="Negotiating") {
+		AcceptConfirmed(TransactionStatus);
+		return;
+	 
+	}
+	if (document.getElementById('PaymentMode2').checked && TransactionStatus =="On-Going") {
+		AcceptConfirmed(TransactionStatus);
+		return;
+	 
+	}
+		ajax.open("POST", "ContractPageController.php", true);
+		ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		ajax.send("Email=" + email);
+		console.log(ajax);
+		document.getElementById('confirmation2').style.display = "none";
+		document.getElementById('OTP').style.display = "block";
+	}
+}
+function ResendOTP(email){
+	ajax.open("POST", "ContractPageController.php", true);
+	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	ajax.send("Email=" + email);
+	console.log(ajax);
+}
+function VerifyOTP(){
+	document.getElementById('OTPform').style.display = "none";
+	alert("Please Wait");
+	OTPEntry = document.getElementById('OTPinput').value
+	ajax.open("POST", "ContractPageController.php", true);
+	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	ajax.send("OTP=" + OTPEntry + "&contractid=" + ContractID  );
+	console.log(ajax);
+}
+function AcceptConfirmed(TransactionStatus){
+if(cancelled){
+	CancelOrder();
+	return;
+}
+if(adminrefund){
+	Refund_Admin();
+	return;
+}
+	if(TransactionStatus =="Negotiating"){
+		Accept();
+	}
+	if(TransactionStatus =="On-Going"){
+		AcceptService();
+	}
 	
+}
+function Accept(){
 	if(document.getElementById('PaymentMode2').checked && UserType =="Buyer"){
 		if(Balance < document.getElementById("Offer").value){
 			alert("You have insufficient balance,please top up");
+			window.open("ConvertPage.php");
 		}
 		else{
 			SendAccept();
@@ -554,6 +731,7 @@ function Accept(){
 		if(Balance < (document.getElementById("Offer").value/2)){
 			
 			alert("You have insufficient balance,please top up");
+			window.open("ConvertPage.php");
 		}
 		else{
 			SendAccept();
@@ -609,6 +787,7 @@ function AcceptService(){
 if(document.getElementById('PaymentMode3').checked && UserType =="Buyer"){
 	if(Balance < document.getElementById("Offer").value){
 		alert("You have insufficient balance,please top up");
+		window.open("ConvertPage.php");
 	}
 	else{
 		SendAcceptService();
@@ -620,6 +799,7 @@ else if(document.getElementById('PaymentMode1').checked && UserType =="Buyer"){
 	if(Balance < (document.getElementById("Offer").value/2)){
 		
 		alert("You have insufficient balance,please top up");
+		window.open("ConvertPage.php");
 	}
 	else{
 		SendAcceptService();
@@ -648,26 +828,35 @@ if(UserType =="Buyer"){
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function RequestRefund(){
-
+	
 	var ajax = new XMLHttpRequest();
 	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("Refund=" + User + "&contractid=" + ContractID + "&usertype=" + UserType + "&User=" + User);
 	console.log(ajax);
-	var ajax = new XMLHttpRequest();
-	ajax.open("POST", "ContractPageController.php", true);
-	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	ajax.send("message=" + " has requested refund" + "&contractid=" + ContractID + "&usertype=" + UserType + "&User=" + User );
-	console.log(ajax);
 	location.reload();
-	
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+function CancelConfirm(){
+	document.getElementById('confirmation3').style.display = "block";
+	cancelled = true;
+}
+function emailverificationCancel(email){
+if (document.getElementById('PaymentMode3').checked && TransactionStatus =="On-Going") {
+	return;
+}
+ajax.open("POST", "ContractPageController.php", true);
+ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+ajax.send("Email=" + email);
+console.log(ajax);
+document.getElementById('confirmation3').style.display = "none";
+document.getElementById('OTP').style.display = "block";
+}
 function CancelOrder(){
 	if(document.getElementById('PaymentMode2').checked && UserType =="Seller"){
 	if(Balance < document.getElementById("Offer").value){
 		alert("You have insufficient balance,please top up");
+		window.open("ConvertPage.php");
 	}
 	else{
 		SendCancelOrder();
@@ -679,6 +868,7 @@ else if(document.getElementById('PaymentMode1').checked && UserType =="Seller"){
 	if(Balance < (document.getElementById("Offer").value/2)){
 		
 		alert("You have insufficient balance,please top up");
+		window.open("ConvertPage.php");
 	}
 	else{
 		SendCancelOrder();
@@ -703,14 +893,48 @@ function SendCancelOrder(){
 	console.log(ajax);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function RefundConfirm(){
+	document.getElementById('confirmation4').style.display = "block";
+	cancelled = true;
+}
+function emailverificationRefund(email){
+if (document.getElementById('PaymentMode3').checked && TransactionStatus =="On-Going") {
+	return;
+}
+ajax.open("POST", "ContractPageController.php", true);
+ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+ajax.send("Email=" + email);
+console.log(ajax);
+document.getElementById('confirmation3').style.display = "none";
+document.getElementById('OTP').style.display = "block";
+}
 function Refund_Admin(){
 
-	if(Number(SellerBalance) < document.getElementById("Offer").value){
+	if(document.getElementById('PaymentMode2').checked){
+	if(SellerBalance < document.getElementById("Offer").value){
 		alert("You have insufficient balance,please top up");
 	}
 	else{
 		SendRefund_Admin();
+		
 	}
+}
+else if(document.getElementById('PaymentMode1').checked){
+
+	if(SellerBalance < (document.getElementById("Offer").value/2)){
+		
+		alert("You have insufficient balance,please top up");
+	}
+	else{
+		SendRefund_Admin();
+		
+	}
+}
+else{
+	SendRefund_Admin();	
+}
+	
+	
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function SendRefund_Admin(){
@@ -744,7 +968,7 @@ function checkaccepted(){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 window.WebSocket = window.WebSocket || window.MozWebSocket;
 
-var connection =  new WebSocket('ws://0.tcp.ngrok.io:10147');
+var connection =  new WebSocket('ws://localhost:3030');
 var connectingSpan = document.getElementById("connecting");
 connection.onopen = function () {
 	
@@ -756,7 +980,7 @@ connection.onerror = function (error) {
 
 connection.onmessage = function (message) {
 	var data = JSON.parse(message.data);
-
+	
 	if(data.ContractID==document.getElementById("contractid").value.trim()){
 			
 			if (typeof data.message != 'undefined') {
@@ -792,10 +1016,10 @@ connection.onmessage = function (message) {
 			}
 			if (typeof data.offer != 'undefined') {
 				if(UserType=="Seller"){
-					document.getElementById('Accept').style.display = "inline";
-					document.getElementById('Reject').style.display = "inline";
+					location.reload();
+				
 				}
-				document.getElementById("Offer").disabled = false;
+				
 				document.getElementById("DateRequired").disabled = false;
 				if(UserType=="Buyer"){
 					document.getElementById('PaymentMode3').disabled = false;
@@ -900,6 +1124,29 @@ connection.onmessage = function (message) {
 					document.getElementById('statusmessage').innerHTML = "Buyer has been refunded";
 					location.reload();
 				}
+				if (data.REPLY == 'OTPResult') {
+					
+					if(User == data.User){
+						console.log(data.Result);
+							if(data.Result == "Success"){
+								document.getElementById('OTP').style.display = "none";
+								AcceptConfirmed(TransactionStatus);
+							}
+							if(data.Result == "Failed"){
+								alert("Invalid OTP code"); 
+								location.reload();
+							}
+							if(data.Result == "LogOut"){
+								alert("Max Attempt reached,you will be logged out"); 
+								ajax.open("POST", "ContractPageController.php", true);
+								ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+								ajax.send("Logout=" + ContractID);
+								location.replace("index.php");
+							}
+						
+					}
+					
+				}
 			}
 			
 		
@@ -923,5 +1170,27 @@ if($ContractObj->Status == "Buyer has accepted"){
 checkaccepted();
  </script>
 <?php
+}
+if(isset($_POST['Confirmationreport'])&& $_POST['Confirmationreport']=="No"){
+exit();
+header("Refresh:0");
+
+}
+
+if(isset($_POST['Confirmationreport'])&&$_POST['Confirmationreport']=="Yes"){
+
+$_SESSION['Object']->ReportContract($_GET['ID']);
+echo '<script> alert("Thank you for your vigilance,rest assured, the administrators will look into the matter");</script> ';	
+echo '<script> location.replace("index.php")</script> ';	
+}
+if(isset($_POST['Confirmationunreport'])&& $_POST['Confirmationunreport']=="No"){
+exit();
+header("Refresh:0");
+}
+if(isset($_POST['Confirmationunreport'])&&$_POST['Confirmationunreport']=="Yes"){
+
+$_SESSION['Object']->UnreportContract($_GET['ID']);
+echo '<script> alert("Contract unreported");</script> ';
+echo '<script> location.replace("index.php")</script> ';	
 }
 ?>

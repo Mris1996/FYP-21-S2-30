@@ -9,7 +9,7 @@
 
 <style>
 
-.navbar{
+ .navbar{
 	background-color:purple;
 	height:120px;
 	color:black;
@@ -18,13 +18,13 @@
 	
 }
 
-.dropdown-content {
+ .dropdown-content {
 	width:100%;
   display: none;
   position: absolute;
   z-index: 1;
 }
-.dropdown-content input not(#reload){
+ .dropdown-content input not(#reload){
   width:100%;
   color: black;
   padding: 12px 16px;
@@ -42,11 +42,11 @@
   background-color:white;
    margin:auto;
 }
-.dropdown-content{
+ .dropdown-content{
 	width:300px;
 	
 }
-.dropbtn{
+ .dropbtn{
 	margin-left:100px;
 	border-radius: 50%;
 }
@@ -54,8 +54,8 @@
 
 .dropdown:hover .dropdown-content {display: block;}
 
-.dropdown:hover .dropbtn {background-color: #3e8e41;}
-.SearchBar{
+ .dropdown:hover .dropbtn {background-color: #3e8e41;}
+ .SearchBar{
 	 display: block;
   width: 500px;
   margin: 10px auto;
@@ -75,7 +75,7 @@
 	margin-left:10px;
 	
 }
-a:hover{
+ a:hover{
 	border: 5px;
 	outline: none;
 	opacity:1;	
@@ -92,13 +92,6 @@ a:hover{
 <img src="systemimages/CompanyLogo.jpg" style="border-radius:20px" width="80" height="80">
 </a>	
 <?php 
-
-
-
-
-
-
-
 date_default_timezone_set("Singapore");
 require_once("Users.php");
 require_once("Products.php");
@@ -123,7 +116,7 @@ echo'<style> input[name="Nav_SignUp"]{display:none;}</style>';
 echo'<style> input[name="Nav_Login"]{display:none;}</style>';
 echo'<style> input[name="Nav_LogOut"]{display:visible;}</style>';
 
-  
+ echo '<input type="hidden" id="PubKey" value="'.$_SESSION['Object']->getPubKey().'">'; 
 echo'
 <form method="post">
 	<div class="dropdown">
@@ -133,6 +126,7 @@ echo'
 	<a href="ProfilePage.php?ID='.$_SESSION['ID'].'">Profile</a>
 	<a href="ListPage.php">List a product</a>
 	<a href="MyContractsPage.php">My Contracts</a>
+	<a href="MyTransactionsPage.php">My Transactions</a>
 	<a href="SettingsPage.php">Settings</a>
 	<a href="ConvertPage.php">Top-Up</a>';
 if($_SESSION['Object']->getAccountType()=="Administrator"){
@@ -141,14 +135,30 @@ if($_SESSION['Object']->getAccountType()=="Administrator"){
 	echo'<a href="UserManagementPage.php">Manage accounts</a>';
 	echo'<a href="ContractManagementPage.php">Manage contracts</a>';
 }
-$BalInSGD = $_SESSION['Object']->getAccountBalance() * $_SESSION['Object']->getCurrencyValue('SGD');
-$BalInSGD = number_format($BalInSGD, 2, '.', '');
-echo '<a>Account balance: SGD$'.$BalInSGD;
-echo '<a>Account balance: ETH'.$_SESSION['Object']->getAccountBalance();
-echo '<form method="post">
-		<input id="reload" type="image" src="systemimages/reload.png" alt="Submit" width="30" height="30" style="float:right" /> </a>
-		<input type="hidden" name="Refresh"/>
-	  </form>';
+
+echo '<a id="Account_Balance"></a>';
+?>
+<script>
+var ajax = new XMLHttpRequest();
+ajax.open("POST", "RealTimeBalance.php", true);
+ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+ajax.send();
+setInterval(function() {
+var ajax = new XMLHttpRequest();
+	ajax.open("POST", "RealTimeBalance.php", true);
+	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	ajax.send();
+	}, 1000);
+window.WebSocket = window.WebSocket || window.MozWebSocket;
+var connection =  new WebSocket('ws://localhost:3030');
+connection.onmessage = function (message) {
+	var data = JSON.parse(message.data);
+	if(data.PubKey==document.getElementById("PubKey").value){
+		document.getElementById("Account_Balance").innerHTML = "Balance"+"</br>"+"SGD$"+data.Balance;
+	}
+}
+</script>
+<?php
 echo'
 	<input type="submit" name="Nav_LogOut"  value="Log Out"/>
 	</div>
