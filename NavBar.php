@@ -148,10 +148,12 @@ var ajax = new XMLHttpRequest();
 	ajax.open("POST", "RealTimeBalance.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send();
+	console.log(ajax);
 	}, 1000);
 window.WebSocket = window.WebSocket || window.MozWebSocket;
 var connection =  new WebSocket('ws://localhost:3030');
 connection.onmessage = function (message) {
+	
 	var data = JSON.parse(message.data);
 	if(data.PubKey==document.getElementById("PubKey").value){
 		document.getElementById("Account_Balance").innerHTML = "Balance"+"</br>"+"SGD$"+data.Balance;

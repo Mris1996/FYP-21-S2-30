@@ -8,7 +8,6 @@ curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 
 //#############################################################
 $_SESSION['Object']->updateBalance();
-$_SESSION['Object']->updateProduct();
 $jsonData = json_encode(['Balance'=>$_SESSION['Object']->getAccountBalance(),'PubKey'=>$_SESSION['Object']->getPubKey()]);
 
 $query = http_build_query(['data' => $jsonData]);	
