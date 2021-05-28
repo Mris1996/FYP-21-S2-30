@@ -104,7 +104,7 @@ class BaseUser
 				$sql = "INSERT INTO `OTP` (`UserID`, `Password`) VALUES ('".$this->getUID()."','".$hashed_password."')";
 				$result = $this->connect()->query($sql) or die($this->connect()->error); 
 			}
-			$to_email = "risv96@gmail.com";
+			$to_email = $email;
 			$subject = "OTP password";
 			$body = "Your OTP password is:".$temp_password;
 			$headers = "From: S.T.I.C";
