@@ -1,4 +1,52 @@
-<?php require_once("NavBar.php");
+<?php require_once("NavBar.php");?>
+
+<style>
+span{
+	
+	color:red;
+}
+
+#confirmation{
+	display:none;
+	position:fixed;
+    padding:0;
+    margin:auto;
+    top:0;
+    left:0;
+
+    width: 100%;
+    height: 100%;
+    background:rgba(255,255,255,0.8);
+}
+#confirmationtext{
+	width:200px;
+    margin:auto;
+	margin-top:20%;
+   
+}
+#Loading_GUI{
+	display:none;
+}
+#OTP{
+	display:none;
+	position:fixed;
+    padding:0;
+    margin:auto;
+    top:0;
+    left:0;
+
+    width: 100%;
+    height: 100%;
+    background:rgba(255,255,255,0.8);
+}
+#OTPform{
+	width:200px;
+    margin:auto;
+	margin-top:20%;
+   
+}
+</style>
+<?php
 
 if(!isset($_SESSION['ID'])){
 	echo '<script> location.replace("index.php")</script> ';
@@ -14,7 +62,7 @@ $ETH = false;
 echo'<input type="hidden" id="convertrate" value="'.$_SESSION['Object']->getCurrencyValue('SGD').'">';
 
 if(isset($_POST['FIAT2ETH'])){
-	
+
 $FIAT = true;
 	
 if(empty($_POST["Convert2_publickey"]))
@@ -42,24 +90,15 @@ $validated = false;
 else{
 	
 if($_POST["Convert2_amount"]>$_SESSION['Object']->getAccountBalance()){
-$Convert2_amountError = "You insufficient amount of money";	
+$Convert2_amountError = "";	
+echo'<script>alert("You have insufficient amount of money,please top up");</script>';
 $validated = false;
 }
 }
 	
 if($validated){
-echo'
-	<form method="post" >
-	<div id="confirmation">
-	<div id="confirmationtext">
-	<b>Do you confirm?</b></br>
-		<input type="submit" name="Confirmation" value="Yes">
-		<input type="submit" name="Confirmation" value="No">
-	</form>
-	</div>
-	</div>
-	';
-
+	echo'<style> .ETHGUI{display:none;}</style>';
+	echo'<style> #confirmation{display:block;}</style>';
 	$_SESSION['PubKeyC2'] = $_POST["Convert2_publickey"];
 	$_SESSION['AmountC2'] = $_POST["Convert2_amount"] ;
 }
@@ -70,11 +109,9 @@ $_POST["Convert2_publickey"] = '';
 $_POST["Convert2_amount"] = '';
 }
 
-if(isset($_POST['Confirmation'])&& $_POST['Confirmation']=="No"){
-$validated = false;
-}
-if(isset($_POST['Confirmation'])&&$_POST['Confirmation']=="Yes"){
 
+if(isset($_SESSION['VerifiedUser'])){
+unset($_SESSION['VerifiedUser']);
 $Convert2edAmount = $_SESSION['AmountC2']/$_SESSION['Object'] ->getCurrencyValue('SGD');
 $message = $_SESSION['Object'] -> ConvertToETH($_SESSION['AmountC2'],$_SESSION['PubKeyC2']);
 echo'<style> .ETHGUI{display:none;}</style>';	
@@ -126,6 +163,7 @@ echo'<style> .ETHGUI{display:none;}</style>';
 }
 if(isset($_POST['ETH2FIAT'])){
 $ETH = true;
+
 if(empty($_POST["Convert_publickey"]))
 {
 $Convert_publickeyError = "Public key is required";
@@ -164,21 +202,11 @@ $validated = false;
 }
 
 if($validated){
-echo'
-	<form method="post" >
-	<div id="confirmation">
-	<div id="confirmationtext">
-	<b>Do you confirm?</b></br>
-		<input type="submit" name="Confirmation2" value="Yes">
-		<input type="submit" name="Confirmation2" value="No">
-	</form>
-	</div>
-	</div>
-	';
-
 	$_SESSION['PubKeyC1'] = $_POST["Convert_publickey"];
 	$_SESSION['AmountC1'] = $_POST["Convert_amount"] ;
 	$_SESSION['PrivKeyC1'] =$_POST['Convert_privatekey'] ;
+	echo'<style> .FIATGUI{display:none;}</style>';
+	echo'<style> #confirmation{display:block;}</style>';
 }
 
 }
@@ -190,11 +218,9 @@ $_POST["Convert_amount"] = '';
 if(!$ETH){
 echo'<style> .FIATGUI{display:none;}</style>';	
 }
-if(isset($_POST['Confirmation2'])&& $_POST['Confirmation2']=="No"){
-$validated = false;
-}
-if(isset($_POST['Confirmation2'])&&$_POST['Confirmation2']=="Yes"){
 
+if(isset($_SESSION['VerifiedUser'])){
+unset($_SESSION['VerifiedUser']);
 $Convert2edAmount =$_SESSION['AmountC1']*$_SESSION['Object'] ->getCurrencyValue('SGD');
 $message = $_SESSION['Object'] -> ConvertToFIATCurrency($_SESSION['AmountC1'] ,$_SESSION['PubKeyC1'],$_SESSION['PrivKeyC1']);
 echo'<style> .ETHGUI{display:none;}</style>';	
@@ -237,35 +263,10 @@ else{
 	echo'<script>history.pushState({}, "", "")</script>';
 	exit();
 }	
-
 }
+
 ?> 
 
-<style>
-span{
-	
-	color:red;
-}
-
-#confirmation{
-	
-	position:fixed;
-    padding:0;
-    margin:auto;
-    top:0;
-    left:0;
-
-    width: 100%;
-    height: 100%;
-    background:rgba(255,255,255,0.8);
-}
-#confirmationtext{
-	width:200px;
-    margin:auto;
-	margin-top:20%;
-   
-}
-</style>
 <button class="FIAT">SGD to ETH</button>
 <button class="ETH">ETH to SGD</button>
 
@@ -348,4 +349,101 @@ function ConvertETH(){
 </div>
 
 </div>
+
+<div id = "Loading_GUI" class="Loading_GUI">
+<h1>Loading,Please Wait</h1>
+</div>
+<div id="confirmation">
+<div id="confirmationtext">
+<b>Are you sure you?</b></br>
+<input type="submit"   name="submit" id="<?php echo $_SESSION['Object']->getEmail()?>" onclick="emailverification(this.id)" value="Yes">
+<input type="submit"  onclick="rejectfunction()" value="No">
+</form>
+</div>
+</div>
+</form>
+<div id="OTP">
+<div id="OTPform">
+<Label>OTP Code:</Label><input type="text"  id="OTPinput">
+<input type="submit" onclick="VerifyOTP()" value="Submit OTP">
+<input type="submit" id="<?php echo $_SESSION['Object']->getEmail()?>" onclick="ResendOTP(this.id)" value="Resend">
+</form>
+</div>
+</div>
+
+<input type="hidden" class="text-box" id="User"  value = "<?php echo $_SESSION['Object']->getUID()?>">
+
+<script>
+
+
+var User  = document.getElementById('User').value;
+function AcceptConfirm(){
+document.getElementById('confirmation').style.display = "block";
+
+}
+function rejectfunction(){
+	history.pushState({}, "", "");
+location.reload();
+}
+function emailverification(email){
+	ajax.open("POST", "ConvertPageController.php", true);
+	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	ajax.send("Email=" + email);
+	console.log(ajax);
+	document.getElementById('confirmation').style.display = "none";
+	document.getElementById('OTP').style.display = "block";
+
+}
+function ResendOTP(email){
+
+	ajax.open("POST", "ConvertPageController.php", true);
+	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	ajax.send("Email=" + email);
+	console.log(ajax);
+	alert("Resent Email");
+}
+function VerifyOTP(){
+	document.getElementById('OTPform').style.display = "none";
+	alert("Please Wait");
+	OTPEntry = document.getElementById('OTPinput').value;
+	ajax.open("POST", "ConvertPageController.php", true);
+	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	ajax.send("OTP=" + OTPEntry );
+	console.log(ajax);
+}
+var connection =  new WebSocket('ws://localhost:3030');
+connection.onmessage = function (message) {
+	var data = JSON.parse(message.data);
+
+			if (data.REPLY == 'OTPResult') {
+					if(User == data.User){
+						console.log(data.Result);
+							if(data.Result == "Success"){
+								document.getElementById('Loading_GUI').style.display = "block";
+								document.getElementById('OTP').style.display = "none";
+								ajax.open("POST", "ConvertPageController.php", true);
+								ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+								location.reload();
+							}
+							if(data.Result == "Failed"){
+								alert("Invalid OTP code"); 
+								history.pushState({}, "", "");
+								location.reload();
+							
+							}
+							if(data.Result == "LogOut"){
+								alert("Max Attempt reached,you will be logged out"); 
+								ajax.open("POST", "ConvertPageController.php", true);
+								ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+								ajax.send("Logout=" + User);
+								location.replace("LoginPage.php");
+							}
+						
+					}
+					
+				}
+	
+}
+</script>
+
 <?php require_once("Footer.php");?>
