@@ -129,7 +129,6 @@ if(isset($_POST['CheckAccepted'])){
 	
 if($_SESSION['Object']->CheckAccepted($_POST['CheckAccepted'])==2){
 	
-
 if($_SESSION['Object']->ToTransfer($_POST['CheckAccepted'])){
 	
 		if($_SESSION['Object']->TransferAmountAccept($_POST['CheckAccepted'],$_SESSION['Object']->AmountToTransfer($_POST['CheckAccepted']))){
@@ -152,6 +151,7 @@ $jsonData = json_encode([
 'Deal' => "set",
 'ContractID' => $_POST['CheckAccepted']
 ]);	
+
 }
 else{
 	$jsonData = json_encode([
@@ -164,7 +164,9 @@ else{
 $query = http_build_query(['data' => $jsonData]);	
 }
 
-
+if(isset($_POST['InitContract'])){
+$_SESSION['Object']->InitContract($_POST['InitContract']);
+}
 //#############################################################
 if(isset($_POST['CheckServiceAccepted'])){
 

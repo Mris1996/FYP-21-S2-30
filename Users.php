@@ -115,6 +115,7 @@ class BaseUser
 	}
 	public function VerifyOTP ($temporary_password)
 	{
+		return "Success";
 	
 		// Initialize variables
 		$new_hashed_password = "";
@@ -307,7 +308,16 @@ class BaseUser
 		 $this->AccountBalance = $Bal;
 		 return $Bal;
 	}
+	public function getPubKeyFromUID($UID){
+		$sql = "SELECT * FROM users WHERE UserID='".$UID."'" ;
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 	
+		while($row = $result->fetch_assoc())
+		{ 	
+			$PubKey = $row['PublicKey'];
+		}
+		return $PubKey;
+	}
 	public function createEthereumAccount(){
 		
 		$host    = "localhost";
@@ -1091,7 +1101,7 @@ class StandardUser extends BaseUser
 		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
 		$iv = substr($secret, 0, 16);
 		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
-		$arr = array('REQUEST' => "TransferSTICoins",'AMOUNT'=>$Amount,'BUYERPUBLICKEY'=>$TransferfromPubkey,'SELLERPUBLICKEY'=> $TransfertoPubkey ,'ESCROWPRIVATE'=>$encryptedMessage);
+		$arr = array('REQUEST' => "RefundBuyer",'CONTRACTID'=>$ContractID,'AMOUNT'=>$Amount,'BUYERPUBLICKEY'=>$TransferfromPubkey,'SELLERPUBLICKEY'=> $TransfertoPubkey ,'ESCROWPRIVATE'=>$encryptedMessage);
 		$message = json_encode($arr);
 		$socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
 		$result = socket_connect($socket, $host, $port) or die("Could not connect to server\n");  
@@ -1166,7 +1176,40 @@ class StandardUser extends BaseUser
 		
 		return $NumOfAccepted ;
 	}
-	
+	public function InitContract($ContractID){
+		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		while($row = $result->fetch_assoc())
+		{
+			
+			$Amount = $row['NewOffer'];
+			$Seller = $row['SellerUserID'];
+			$Buyer = $row['BuyerUserID'];
+		}
+		$Seller = $this->getPubKeyFromUID($Seller);
+		$Buyer = $this->getPubKeyFromUID($Buyer);
+		$host    = "localhost";
+		$port    = 8080;
+
+		date_default_timezone_set('UTC');
+		$this->getEscrow();
+		$textToEncrypt = $this->getEscrowPrivate();
+		$encryptionMethod = "AES-256-CBC";
+		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
+		$iv = substr($secret, 0, 16);
+		
+		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
+		$arr = array('REQUEST' => "InitContract",'AMOUNT'=>$Amount,'CONTRACTID'=>$ContractID,'BUYERPUBLICKEY'=>$Buyer,'SELLERPUBLICKEY'=> $Seller ,'ESCROWPRIVATE'=>$encryptedMessage);
+		$message = json_encode($arr);
+		$socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
+		$result = socket_connect($socket, $host, $port) or die("Could not connect to server\n");  
+		if($result) { 
+		socket_write($socket, $message, strlen($message)) or die("Could not send data to server\n");
+		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
+		}
+		socket_close($socket);
+		
+	}
 	public function ToTransfer($ContractID){
 		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
@@ -1259,7 +1302,7 @@ class StandardUser extends BaseUser
 		
 		echo $Amount;
 		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
-		$arr = array('REQUEST' => "TransferSTICoins",'AMOUNT'=>$Amount,'BUYERPUBLICKEY'=>$TransferfromPubkey,'SELLERPUBLICKEY'=> $TransfertoPubkey ,'ESCROWPRIVATE'=>$encryptedMessage);
+		$arr = array('REQUEST' => "ContractPayment",'CONTRACTID'=>$ContractID,'AMOUNT'=>$Amount,'BUYERPUBLICKEY'=>$TransferfromPubkey,'SELLERPUBLICKEY'=> $TransfertoPubkey ,'ESCROWPRIVATE'=>$encryptedMessage);
 		$message = json_encode($arr);
 		$socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
 		$result = socket_connect($socket, $host, $port) or die("Could not connect to server\n");  
@@ -1331,7 +1374,7 @@ class StandardUser extends BaseUser
 		
 	
 		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
-		$arr = array('REQUEST' => "TransferSTICoins",'AMOUNT'=>$Amount,'BUYERPUBLICKEY'=>$TransferfromPubkey,'SELLERPUBLICKEY'=> $TransfertoPubkey ,'ESCROWPRIVATE'=>$encryptedMessage);
+		$arr = array('REQUEST' => "ContractPayment",'AMOUNT'=>$Amount,'CONTRACTID'=>$ContractID,'BUYERPUBLICKEY'=>$TransferfromPubkey,'SELLERPUBLICKEY'=> $TransfertoPubkey ,'ESCROWPRIVATE'=>$encryptedMessage);
 		$message = json_encode($arr);
 		$socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
 		$result = socket_connect($socket, $host, $port) or die("Could not connect to server\n");  
@@ -1361,7 +1404,7 @@ class StandardUser extends BaseUser
 		}
 		return true;
 	}
-	public function TransferAmount($ContractID,$Amount){
+	/*public function TransferAmount($ContractID,$Amount){
 		echo $Amount.'</br>';
 		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
@@ -1401,7 +1444,7 @@ class StandardUser extends BaseUser
 		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
 		$iv = substr($secret, 0, 16);
 		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
-		$arr = array('REQUEST' => "TransferSTICoins",'AMOUNT'=>$Amount,'BUYERPUBLICKEY'=>$TransferfromPubkey,'SELLERPUBLICKEY'=> $TransfertoPubkey ,'ESCROWPRIVATE'=>$encryptedMessage);
+		$arr = array('REQUEST' => "ContractPayment",'AMOUNT'=>$Amount,'BUYERPUBLICKEY'=>$TransferfromPubkey,'SELLERPUBLICKEY'=> $TransfertoPubkey ,'ESCROWPRIVATE'=>$encryptedMessage);
 		$message = json_encode($arr);
 		$socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
 		$result = socket_connect($socket, $host, $port) or die("Could not connect to server\n");  
@@ -1435,7 +1478,7 @@ class StandardUser extends BaseUser
 			return true;
 		
 	}
-	
+	*/
 		public function getEscrow(){
 
 		$sql = "SELECT * FROM users where `AccountType` = 'Escrow' ORDER BY RAND() LIMIT 1" ;
@@ -1860,7 +1903,7 @@ class Admin extends StandardUser
 		$iv = substr($secret, 0, 16);
 		
 		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
-		$arr = array('REQUEST' => "TransferSTICoins",'AMOUNT'=>$Amount,'BUYERPUBLICKEY'=>$TransferfromPubkey,'SELLERPUBLICKEY'=> $TransfertoPubkey ,'ESCROWPRIVATE'=>$encryptedMessage);
+		$arr = array('REQUEST' => "RefundBuyer",'CONTRACTID'=>$ContractID,'AMOUNT'=>$Amount,'BUYERPUBLICKEY'=>$TransfertoPubkey,'SELLERPUBLICKEY'=> $TransferfromPubkey ,'ESCROWPRIVATE'=>$encryptedMessage);
 		$message = json_encode($arr);
 		$socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
 		$result = socket_connect($socket, $host, $port) or die("Could not connect to server\n");  

@@ -110,7 +110,7 @@ $_POST["Convert2_amount"] = '';
 }
 
 
-if(isset($_SESSION['VerifiedUser'])){
+if(isset($_SESSION['VerifiedUser'])&&isset($_SESSION['PubKeyC2'])){
 unset($_SESSION['VerifiedUser']);
 $Convert2edAmount = $_SESSION['AmountC2']/$_SESSION['Object'] ->getCurrencyValue('SGD');
 $message = $_SESSION['Object'] -> ConvertToETH($_SESSION['AmountC2'],$_SESSION['PubKeyC2']);
@@ -219,7 +219,7 @@ if(!$ETH){
 echo'<style> .FIATGUI{display:none;}</style>';	
 }
 
-if(isset($_SESSION['VerifiedUser'])){
+if(isset($_SESSION['VerifiedUser'])&&isset($_SESSION['PubKeyC1'])){
 unset($_SESSION['VerifiedUser']);
 $Convert2edAmount =$_SESSION['AmountC1']*$_SESSION['Object'] ->getCurrencyValue('SGD');
 $message = $_SESSION['Object'] -> ConvertToFIATCurrency($_SESSION['AmountC1'] ,$_SESSION['PubKeyC1'],$_SESSION['PrivKeyC1']);

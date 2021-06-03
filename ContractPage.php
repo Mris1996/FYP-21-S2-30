@@ -191,7 +191,7 @@ if($ContractObj->BuyerUserID!=$_SESSION['ID']&&$ContractObj->SellerUserID!=$_SES
 <div id="confirmation4">
 <div id="confirmationtext4">
 <b>Are you sure you?</b></br>
-<input type="submit"  id="<?php echo $_SESSION['Object']->getEmail()?>" onclick="emailverificationCancel(this.id)" value="Yes">
+<input type="submit"  id="<?php echo $_SESSION['Object']->getEmail()?>" onclick="emailverificationRefund(this.id)" value="Yes">
 <input type="submit"  onclick="location.reload()" value="No">
 </form>
 </div>
@@ -456,7 +456,7 @@ if($ContractObj->Status == "Seller has accepted" && $Type=="Seller"){
 
 if($Type=="Admin"){
 if($ContractObj->Status == "Requested Refund"){
-	echo'<button id="Refund_Admin" name="Refund_Admin" value="Refund Buyer" onclick="Refund_Admin()">Refund Buyer</button>';
+	echo'<button id="Refund_Admin" name="Refund_Admin" value="Refund Buyer" onclick="RefundConfirm()">Refund Buyer</button>';
 }
 echo'<form action="UserManagementPage.php?ID='.$ContractObj->SellerUserID.'" method="post"><input type="submit" value="Ban/Suspend seller"></form>';
 echo'<form action="UserManagementPage.php?ID='.$ContractObj->BuyerUserID.'"method="post"><input type="submit" value="Ban/Suspend buyer"></form>';
@@ -687,6 +687,7 @@ function ResendOTP(email){
 	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("Email=" + email);
+	alert("Resent OTP to your email!");
 	console.log(ajax);
 }
 function VerifyOTP(){
@@ -746,6 +747,11 @@ function Accept(){
 function SendAccept(){
 if(UserType =="Buyer"){
 	alert("Please Wait");
+	var ajax = new XMLHttpRequest();
+	ajax.open("POST", "ContractPageController.php", true);
+	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	ajax.send("&InitContract=" + ContractID);
+	console.log(ajax);
 }
 document.getElementById('Accept').style.display = "None";
 document.getElementById('Reject').style.display = "None";
@@ -895,7 +901,7 @@ function SendCancelOrder(){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function RefundConfirm(){
 	document.getElementById('confirmation4').style.display = "block";
-	cancelled = true;
+	adminrefund = true;
 }
 function emailverificationRefund(email){
 if (document.getElementById('PaymentMode3').checked && TransactionStatus =="On-Going") {
@@ -905,7 +911,7 @@ ajax.open("POST", "ContractPageController.php", true);
 ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 ajax.send("Email=" + email);
 console.log(ajax);
-document.getElementById('confirmation3').style.display = "none";
+document.getElementById('confirmation4').style.display = "none";
 document.getElementById('OTP').style.display = "block";
 }
 function Refund_Admin(){
@@ -1164,10 +1170,13 @@ checkserviceaccepted();
  </script>
 <?php
 }
-if($ContractObj->Status == "Buyer has accepted"){
+if($ContractObj->Status == "Buyer has accepted" && $Type == "Buyer"){
+
 ?>
 <script>
+
 checkaccepted();
+
  </script>
 <?php
 }

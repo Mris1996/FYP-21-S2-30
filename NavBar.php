@@ -148,8 +148,8 @@ var ajax = new XMLHttpRequest();
 	ajax.open("POST", "RealTimeBalance.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send();
-	console.log(ajax);
-	}, 1000);
+	//console.log(ajax);
+	}, 10000);
 window.WebSocket = window.WebSocket || window.MozWebSocket;
 var connection =  new WebSocket('ws://localhost:3030');
 connection.onmessage = function (message) {
