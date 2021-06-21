@@ -191,7 +191,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SignUpButton'])){
 		
 			if($SignUpFileError == 0){
 					
-				if($fileSize < 500000){	//if file size less then 50mb
+				if($fileSize < 5000000){	//if file size less then 50mb
 					$FileNew = uniqid('', true).".".$fileActualExt;
 					
 

@@ -2,6 +2,6 @@
 while [ true ]
 do
 git pull
-sleep 5
+sleep 2
 
 done

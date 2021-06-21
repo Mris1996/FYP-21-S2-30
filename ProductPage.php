@@ -216,6 +216,7 @@ header("Refresh:0");
 }
 if(isset($_POST['ConfirmationUnlist'])&&$_POST['ConfirmationUnlist']=="Yes"){
 $_SESSION['Object']->UnlistProduct($ProductID);
+exit();
 header("Refresh:0");	
 }
 if(isset($_POST['SendOffer'])){

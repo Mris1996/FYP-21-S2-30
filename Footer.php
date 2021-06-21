@@ -8,7 +8,7 @@ footer {
     clear: both;
     position: relative;
     height: 100px;
-    margin-top: 200px;
+    margin-top: 500px;
 	text-align:center;
 }
 
@@ -28,7 +28,7 @@ footer {
                 <li class="list-inline-item"><a href="ContactPage.php">Contact Us</a></li>
                 <li class="list-inline-item"><a href="#">Terms and conditions</a></li>
             </ul>
-            <p class="copyright">S.T.I.C Version 0.1 © 2021</p>
+            <p class="copyright">S.T.I.C Version 0.2 © 2021</p>
         </footer>
     </div>
    

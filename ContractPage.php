@@ -1,6 +1,6 @@
 <?php
-	require_once("NavBar.php");
- 
+require_once("NavBar.php");
+require_once("couriers.php");
 if(!isset($_SESSION['ID'])){
 	echo '<script> location.replace("index.php")</script> ';
 }
@@ -11,18 +11,80 @@ if(!$ContractObj->initialiseContract($ContractID)){
 	echo '<script> location.replace("index.php")</script> ';
 }
 if($ContractObj->BuyerUserID!=$_SESSION['ID']&&$ContractObj->SellerUserID!=$_SESSION['ID']){
-	if($_SESSION['Object']->getAccountType()!="Administrator"){
+if($_SESSION['Object']->getAccountType()!="Administrator" && $_SESSION['Object']->getAccountType()!="Courier"){
 	echo '<script> location.replace("index.php")</script> ';
 }
-	
-}
+if($ContractObj->DeliveryMode == "Courier Delivery"  && $_SESSION['Object']->getAccountType()=="Courier"){
+	if($ContractObj->Courier != $_SESSION['ID']){
+		echo '<script> location.replace("index.php")</script> ';	
+	}
 
+}
+}
 
 
 ?>
 
 
 <style type="text/css">
+ol.progtrckr {
+  margin-top:100px;
+    list-style-type none;
+}
+
+ol.progtrckr li {
+    display: inline-block;
+    text-align: center;
+    line-height: 3.5em;
+}
+
+ol.progtrckr[data-progtrckr-steps="2"] li { width: 49%; }
+ol.progtrckr[data-progtrckr-steps="3"] li { width: 33%; }
+ol.progtrckr[data-progtrckr-steps="4"] li { width: 24%; }
+ol.progtrckr[data-progtrckr-steps="5"] li { width: 19%; }
+ol.progtrckr[data-progtrckr-steps="6"] li { width: 16%; }
+ol.progtrckr[data-progtrckr-steps="7"] li { width: 14%; }
+ol.progtrckr[data-progtrckr-steps="8"] li { width: 12%; }
+ol.progtrckr[data-progtrckr-steps="9"] li { width: 11%; }
+
+ol.progtrckr li.progtrckr-done {
+    color: black;
+    border-bottom: 4px solid yellowgreen;
+}
+ol.progtrckr li.progtrckr-todo {
+    color: silver; 
+    border-bottom: 4px solid silver;
+}
+
+ol.progtrckr li:after {
+    content: "\00a0\00a0";
+}
+ol.progtrckr li:before {
+    position: relative;
+    bottom: -2.5em;
+    float: left;
+    left: 50%;
+    line-height: 1em;
+}
+ol.progtrckr li.progtrckr-done:before {
+    content: "\2713";
+    color: white;
+    background-color: yellowgreen;
+    height: 2.2em;
+    width: 2.2em;
+    line-height: 2.2em;
+    border: none;
+    border-radius: 2.2em;
+}
+ol.progtrckr li.progtrckr-todo:before {
+    content: "\039F";
+    color: silver;
+    background-color: white;
+    font-size: 2.2em;
+    bottom: -1.2em;
+}
+
+
 .topnavbg{
 	display:none;
 }
@@ -168,13 +230,61 @@ if($ContractObj->BuyerUserID!=$_SESSION['ID']&&$ContractObj->SellerUserID!=$_SES
 	margin-top:20%;
    
 }
+#contractdetailsfromcontract{
+	display:none;
+}
+#loadergui {
+width:300px;
+margin:auto;
+margin-top:20%;
+display:none;
+}
+#loader {
+	position: absolute;
+border: 16px solid grey;
+border-radius: 50%;
+border-top: 16px solid purple;
+width: 300px;
+height: 300px;
+
+
+-webkit-animation: spin 2s linear infinite; /* Safari */
+animation: spin 2s linear infinite;
+}
+#loaderimage {
+margin-left:14px;
+margin-top:15px;
+border-radius: 50%;
+position: absolute;
+background-image: url("systemimages/Logo.jpg");
+width:270px;
+height:270px;
+background-repeat: no-repeat;
+background-size: auto;
+background-size: 270px 270px;
+}
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 </style>
 
 </head>
-<body >
+<div id="loadergui">
+<h2>Loading Please Wait</h2>
+<div id="loader"></div>
+<div id="loaderimage"></div>
+</div>
+<div id="contractgui">
 <div id="confirmation2">
 <div id="confirmationtext2">
-<b>Are you sure you?</b></br>
+<b>Are you sure?</b></br>
 <input type="submit"  id="<?php echo $_SESSION['Object']->getEmail()?>" onclick="emailverification(this.id)" value="Yes">
 <input type="submit"  onclick="location.reload()" value="No">
 </form>
@@ -182,7 +292,7 @@ if($ContractObj->BuyerUserID!=$_SESSION['ID']&&$ContractObj->SellerUserID!=$_SES
 </div>
 <div id="confirmation3">
 <div id="confirmationtext3">
-<b>Are you sure you?</b></br>
+<b>Are you sure?</b></br>
 <input type="submit"  id="<?php echo $_SESSION['Object']->getEmail()?>" onclick="emailverificationCancel(this.id)" value="Yes">
 <input type="submit"  onclick="location.reload()" value="No">
 </form>
@@ -190,7 +300,7 @@ if($ContractObj->BuyerUserID!=$_SESSION['ID']&&$ContractObj->SellerUserID!=$_SES
 </div>
 <div id="confirmation4">
 <div id="confirmationtext4">
-<b>Are you sure you?</b></br>
+<b>Are you sure?</b></br>
 <input type="submit"  id="<?php echo $_SESSION['Object']->getEmail()?>" onclick="emailverificationRefund(this.id)" value="Yes">
 <input type="submit"  onclick="location.reload()" value="No">
 </form>
@@ -290,6 +400,7 @@ if(!isset($_SESSION['ID'])){
 $submit = true;
 $ProductID = $ProductObj->ProductID;
 $_SESSION['Temp_Product']=$ProductID;
+
 $DateRequiredError = $OfferError = "";
 $Owner = $_SESSION['Object']->getProductOwner($ProductID);
 $ProductObj = new Products();
@@ -297,19 +408,28 @@ $ProductObj->InitialiseProduct($ProductID);
 
 
 ?>
+<ol class="progtrckr" data-progtrckr-steps="5">
+<li class="progtrckr-todo" >Contract Negotiation</li>
+<li class="progtrckr-todo">Contract Deal</li>
+<li class="progtrckr-todo">Delivery Confirm</li>
+<li class="progtrckr-todo">Order Processing</li>
+<li class="progtrckr-todo">Delivered</li>
+</ol>
 <input type="hidden" class="text-box" id="UserID"  value = "<?php echo $_SESSION['ID']?>">
 <input type="hidden" class="text-box" id="contractid"  value = "<?php echo $_GET['ID']?>">
 <input type="hidden" class="text-box" id="usertype"  value = "<?php echo $Type?>">
 <input type="hidden" class="text-box" id="Payment"  value = "<?php echo $ContractObj->PaymentMode?>">
+<input type="hidden" class="text-box" id="Delivery"  value = "<?php echo $ContractObj->DeliveryMode?>">
 <input type="hidden" class="text-box" id="Balance"  value = "<?php echo $_SESSION['Object']->getAccountBalance()?>">
 <input type="hidden" class="text-box" id="TransactionStatus"  value = "<?php echo $ContractObj->Transaction?>">
+<input type="hidden" class="text-box" id="Commission"  value = "<?php echo $_SESSION['Object']->getProductCost()?>">
 
 <?php
-if($Type=="Admin"){
+
 $BaseUserOBJ = new BaseUser("check balance");
 $BaseUserOBJ->setUID($ContractObj->SellerUserID);
 echo'<input type="hidden" class="text-box" id="SellerBalance"  value = "'.$BaseUserOBJ->getAccountBalanceFromServer($BaseUserOBJ->getPubKey()).'">';
-}
+
 
 ?>
 <h1 id="statusmessage" style="text-align:center">Status:<?php 
@@ -322,6 +442,7 @@ else if($ContractObj->Status == "Requested Refund"){
  echo 'Buyer requested for refund,await Admin assistance';	
 } 
 else if($ContractObj->Status == "Buyer has accepted service"){
+	
 	echo 'Buyer has accepted service';	
 
 }
@@ -329,6 +450,7 @@ else if($ContractObj->Status == "Seller has accepted service"){
 	echo 'Seller has accepted service';	
 }
 else if($ContractObj->Status == "Buyer has accepted"){
+
 	echo 'Buyer has accepted';	
 }
 else if($ContractObj->Status == "Seller has accepted"){
@@ -368,6 +490,13 @@ echo 'Terms are being negotiated';
 
 
 <hr><center><h2>Contract Details</h2></center>
+<div id="contractdetailsfromcontract">
+<hr>
+<center><h3>Contract Details from Smart Contract</h3></center>
+<label><b>Status:</b></label><label id="contractstatus"></label></br>
+<label><b>Amount Paid:</b></label><label id="amountpaid"></label></br>
+<hr>
+</div>
 <?php
 		if($Type == "Buyer"){
 		echo'
@@ -376,6 +505,7 @@ echo 'Terms are being negotiated';
 		}
 		if($Type == "Seller" || $Type== "Admin"){
 		echo'
+			<label>Cost per transaction:</label><b>'.number_format($_SESSION['Object']->getProductCost()*100, 2, '.', '').'% of offer</b></br>
 			<label>Date product is required by:</label>
 			<input type="date" id ="DateRequired" name="DateRequired" oninput="formsyncfunction()" value="'.$ContractObj->DateRequired.'" readonly>';
 		}
@@ -387,9 +517,9 @@ echo 'Terms are being negotiated';
 		<input type="number" id="Offer" name="Offer" min="0.00" step="any" oninput="formsyncfunction()" value="<?php echo number_format($ContractObj->NewOffer, 2, '.', '');?>" required>
 		<br />
 <?php 
-		if($Type == "Buyer"){
+
 		echo'
-		<label>Offer will be rounded up to whole number</label><br /><br />
+		<br /><br />
 		<label> Payment Mode</label><br>
 		<label for="Half">Half-Amount now:</label>
 		<input type="radio"  id="PaymentMode1" onclick="formsyncfunction()" name="PaymentMode" value="Half-STICoins" ><br>
@@ -398,26 +528,88 @@ echo 'Terms are being negotiated';
 		<label for="FullLater">Full-Amount later :</label>
 		<input type="radio" id="PaymentMode3" onclick="formsyncfunction()" name="PaymentMode" value="Full-STICoins_Later"><br>
 		<br>';
-		}
+		
 		if($Type == "Seller" || $Type == "Admin"){
-			echo'
-		<label>Offer will be rounded up to whole number</label><br /><br />
-		<label> Payment Mode</label><br>
-		<label for="Half">Half-Amount now:</label>
-		<input type="radio"  id="PaymentMode1" onclick="formsyncfunction()" name="PaymentMode" value="Half-STICoins"  disabled><br>
-		<label for="FullNow">Full-Amount now:</label>
-		<input type="radio"  id="PaymentMode2" onclick="formsyncfunction()" name="PaymentMode" value="Full-STICoins" disabled><br>
-		<label for="FullLater">Full-Amount later :</label>
-		<input type="radio" id="PaymentMode3" onclick="formsyncfunction()" name="PaymentMode" value="Full-STICoins_Later" disabled><br>
-		<br>';
-			
+					
+		?>
+		<script>
+		$('input[name="PaymentMode"]').attr('disabled', 'disabled');
+	
+
+		</script>
+		<?php
 		}
+		?>
+		<script>
+		   var Payment = document.getElementById("Payment").value;
+		   $("input[type=radio][name='PaymentMode'][value='"+Payment+"']").attr("checked", "checked");
+
+		</script>
+		<?php
+			
+		
+	
 		echo'</br>';
+		
+
+		echo'
+		<label>Delivery Mode</label><br>
+		<table class="table table-borderless table-info">
+		<tr>
+		<th>Courier</th>
+		<th>Delivery Title</th>
+		<th>Price</th>
+		<th>Estimated Date</th>
+		<th>Select</th>
+		</tr>
+		<tr>
+		<td>Seller</td>
+		<td>Self Delivery</td>
+		<td>-</td>
+		<td>-</td>
+		<td><input type="radio" id="Self Delivery" onclick="formsyncfunction()" name="DeliveryMode" value="Self Delivery"><br></td>
+		</tr>
+		';
+
+		$arr = $_SESSION['Object']->getListOfCouriers();
+		for($x=0;$x<sizeof($arr);$x++){
+			$CourierObj = new Couriers;
+			$CourierObj->InitialiseCouriers($arr[$x]);
+			echo'<tr>
+			<td>'.$CourierObj->CourierName.'</td>
+			<td>'.$CourierObj->DeliveryName.'</td>
+			<td>'.$_SESSION['Object']->getCurrency().number_format($CourierObj->Price, 2, '.', '').'</td>
+			<td>'.$CourierObj->EstimatedTime.'</td>
+			<td><input type="radio" id="'.$CourierObj->DeliveryName.'" onclick="formsyncfunction()" name="DeliveryMode" value="'.$CourierObj->DeliveryName.'"><br></td>
+			</tr>';
+		}
+		echo'
+		</table>
+		</br></br></br></br>';
+		
+		if($Type == "Admin"|| $Type == "Buyer" ){
+		?>
+		<script>
+		$('input[name="DeliveryMode"]').attr('disabled', 'disabled');
+
+		</script>
+		<?php
+		}
+		?>
+		<script>
+		   var Delivery = document.getElementById("Delivery").value;
+		   $("input[type=radio][name='DeliveryMode'][value='"+Delivery+"']").attr("checked", "checked");
+
+		</script>
+		<?php
+		
 		if($Type=="Buyer" && $ContractObj->Status == "Seller has accepted service"||$Type=="Seller" && $ContractObj->Status == "Deal"){
 			echo'<input type="button" name="service" id="service" onclick="AcceptConfirm()" value="Service fullfilled">';
 		}
-		if($Type == "Buyer" && $ContractObj->Transaction == "Complete" &&  $ContractObj->Status!="Refunded Transaction" || $Type == "Buyer" && $ContractObj->Transaction == "On-Going" &&  $ContractObj->Status!="Refunded Transaction" ){
-			echo'</br><input type="button" name="refund" id="refund" onclick="RequestRefund()" value="Request Refund">';
+		if($Type == "Buyer" && $ContractObj->Transaction == "Complete" &&  $ContractObj->Status!="Refunded Transaction" && $ContractObj->Status!="Rejected" &&  $ContractObj->Status!="Requested Refund"|| $Type == "Buyer" && $ContractObj->Transaction == "On-Going" &&  $ContractObj->Status!="Refunded Transaction"&&  $ContractObj->Status!="Requested Refund" ){
+			if($ContractObj->Status!="Order Cancelled"){
+				echo'</br><input type="button" name="refund" id="refund" onclick="RequestRefund()" value="Request Refund">';
+			}
 		}
 		if($Type == "Seller" && $ContractObj->Transaction == "On-Going" && $ContractObj->Status != "Order Cancelled" && $ContractObj->Status != "Buyer has accepted service" && $ContractObj->Status != "Seller has accepted service"){
 				
@@ -429,6 +621,7 @@ echo 'Terms are being negotiated';
 	
 
 ?>
+
 <button id="Accept" name="Accept" value="Accept" onclick="AcceptConfirm()">Sign Contract</button>
 <button id="Reject" name="Reject" value="Reject" onclick="Reject()">Reject Contract</button>
 <script>
@@ -465,7 +658,9 @@ echo'<form method="post"><input type="submit" name="ResumeTranasction" value="Re
 }
 }
 else{
+	if($Type=="Buyer"){
 	echo'<input type="submit" onclick="OpenWindow(this.id)" id="OfferPage.php" value="Make a new contract">';
+	}
 }
 if(isset($_POST['ResumeTranasction'])){
 	$_SESSION['Object']->ResumeTranasction($ContractObj->ContractID,$ContractObj->Transaction);
@@ -507,10 +702,8 @@ if($Type=="Admin" ||$ContractObj->Transaction == "On-Going" || $ContractObj->Sta
 <script>
 	document.getElementById('Accept').style.display = "None";
 	document.getElementById('Offer').disabled = true;
-	document.getElementById('DateRequired').disabled = true;
-	document.getElementById('PaymentMode3').disabled = true;
-	document.getElementById('PaymentMode2').disabled = true;
-	document.getElementById('PaymentMode1').disabled = true;
+	$('input[name="PaymentMode"]').attr('disabled', 'disabled');
+	$('input[name="DeliveryMode"]').attr('disabled', 'disabled');
 </script>
 <?php
 }
@@ -518,7 +711,6 @@ if($Type=="Admin" || $ContractObj->Status == "Admin has halted this transaction"
 ?>
 <script>
 	document.getElementById('Reject').style.display = "None";
-	
 
 </script>
 <?php
@@ -539,19 +731,6 @@ if($ContractObj->Transaction == "Negotiating"){
 </script>
 <?php	
 }
-else if($ContractObj->Transaction == "On-Going"){
-?>
-<script>
-document.getElementById('Accept').style.display = "None";
-document.getElementById('Reject').style.display = "None";
-document.getElementById('Offer').disabled = true;
-document.getElementById('DateRequired').disabled = true;
-document.getElementById('PaymentMode3').disabled = true;
-document.getElementById('PaymentMode2').disabled = true;
-document.getElementById('PaymentMode1').disabled = true;
-</script>
-<?php	
-}
 else{
 ?>
 <script>
@@ -559,33 +738,23 @@ document.getElementById('Accept').style.display = "None";
 document.getElementById('Reject').style.display = "None";
 document.getElementById('Offer').disabled = true;
 document.getElementById('DateRequired').disabled = true;
-document.getElementById('PaymentMode3').disabled = true;
-document.getElementById('PaymentMode2').disabled = true;
-document.getElementById('PaymentMode1').disabled = true;
+$('input[name="PaymentMode"]').attr('disabled', 'disabled');
+$('input[name="DeliveryMode"]').attr('disabled', 'disabled');
 </script>
 <?php	
 }
 ?>
-</body>
+
+</div>
  <script src="https://smtpjs.com/v3/smtp.js"></script>  
 <script>
+
 function OpenWindow(ID){
 	window,opener.close();window.open(ID);
 
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-if (document.getElementById('PaymentMode1').value == document.getElementById("Payment").value) {
-	document.getElementById('PaymentMode1').checked = true;
-
-}
-if (document.getElementById('PaymentMode2').value == document.getElementById("Payment").value) {
-	document.getElementById('PaymentMode2').checked = true;
-
-}
-if (document.getElementById('PaymentMode3').value == document.getElementById("Payment").value) {
-	document.getElementById('PaymentMode3').checked = true;
-} 
 //initialise all required variables from php -> Js
 var cancelled = false;
 var adminrefund = false;
@@ -596,10 +765,22 @@ messageInput = document.getElementById("message-input"),
 UserType =  document.getElementById("usertype").value.trim();
 PaymentType = document.getElementById("Payment").value;
 TransactionStatus = document.getElementById("TransactionStatus").value;
-if (UserType=="Admin") {
-	SellerBalance = document.getElementById("SellerBalance").value;
-	
+Comission = document.getElementById("Commission").value;
+var Offer =  document.getElementById("Offer").value.trim();
+Comission = Offer*(Comission/100);
+var Delivery = document.getElementById("Delivery").value;
+console.log(Comission);
+SellerBalance = document.getElementById("SellerBalance").value;
+
+if(TransactionStatus!="Negotiating" && UserType == "Admin"){
+console.log(UserType);
+//var ajaxnew = new XMLHttpRequest();
+//ajaxnew.open("POST", "ContractPageController.php", true);
+//ajaxnew.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+//ajaxnew.send("ContractInformation=" + User + "&contractid=" + ContractID + "&usertype=" + UserType + "&User=" + User);
+//console.log(ajaxnew);
 }
+/////////////////////////////////////////
 		
 function handleKeyUp(e) {
 	
@@ -616,7 +797,7 @@ function sendMessage() {
 	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("User=" + User + "&message=" + message + "&contractid=" + ContractID + "&usertype=" + UserType );
-	//console.log(ajax);
+	
 	messageInput.value = "";
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -624,19 +805,9 @@ function formsyncfunction(){
 
 	var Offer =  document.getElementById("Offer").value.trim();
 	DateRequired =  document.getElementById("DateRequired").value.trim();
+	var PaymentMode = $('input[name=PaymentMode]:checked').val();
+	var DeliveryMode =  $('input[name=DeliveryMode]:checked').val();
 	
-	if (document.getElementById('PaymentMode1').checked) {
-	  PaymentMode = document.getElementById('PaymentMode1').value;
-	 
-	}
-	if (document.getElementById('PaymentMode2').checked) {
-	  PaymentMode = document.getElementById('PaymentMode2').value;
-	 
-	}
-	if (document.getElementById('PaymentMode3').checked) {
-	  PaymentMode = document.getElementById('PaymentMode3').value;
-	 
-	}
 	if(UserType=="Buyer"){
 	document.getElementById('Accept').style.display = "none";
 	document.getElementById('Reject').style.display = "none";
@@ -644,13 +815,8 @@ function formsyncfunction(){
 	var ajax = new XMLHttpRequest();
 	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	ajax.send("User=" + User + "&offer=" + Offer + "&daterequired=" + DateRequired + "&paymentmode=" + PaymentMode + "&contractid=" + ContractID + "&usertype=" + UserType);
-	console.log(ajax);
-	var ajax = new XMLHttpRequest();
-	ajax.open("POST", "ContractPageController.php", true);
-	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	ajax.send("User=" + User + "&contractid=" + ContractID + "&message=" + " has updated the offer");
-	console.log(ajax);
+	ajax.send("User=" + User + "&offer=" + Offer + "&daterequired=" + DateRequired + "&paymentmode=" + PaymentMode + "&contractid=" + ContractID + "&usertype=" + UserType + "&delivery=" + DeliveryMode);
+	document.getElementById('statusmessage').innerHTML = "Status:Terms are being negotiated";
 	
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -678,7 +844,6 @@ function emailverification(email){
 		ajax.open("POST", "ContractPageController.php", true);
 		ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		ajax.send("Email=" + email);
-		console.log(ajax);
 		document.getElementById('confirmation2').style.display = "none";
 		document.getElementById('OTP').style.display = "block";
 	}
@@ -688,16 +853,15 @@ function ResendOTP(email){
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("Email=" + email);
 	alert("Resent OTP to your email!");
-	console.log(ajax);
 }
 function VerifyOTP(){
 	document.getElementById('OTPform').style.display = "none";
-	alert("Please Wait");
+	document.getElementById('contractgui').style.display = "none";
+	document.getElementById('loadergui').style.display = "block";
 	OTPEntry = document.getElementById('OTPinput').value
 	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("OTP=" + OTPEntry + "&contractid=" + ContractID  );
-	console.log(ajax);
 }
 function AcceptConfirmed(TransactionStatus){
 if(cancelled){
@@ -717,49 +881,85 @@ if(adminrefund){
 	
 }
 function Accept(){
-	if(document.getElementById('PaymentMode2').checked && UserType =="Buyer"){
-		if(Balance < document.getElementById("Offer").value){
+	document.getElementById('confirmation2').style.display = "none";
+	if(document.getElementById('PaymentMode2').checked){
+		
+		if(SellerBalance < Comission.value){
+			console.log(Commission)
+		
+			alert("Seller have insufficient balance for commission payment,please top up");
+			if(UserType =="Seller"){
+				window.open("ConvertPage.php");
+				location.reload();
+			}
+		}
+		else{
+			if(UserType =="Seller"){
+				SendAccept();
+			}
+		}
+	}
+  if(document.getElementById('PaymentMode1').checked){
+		if(SellerBalance <  Comission.value){
+			alert("Seller have insufficient balance for commission payment,please top up");
+			if(UserType =="Seller"){
+				window.open("ConvertPage.php");
+				location.reload();
+			}
+		}
+		else{
+			if(UserType =="Seller"){
+				SendAccept();
+			}
+		}
+	}
+	 if(document.getElementById('PaymentMode2').checked){
+		if(UserType =="Seller"){
+			SendAccept();
+		}
+	
+}
+ if(document.getElementById('PaymentMode3').checked){
+		SendAccept();
+	
+}
+   if(document.getElementById('PaymentMode2').checked && UserType =="Buyer"){
+		if(Balance < Number(document.getElementById("Offer").value)){
 			alert("You have insufficient balance,please top up");
 			window.open("ConvertPage.php");
+			location.reload();
 		}
 		else{
 			SendAccept();
 			
 		}
 	}
-	else if(document.getElementById('PaymentMode1').checked && UserType =="Buyer"){
+   if(document.getElementById('PaymentMode1').checked && UserType =="Buyer"){
 
-		if(Balance < (document.getElementById("Offer").value/2)){
+		if(Balance < (Number(document.getElementById("Offer").value)/2)){
 			
 			alert("You have insufficient balance,please top up");
 			window.open("ConvertPage.php");
+			location.reload();
 		}
 		else{
+		
 			SendAccept();
 			
 		}
 	}
-	else{
-		SendAccept();	
-	}
+
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function SendAccept(){
-if(UserType =="Buyer"){
-	alert("Please Wait");
-	var ajax = new XMLHttpRequest();
-	ajax.open("POST", "ContractPageController.php", true);
-	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	ajax.send("&InitContract=" + ContractID);
-	console.log(ajax);
-}
+document.getElementById('contractgui').style.display = "none";
+document.getElementById('loadergui').style.display = "block";
 document.getElementById('Accept').style.display = "None";
 document.getElementById('Reject').style.display = "None";
 document.getElementById("Offer").disabled = true;
 document.getElementById("DateRequired").disabled = true;
-document.getElementById('PaymentMode3').disabled = true;
-document.getElementById('PaymentMode2').disabled = true;
-document.getElementById('PaymentMode1').disabled = true;
+$('input[name="PaymentMode"]').attr('disabled', 'disabled');
+$('input[name="DeliveryMode"]').attr('disabled', 'disabled');
 var ajax = new XMLHttpRequest();
 ajax.open("POST", "ContractPageController.php", true);
 ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -772,28 +972,64 @@ function Reject(){
 	document.getElementById('Reject').style.display = "None";
 	document.getElementById("Offer").disabled = true;
 	document.getElementById("DateRequired").disabled = true;
-	document.getElementById('PaymentMode3').disabled = true;
-	document.getElementById('PaymentMode2').disabled = true;
-	document.getElementById('PaymentMode1').disabled = true;
+	$('input[name="PaymentMode"]').attr('disabled', 'disabled');
+	$('input[name="DeliveryMode"]').attr('disabled', 'disabled');
 	var ajax = new XMLHttpRequest();
 	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("Reject=" + User + "&contractid=" + ContractID );
-	console.log(ajax);
 	var ajax = new XMLHttpRequest();
 	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("message=" + " has rejected the offer,Transaction declined" + "&contractid=" + ContractID + "&usertype=" + UserType + "&User=" + User );
-	console.log(ajax);
-	
 	
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 function AcceptService(){
+
+document.getElementById('confirmation2').style.display = "none";
+if(document.getElementById('PaymentMode3').checked){
+	
+	if(SellerBalance < Comission){
+		alert("Seller have insufficient balance for commission payment,please top up");
+		if(UserType =="Seller"){
+			window.open("ConvertPage.php");
+			location.reload();
+		}
+	}
+	else{
+		if(UserType =="Seller"){
+			SendAcceptService();
+		}
+	}
+}
+ if(document.getElementById('PaymentMode1').checked){
+	
+	if(SellerBalance < Comission){
+		alert("Seller have insufficient balance for commission payment,please top up");
+		if(UserType =="Seller"){
+			window.open("ConvertPage.php");
+			location.reload();
+		}
+	}
+	else{
+		if(UserType =="Seller"){
+			SendAcceptService();
+		}
+	}
+}
+if(document.getElementById('PaymentMode2').checked){
+		
+	SendAcceptService();
+		
+	
+}
 if(document.getElementById('PaymentMode3').checked && UserType =="Buyer"){
-	if(Balance < document.getElementById("Offer").value){
+	if(Balance < Number(document.getElementById("Offer").value)){
 		alert("You have insufficient balance,please top up");
 		window.open("ConvertPage.php");
+		location.reload();
 	}
 	else{
 		SendAcceptService();
@@ -802,25 +1038,22 @@ if(document.getElementById('PaymentMode3').checked && UserType =="Buyer"){
 }
 else if(document.getElementById('PaymentMode1').checked && UserType =="Buyer"){
 
-	if(Balance < (document.getElementById("Offer").value/2)){
+	if(Balance < (Number(document.getElementById("Offer").value)/2)+3){
 		
 		alert("You have insufficient balance,please top up");
 		window.open("ConvertPage.php");
+		location.reload();
 	}
 	else{
 		SendAcceptService();
 		
 	}
 }
-else{
-	SendAcceptService();	
-}
+
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function SendAcceptService(){
-if(UserType =="Buyer"){
-	alert("Please Wait");
-}
+
 
 	if(document.getElementById('service') != null){
 		document.getElementById('service').style.display = "none";
@@ -829,7 +1062,6 @@ if(UserType =="Buyer"){
 	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("AcceptService=" + User + "&contractid=" + ContractID + "&usertype=" + UserType + "&User=" + User);
-	console.log(ajax);
 
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -839,7 +1071,6 @@ function RequestRefund(){
 	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("Refund=" + User + "&contractid=" + ContractID + "&usertype=" + UserType + "&User=" + User);
-	console.log(ajax);
 	location.reload();
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -854,13 +1085,13 @@ if (document.getElementById('PaymentMode3').checked && TransactionStatus =="On-G
 ajax.open("POST", "ContractPageController.php", true);
 ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 ajax.send("Email=" + email);
-console.log(ajax);
+
 document.getElementById('confirmation3').style.display = "none";
 document.getElementById('OTP').style.display = "block";
 }
 function CancelOrder(){
 	if(document.getElementById('PaymentMode2').checked && UserType =="Seller"){
-	if(Balance < document.getElementById("Offer").value){
+	if(Balance < Number(document.getElementById("Offer").value)){
 		alert("You have insufficient balance,please top up");
 		window.open("ConvertPage.php");
 	}
@@ -870,8 +1101,7 @@ function CancelOrder(){
 	}
 }
 else if(document.getElementById('PaymentMode1').checked && UserType =="Seller"){
-
-	if(Balance < (document.getElementById("Offer").value/2)){
+	if(Balance < (Number(document.getElementById("Offer").value)/2)){
 		
 		alert("You have insufficient balance,please top up");
 		window.open("ConvertPage.php");
@@ -887,16 +1117,16 @@ else{
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function SendCancelOrder(){
+setInterval(function() {
+location.reload();
+}, 70000);
+	document.getElementById('contractgui').style.display = "none";
+	document.getElementById('loadergui').style.display = "block";
 	var ajax = new XMLHttpRequest();
 	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("Cancel=" + User + "&contractid=" + ContractID + "&usertype=" + UserType + "&User=" + User);
-	console.log(ajax);
-	var ajax = new XMLHttpRequest();
-	ajax.open("POST", "ContractPageController.php", true);
-	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	ajax.send("message=" + " has cancelled order.Sorry for the inconvenience,your amount will return to you shortly." + "&contractid=" + ContractID + "&usertype=" + UserType + "&User=" + User );
-	console.log(ajax);
+	
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function RefundConfirm(){
@@ -910,71 +1140,83 @@ if (document.getElementById('PaymentMode3').checked && TransactionStatus =="On-G
 ajax.open("POST", "ContractPageController.php", true);
 ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 ajax.send("Email=" + email);
-console.log(ajax);
+
 document.getElementById('confirmation4').style.display = "none";
 document.getElementById('OTP').style.display = "block";
 }
 function Refund_Admin(){
 
-	if(document.getElementById('PaymentMode2').checked){
-	if(SellerBalance < document.getElementById("Offer").value){
-		alert("You have insufficient balance,please top up");
+	if(document.getElementById('PaymentMode2').checked||document.getElementById('PaymentMode3').checked){
+	if(SellerBalance < Number(document.getElementById("Offer").value)){
+		console.log(SellerBalance)
+		console.log( Number(document.getElementById("Offer").value))
+		alert("Seller have insufficient balance,please top up");
+		location.reload();
 	}
 	else{
 		SendRefund_Admin();
 		
+		
 	}
 }
-else if(document.getElementById('PaymentMode1').checked){
+ if(document.getElementById('PaymentMode1').checked){
 
-	if(SellerBalance < (document.getElementById("Offer").value/2)){
-		
-		alert("You have insufficient balance,please top up");
+	if(SellerBalance < (Number(document.getElementById("Offer").value)/2)){
+		alert("Seller have insufficient balance,please top up");
+		location.reload();
 	}
 	else{
 		SendRefund_Admin();
 		
 	}
 }
-else{
-	SendRefund_Admin();	
-}
+
+
 	
 	
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function SendRefund_Admin(){
+	document.getElementById('contractgui').style.display = "none";
+	document.getElementById('loadergui').style.display = "block";
 	document.getElementById('Refund_Admin').style.display = "none";
 	var ajax = new XMLHttpRequest();
 	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("RefundAdmin=" + User + "&contractid=" + ContractID + "&usertype=" + UserType + "&User=" + User);
-	console.log(ajax);
+	
 	var ajax = new XMLHttpRequest();
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function checkserviceaccepted(){
-
+	if(UserType == "Buyer"){
+	document.getElementById('contractgui').style.display = "none";
+	document.getElementById('loadergui').style.display = "block";
 	var ajax = new XMLHttpRequest();
 	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("&CheckServiceAccepted=" + ContractID+ "&usertype=" + UserType+"&paymenttype=" +PaymentType);
-	console.log(ajax);
+	
+	}
 	
 }
 function checkaccepted(){
-
+	if(UserType == "Buyer"){
+	document.getElementById('contractgui').style.display = "none";
+	document.getElementById('loadergui').style.display = "block";
 	var ajax = new XMLHttpRequest();
 	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("&CheckAccepted=" + ContractID+ "&usertype=" + UserType+"&paymenttype=" +PaymentType);
 	console.log(ajax);
-
+	
+	}
+	location.reload();
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 window.WebSocket = window.WebSocket || window.MozWebSocket;
 
-var connection =  new WebSocket('ws://localhost:3030');
+var connection =  new WebSocket(webportconfig);
 var connectingSpan = document.getElementById("connecting");
 connection.onopen = function () {
 	
@@ -986,7 +1228,7 @@ connection.onerror = function (error) {
 
 connection.onmessage = function (message) {
 	var data = JSON.parse(message.data);
-	
+	console.log(data);
 	if(data.ContractID==document.getElementById("contractid").value.trim()){
 			
 			if (typeof data.message != 'undefined') {
@@ -1021,11 +1263,7 @@ connection.onmessage = function (message) {
 			document.getElementById("message-box").appendChild(div);
 			}
 			if (typeof data.offer != 'undefined') {
-				if(UserType=="Seller"){
-					location.reload();
-				
-				}
-				
+				location.reload();
 				document.getElementById("DateRequired").disabled = false;
 				if(UserType=="Buyer"){
 					document.getElementById('PaymentMode3').disabled = false;
@@ -1034,19 +1272,8 @@ connection.onmessage = function (message) {
 				}
 				document.getElementById('Offer').value = data.offer;
 				document.getElementById('DateRequired').value = data.daterequired;
-				if (document.getElementById('PaymentMode1').value == data.paymentmode ) {
-						document.getElementById('PaymentMode1').checked = true;
-				 
-				}
-				if (document.getElementById('PaymentMode2').value == data.paymentmode ) {
-						document.getElementById('PaymentMode2').checked = true;
-				 
-				}
-				if (document.getElementById('PaymentMode3').value == data.paymentmode ) {
-						document.getElementById('PaymentMode3').checked = true;
-				 
-				}
-				
+				$("input[type=radio][name='PaymentMode'][value='"+data.paymentmode+"']").attr("checked", "checked");
+				$("input[type=radio][name='DeliveryMode'][value='"+	data.deliverymode+"']").attr("checked", "checked");
 			}
 			
 			
@@ -1066,8 +1293,8 @@ connection.onmessage = function (message) {
 				if (data.REPLY == 'CheckServiceAccepted') {
 
 				if(data.DealComplete=="set"){
-			
-					location.reload();
+					//window.open("RatingPage.php?ID="+data.ContractID);
+					//location.reload();
 
 				}
 				if(data.DealComplete=="error")
@@ -1114,6 +1341,8 @@ connection.onmessage = function (message) {
 				}
 				if (data.REPLY == 'AcceptService') {
 					checkserviceaccepted();
+					document.getElementById('contractgui').style.display = "none";
+					document.getElementById('loadergui').style.display = "block";
 					if(UserType == "Seller"){
 						document.getElementById('cancel').style.display = "none";
 					}
@@ -1123,6 +1352,9 @@ connection.onmessage = function (message) {
 				}
 				if (data.REPLY == 'AcceptOffer') {
 					checkaccepted();
+					document.getElementById('contractgui').style.display = "none";
+					document.getElementById('loadergui').style.display = "block";
+					
 					document.getElementById('statusmessage').innerHTML = "Status:"+ data.Type + " has accepted offer";
 					location.reload();
 				}
@@ -1153,6 +1385,12 @@ connection.onmessage = function (message) {
 					}
 					
 				}
+				if (data.REPLY == 'ContractInformation') {
+					document.getElementById('contractdetailsfromcontract').style.display = "block";
+					document.getElementById('contractstatus').innerHTML = data.contractdata.Status;
+					document.getElementById('amountpaid').innerHTML = Currency+(data.contractdata.Paid/100).toFixed(2);
+					console.log(data.contractdata);
+				}
 			}
 			
 		
@@ -1167,18 +1405,26 @@ objDiv.scrollTop = objDiv.scrollHeight;
 	?>
 <script>
 checkserviceaccepted();
+setInterval(function() {
+location.reload();
+	}, 70000);
  </script>
 <?php
 }
+
 if($ContractObj->Status == "Buyer has accepted" && $Type == "Buyer"){
 
 ?>
 <script>
 
 checkaccepted();
-
+setInterval(function() {
+location.reload();
+	}, 70000);
  </script>
+
 <?php
+
 }
 if(isset($_POST['Confirmationreport'])&& $_POST['Confirmationreport']=="No"){
 exit();
@@ -1203,3 +1449,4 @@ echo '<script> alert("Contract unreported");</script> ';
 echo '<script> location.replace("index.php")</script> ';	
 }
 ?>
+

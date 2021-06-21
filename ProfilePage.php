@@ -180,19 +180,23 @@ echo'
 </div>';
 
 
-
-
+if(isset($_SESSION['ID'])){
+	$User =$_SESSION['ID'];
+}
+else{
+	$User = "default";
+}
 if(isset($_POST['SortDate'])){
-$BaseUserObj->ViewAllUserProduct("DateOfListing",$_POST['Order'],$ID,$_SESSION['ID']);
+$BaseUserObj->ViewAllUserProduct("DateOfListing",$_POST['Order'],$ID,$User);
 }
 if(isset($_POST['SortPrice'])){
-$BaseUserObj->ViewAllUserProduct("ProductInitialPrice",$_POST['Order'],$ID,$_SESSION['ID']);
+$BaseUserObj->ViewAllUserProduct("ProductInitialPrice",$_POST['Order'],$ID,$User);
 }
 if(isset($_POST['SortCat'])){	
-$BaseUserObj->ViewAllUserProduct("ProductCategory",$_POST['Order'],$ID,$_SESSION['ID']);
+$BaseUserObj->ViewAllUserProduct("ProductCategory",$_POST['Order'],$ID,$User);
 }
 if(!isset($_POST['SortCat'])&&!isset($_POST['SortPrice'])&&!isset($_POST['SortDate'])){
-$BaseUserObj->ViewAllUserProduct("DateOfListing","ASC",$ID,$_SESSION['ID']);	
+$BaseUserObj->ViewAllUserProduct("DateOfListing","ASC",$ID,$User);	
 }
 
 ?>
@@ -200,6 +204,7 @@ $BaseUserObj->ViewAllUserProduct("DateOfListing","ASC",$ID,$_SESSION['ID']);
 <hr>
 <h1>Reviews</h1>
 <?php $BaseUserObj->viewReview($ID,"User");
+if(isset($_SESSION['ID'])){
 if($BaseUserObj->getUID()!=$_SESSION['ID']){
 ?>
 </div>
@@ -210,6 +215,7 @@ if($BaseUserObj->getUID()!=$_SESSION['ID']){
 </form>
 
 <?php
+}
 }
 if(isset($_POST['reviewtextsubmit'])){
 	

@@ -34,6 +34,12 @@ class Contracts
 	
 	public $Reported; 
 	
+	public $Paid;
+	
+	public $DeliveryMode;
+	
+	public $Courier;
+	
 	public function connect(){
 		$servername= "localhost";
 		$username = "root";
@@ -85,6 +91,12 @@ class Contracts
 			$this->Transaction = $row["Transaction"];	
 			
 			$this->Reported = $row["Reported"];	
+			
+			$this->Paid = $row["Paid"];	
+			
+			$this->DeliveryMode = $row["DeliveryMode"];	
+			
+			$this->Courier = $row["Courier"];	
 			
 			$this->RatingToken = json_decode($row["RatingToken"],true);
 	}

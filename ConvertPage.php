@@ -24,9 +24,7 @@ span{
 	margin-top:20%;
    
 }
-#Loading_GUI{
-	display:none;
-}
+
 #OTP{
 	display:none;
 	position:fixed;
@@ -44,6 +42,46 @@ span{
     margin:auto;
 	margin-top:20%;
    
+}
+#loadergui {
+width:300px;
+margin:auto;
+margin-top:5%;
+display:none;
+}
+#loader {
+	position: absolute;
+border: 16px solid grey;
+border-radius: 50%;
+border-top: 16px solid purple;
+width: 300px;
+height: 300px;
+
+
+-webkit-animation: spin 2s linear infinite; /* Safari */
+animation: spin 2s linear infinite;
+}
+#loaderimage {
+margin-left:14px;
+margin-top:15px;
+border-radius: 50%;
+position: absolute;
+background-image: url("systemimages/Logo.jpg");
+width:270px;
+height:270px;
+background-repeat: no-repeat;
+background-size: auto;
+background-size: 270px 270px;
+}
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style>
 <?php
@@ -118,7 +156,6 @@ echo'<style> .ETHGUI{display:none;}</style>';
 sleep(2);
 
 if($message!="Success"){
-	$_SESSION['Object']->updateBalance();
 	echo'
 	<form method="post" action="ConvertPage.php">
 	<h1>Transaction Summary</h1>
@@ -127,7 +164,6 @@ if($message!="Success"){
 	<b>Converted Amount:'.$Convert2edAmount.'</b></br>
 	<b>Transaction: Failed </b></br>
 	<b>Reason:'.$message.'</b></br>
-	<b>Account Balance:SGD$'.$_SESSION['Object']->getAccountBalance().'</b></br>
 	<input type="submit" value="Try again">
 	</form>';	
 	unset($_SESSION['PubKeyC2']);
@@ -136,7 +172,6 @@ if($message!="Success"){
 	exit();
 }
 else{
-	$_SESSION['Object']->updateBalance();
 	echo'
 	<form method="post" action="index.php">
 	<h1>Transaction Summary</h1>
@@ -144,7 +179,6 @@ else{
 	<b>Initial Amount :'.$_SESSION["AmountC2"].'</b></br>
 	<b>Converted Amount:'.$Convert2edAmount.'</b></br>
 	<b>Transaction: Success </br>
-	<b>Account Balance:SGD$'.$_SESSION['Object']->getAccountBalance().'</b></br>
 	<input type="submit" value="Return to main menu!">
 	</form>';	
 	unset($_SESSION['PubKeyC2']);
@@ -227,7 +261,6 @@ echo'<style> .ETHGUI{display:none;}</style>';
 sleep(2);
 
 if($message!="Success"){
-	$_SESSION['Object']->updateBalance();
 	echo'
 	<form method="post" action="ConvertPage.php">
 	<h1>Transaction Summary</h1>
@@ -236,7 +269,6 @@ if($message!="Success"){
 	<b>Converted Amount:'.$Convert2edAmount.'</b></br>
 	<b>Transaction: Failed </b></br>
 	<b>Reason:'.$message.'</b></br>
-	<b>Account Balance:SGD$'.$_SESSION['Object']->getAccountBalance().'</b></br>
 	<input type="submit" value="Try again">
 	</form>';	
 	unset($_SESSION['PubKeyC1']);
@@ -246,7 +278,6 @@ if($message!="Success"){
 	exit();
 }
 else{
-	$_SESSION['Object']->updateBalance();
 	echo'
 	<form method="post" action="index.php">
 	<h1>Transaction Summary</h1>
@@ -254,7 +285,6 @@ else{
 	<b>Initial Amount :'.$_SESSION["AmountC1"].'</b></br>
 	<b>Converted Amount:'.$Convert2edAmount.'</b></br>
 	<b>Transaction: Success </br>
-	<b>Account Balance:SGD$'.$_SESSION['Object']->getAccountBalance().'</b></br>
 	<input type="submit" value="Return to main menu!">
 	</form>';	
 	unset($_SESSION['PubKeyC1']);
@@ -266,9 +296,14 @@ else{
 }
 
 ?> 
-
-<button class="FIAT">SGD to ETH</button>
-<button class="ETH">ETH to SGD</button>
+<div id="loadergui">
+<h2>Loading Please Wait</h2>
+<div id="loader"></div>
+<div id="loaderimage"></div>
+</div>
+<div id="convertGUI">
+<button id="Convert2Ethbtn" class="FIAT">Convert back to Ethereum</button>
+<button id="Convert2Fbtn" class="ETH">Top Up Account Balance</button>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
@@ -313,6 +348,7 @@ function ConvertETH(){
 }
 </script>
 <hr>
+
 <div class="ETHGUI">
 	
 <form method="post" id="formFIAT" onsubmit="return checkForm(this);">
@@ -328,8 +364,7 @@ function ConvertETH(){
 
 </form> 
 </div>
-<div class="FIATGUI">
-	
+<div class="FIATGUI">	
 <form method="post" id="formETH" onsubmit="return check2Form(this);">
   <?php echo '<b>Convert to SGD</b></br>';?>
   <label for="Convert_publickey">Public Key:</label><br>
@@ -347,31 +382,24 @@ function ConvertETH(){
 
 
 </div>
-
-</div>
-
-<div id = "Loading_GUI" class="Loading_GUI">
-<h1>Loading,Please Wait</h1>
-</div>
 <div id="confirmation">
 <div id="confirmationtext">
 <b>Are you sure you?</b></br>
 <input type="submit"   name="submit" id="<?php echo $_SESSION['Object']->getEmail()?>" onclick="emailverification(this.id)" value="Yes">
 <input type="submit"  onclick="rejectfunction()" value="No">
-</form>
+
 </div>
 </div>
-</form>
 <div id="OTP">
 <div id="OTPform">
 <Label>OTP Code:</Label><input type="text"  id="OTPinput">
 <input type="submit" onclick="VerifyOTP()" value="Submit OTP">
 <input type="submit" id="<?php echo $_SESSION['Object']->getEmail()?>" onclick="ResendOTP(this.id)" value="Resend">
-</form>
 </div>
 </div>
 
 <input type="hidden" class="text-box" id="User"  value = "<?php echo $_SESSION['Object']->getUID()?>">
+</div>
 
 <script>
 
@@ -403,15 +431,15 @@ function ResendOTP(email){
 	alert("Resent Email");
 }
 function VerifyOTP(){
-	document.getElementById('OTPform').style.display = "none";
-	alert("Please Wait");
+	document.getElementById('convertGUI').style.display = "none";
+	document.getElementById('loadergui').style.display = "block";
 	OTPEntry = document.getElementById('OTPinput').value;
 	ajax.open("POST", "ConvertPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("OTP=" + OTPEntry );
 	console.log(ajax);
 }
-var connection =  new WebSocket('ws://localhost:3030');
+var connection =  new WebSocket(webportconfig);
 connection.onmessage = function (message) {
 	var data = JSON.parse(message.data);
 
@@ -419,8 +447,8 @@ connection.onmessage = function (message) {
 					if(User == data.User){
 						console.log(data.Result);
 							if(data.Result == "Success"){
-								document.getElementById('Loading_GUI').style.display = "block";
-								document.getElementById('OTP').style.display = "none";
+								document.getElementById('convertGUI').style.display = "none";
+								document.getElementById('loadergui').style.display = "block";
 								ajax.open("POST", "ConvertPageController.php", true);
 								ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 								location.reload();

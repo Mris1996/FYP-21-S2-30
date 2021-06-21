@@ -13,13 +13,14 @@ $message = trim(htmlspecialchars($_POST['message'] ?? ''));
 //#############################################################
 if(isset($_POST['offer'])){
 	
-$_SESSION['Object']->UpdateContract($_POST['offer'],$_POST['daterequired'],$_POST['paymentmode'],$_POST['contractid'],$_POST['usertype']);
+$_SESSION['Object']->UpdateContract($_POST['offer'],$_POST['daterequired'],$_POST['paymentmode'],$_POST['contractid'],$_POST['usertype'],$_POST['delivery']);
 
 $jsonData = json_encode([
 	'User' => $User,
 	'offer' => $_POST['offer'],
 	'daterequired' => $_POST['daterequired'],
 	'paymentmode' => $_POST['paymentmode'],
+	'deliverymode' => $_POST['delivery'],
 	'ContractID' => $_POST['contractid']
 ]);	
 $query = http_build_query(['data' => $jsonData]);	
@@ -125,15 +126,30 @@ $query = http_build_query(['data' => $jsonData]);
 
 
 //#############################################################
+
+if(isset($_POST['ContractInformation'])){
+$data = $_SESSION['Object']->getContractInfoFromSmartContract($_POST['contractid']);
+
+$jsonData = json_encode([
+	'REPLY'=>'ContractInformation',
+	'User' => $User,
+	'Type' => $_POST['usertype'],
+	'contractdata' => $data,
+	'ContractID' => $_POST['contractid']
+]);
+$query = http_build_query(['data' => $jsonData]);	
+	
+}
+
+
+//#############################################################
 if(isset($_POST['CheckAccepted'])){
-	
 if($_SESSION['Object']->CheckAccepted($_POST['CheckAccepted'])==2){
-	
+$_SESSION['Object']->InitContract($_POST['CheckAccepted']);	
+sleep(5);	
 if($_SESSION['Object']->ToTransfer($_POST['CheckAccepted'])){
-	
+		
 		if($_SESSION['Object']->TransferAmountAccept($_POST['CheckAccepted'],$_SESSION['Object']->AmountToTransfer($_POST['CheckAccepted']))){
-				
-	
 		}
 		else{
 			$jsonData = json_encode([
@@ -164,9 +180,6 @@ else{
 $query = http_build_query(['data' => $jsonData]);	
 }
 
-if(isset($_POST['InitContract'])){
-$_SESSION['Object']->InitContract($_POST['InitContract']);
-}
 //#############################################################
 if(isset($_POST['CheckServiceAccepted'])){
 

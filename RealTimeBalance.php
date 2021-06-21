@@ -7,12 +7,16 @@ curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 
 
 //#############################################################
-$_SESSION['Object']->updateBalance();
+if(isset($_POST['UpdateBalance'])){
 $jsonData = json_encode(['Balance'=>$_SESSION['Object']->getAccountBalance(),'PubKey'=>$_SESSION['Object']->getPubKey()]);
 
 $query = http_build_query(['data' => $jsonData]);	
+}
 
 //#############################################################
+if(isset($_POST['ServerBalance'])){
+	$_SESSION['Object']->updateBalance($_POST['ServerBalance']);
+}
 if(isset($query)){
 	
 curl_setopt($ch, CURLOPT_POSTFIELDS, $query);

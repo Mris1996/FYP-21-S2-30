@@ -100,7 +100,7 @@ input[type="text"]{
 		<label>Product Owner:</label><b><?php echo $_SESSION['Object']->getUserDisplayName($ProductObj->SellerUserID)?></b></br>
 		<label>Product Caption:</label><b><?php echo $ProductObj->ProductCaption?></b></br>
 		<label>Product Description:</label><b><?php echo $ProductObj->ProductDescription?></b></br>
-		<label>Product Initial Price:</label><b><?php echo $ProductObj->ProductInitialPrice?></b></br>
+		<label>Product Initial Price:</label><b><?php echo $_SESSION['Object']->getCurrency().$ProductObj->ProductInitialPrice?></b></br>
 		</div>
 	<hr>
 		<h2>Your Offer</h2>

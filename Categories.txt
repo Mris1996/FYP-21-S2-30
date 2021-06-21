@@ -1,4 +1,4 @@
-Home and Lifestyle:categoryicons/home.png
+Home and Lifestyle:categoryicons/home2.png
 Sports:categoryicons/sports.png
 Music:categoryicons/music.png
 Clothing:categoryicons/clothing.png

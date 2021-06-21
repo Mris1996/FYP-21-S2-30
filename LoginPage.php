@@ -126,7 +126,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['LoginButton'])){
 ?>
 <div class="Login_GUI">
 <form method="post">
-<h1 style="color:white;font-size:60px;">Login</h1>
 <span class="error"><?php echo $MainError;?></span><br /><br />
 <label>User ID:</label><input type="text" name="Login_LoginID">
 <span class="error"><?php echo $LoginLoginIDerror;?></span><br /><br />

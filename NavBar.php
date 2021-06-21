@@ -10,16 +10,19 @@
 <style>
 
  .navbar{
-	background-color:purple;
-	height:120px;
+	  background-color: purple;
+	height:100px;
 	color:black;
 	font-size:30px;
 	border-radius:10px;
 	
 }
-
+.dropdown{
+	width:500px;
+}
  .dropdown-content {
-	width:100%;
+  width:100%;
+
   display: none;
   position: absolute;
   z-index: 1;
@@ -31,24 +34,30 @@
   text-decoration: none;
   display: block;
   background-color:white;
-   margin:auto;
+  
 }
 .dropdown-content a {
-  width:100%;
+  width:60%;
+  margin:auto;
   color: black;
   padding: 12px 16px;
   text-decoration: none;
   display: block;
   background-color:white;
-   margin:auto;
+   
 }
  .dropdown-content{
 	width:300px;
-	
+	 margin-right:200px;
 }
  .dropbtn{
-	margin-left:100px;
-	border-radius: 50%;
+margin-left:100px;
+border-color: purple;
+border-style: solid;
+width:80px;
+height:80px;
+
+border-radius: 50%;
 }
 .dropdown-content a:hover {background-color: #ddd;}
 
@@ -56,7 +65,7 @@
 
  .dropdown:hover .dropbtn {background-color: #3e8e41;}
  .SearchBar{
-	 display: block;
+
   width: 500px;
   margin: 10px auto;
   padding: 3px;
@@ -82,15 +91,32 @@
 	transform: scale(1.1);
 	cursor:pointer;
 }
+ input[type="submit"]:hover{
+	cursor:pointer;
+}
+#caticons:hover{
+	
+   outline:60%;
+    filter: drop-shadow(0 0 6px white);
+  
+	
+}
 
+#homebtn:hover{
+   outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+ 
+}
+.input-group{
+	width:100%;
+	margin-top:20px;
+}
 </style>
 
 </head>
 <div class="topnavbg">
 	<nav class="navbar">
-	<a href="index.php">
-<img src="systemimages/CompanyLogo.jpg" style="border-radius:20px" width="80" height="80">
-</a>	
+	
 <?php 
 date_default_timezone_set("Singapore");
 require_once("Users.php");
@@ -109,7 +135,20 @@ if(isset($_POST['Nav_SignUp'])){
 header("Location:SignUpPage.php");
 exit;
 }
-
+ if (!file_exists('Categories.txt')) 
+{
+	fopen("Categories.txt", "w");
+}
+$myfile = fopen("Categories.txt", "r") or die("Unable to open file!");
+while(($line = fgets($myfile)) !== false) {
+$arr = explode(":",$line);
+//$arr[0] ->name
+//$arr[1] ->file location
+echo'<a id="caticons" href="CategoryPage.php?Category='.$arr[0].'">
+<img src="'.$arr[1].'" title="'.$arr[0].'"; width="80" height="80">
+</a>';
+}
+fclose($myfile);
 if(isset($_SESSION['ID'])){
 
 echo'<style> input[name="Nav_SignUp"]{display:none;}</style>';
@@ -117,12 +156,29 @@ echo'<style> input[name="Nav_Login"]{display:none;}</style>';
 echo'<style> input[name="Nav_LogOut"]{display:visible;}</style>';
 
  echo '<input type="hidden" id="PubKey" value="'.$_SESSION['Object']->getPubKey().'">'; 
+}
+echo'
+</nav>
+
+<div class="input-group">
+<a href="index.php">
+<img src="systemimages/CompanyLogo.jpg" id="homebtn" style="border-radius:20px;margin-left:10px;"  width="150" height="70">
+</a>
+
+<div class="SearchBar">
+	<form  method="post">
+		<input type="text"   aria-label="Search" id="SearchBar" style="width:500px;height:50px;background:white;opacity:0.9; border-radius:5px;color:black" name="SearchBar" placeholder="Search">
+	<input type="hidden" name="searchfunction" value="">
+	</form>
+</div>';
+
+if(isset($_SESSION['ID'])){
 echo'
 <form method="post">
 	<div class="dropdown">
 	<img class="dropbtn" src="'.$_SESSION['Object']->ProfilePic.'" height="80" width="80">
 	<div class="dropdown-content">
-	<a>'.$_SESSION['ID'].'</a>
+	<a>Hello, '.$_SESSION['ID'].'</a>
 	<a href="ProfilePage.php?ID='.$_SESSION['ID'].'">Profile</a>
 	<a href="ListPage.php">List a product</a>
 	<a href="MyContractsPage.php">My Contracts</a>
@@ -136,36 +192,51 @@ if($_SESSION['Object']->getAccountType()=="Administrator"){
 	echo'<a href="ContractManagementPage.php">Manage contracts</a>';
 }
 
-echo '<a id="Account_Balance"></a>';
+echo '<a style="background-color:purple;color:white" id="Account_Balance">Please wait for balance</a>';
 ?>
 <script>
+//webportconfig = 'ws://8.tcp.ngrok.io:10810';
+webportconfig = 'ws://localhost:3030';
+Currency = "SGD$";
 var ajax = new XMLHttpRequest();
 ajax.open("POST", "RealTimeBalance.php", true);
 ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-ajax.send();
+ajax.send("UpdateBalance=1");
+	
 setInterval(function() {
 var ajax = new XMLHttpRequest();
 	ajax.open("POST", "RealTimeBalance.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send();
-	//console.log(ajax);
-	}, 10000);
+	}, 100000);
+
 window.WebSocket = window.WebSocket || window.MozWebSocket;
-var connection =  new WebSocket('ws://localhost:3030');
+var connection =  new WebSocket(webportconfig);
+
 connection.onmessage = function (message) {
-	
-	var data = JSON.parse(message.data);
+	console.log(message);
+	var data = message.data;
+	data = JSON.parse(data);
+
 	if(data.PubKey==document.getElementById("PubKey").value){
-		document.getElementById("Account_Balance").innerHTML = "Balance"+"</br>"+"SGD$"+data.Balance;
+		document.getElementById("Account_Balance").innerHTML = "Balance"+"</br>"+Currency+data.Balance.toFixed(2);
+		ajax.open("POST", "RealTimeBalance.php", true);
+		ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		ajax.send("ServerBalance=" + data.Balance);
+		
 	}
 }
+
 </script>
 <?php
 echo'
-	<input type="submit" name="Nav_LogOut"  value="Log Out"/>
-	</div>
+<a style="background-color:black" ><input type="submit" style="width:100%;height:100%"name="Nav_LogOut"  value="Log Out"/></a>
 </div>
-</form>';
+</div>
+</form>
+</div>
+	<hr>
+';
 
 
 $BaseUserOBJ = new BaseUser("check status");
@@ -193,34 +264,15 @@ $_SESSION["Object"]->UpdateBalance();
 if(isset($_POST['searchfunction'])){
 	echo '<script> location.replace("SearchPage.php?query='.$_POST['SearchBar'].'")</script> ';
 }
-if (!file_exists('Categories.txt')) 
-{
-	fopen("Categories.txt", "w");
-}
-$myfile = fopen("Categories.txt", "r") or die("Unable to open file!");
-while(($line = fgets($myfile)) !== false) {
-$arr = explode(":",$line);
-//$arr[0] ->name
-//$arr[1] ->file location
-echo'<a href="CategoryPage.php?Category='.$arr[0].'">
-<img src="'.$arr[1].'" title="'.$arr[0].'"; width="80" height="80">
-</a>';
-}
-fclose($myfile);
+
 ?>	
 
 <form method="post">
-			<input type="submit" class="btn btn-white"   name="Nav_Login"  value="Login"/>
-			<input type="submit" class="btn btn-white"  name="Nav_SignUp"  value="SignUp"/>		
-		</form>
-	</nav>
+	<input type="submit" class="btn btn-white"   name="Nav_Login"  value="Login"/>
+	<input type="submit" class="btn btn-white"  name="Nav_SignUp"  value="SignUp"/>		
+</form>
 
 
-<div class="SearchBar">
-	<form  method="post">
-		<input type="text"   aria-label="Search" id="SearchBar" style="width:500px;height:50px;background:white;opacity:0.9; border-radius:5px;color:black" name="SearchBar" placeholder="Search">
-	<input type="hidden" name="searchfunction" value="">
-	</form>
+
 </div>
-	<hr>
 </div>

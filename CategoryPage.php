@@ -70,6 +70,7 @@ echo '<script> location.replace("index.php")</script> ';
   margin:auto;
 }
 </style>
+<h1><?php echo $Category?></h1>
 <div class="sorter">
 <form method="post" style="margin-top:20px">
 <Label>Sort By:</Label></br>
