@@ -112,7 +112,11 @@ border-radius: 50%;
 	margin-top:20px;
 }
 </style>
-
+<script>
+//webportconfig = 'ws://8.tcp.ngrok.io:10810';
+webportconfig = 'ws://localhost:3030';
+window.WebSocket = window.WebSocket || window.MozWebSocket;
+</script>
 </head>
 <div class="topnavbg">
 	<nav class="navbar">
@@ -195,8 +199,8 @@ if($_SESSION['Object']->getAccountType()=="Administrator"){
 echo '<a style="background-color:purple;color:white" id="Account_Balance">Please wait for balance</a>';
 ?>
 <script>
-//webportconfig = 'ws://8.tcp.ngrok.io:10810';
-webportconfig = 'ws://localhost:3030';
+
+
 Currency = "SGD$";
 var ajax = new XMLHttpRequest();
 ajax.open("POST", "RealTimeBalance.php", true);
@@ -210,11 +214,9 @@ var ajax = new XMLHttpRequest();
 	ajax.send();
 	}, 100000);
 
-window.WebSocket = window.WebSocket || window.MozWebSocket;
 var connection =  new WebSocket(webportconfig);
 
 connection.onmessage = function (message) {
-	console.log(message);
 	var data = message.data;
 	data = JSON.parse(data);
 

@@ -38,7 +38,6 @@ class Contracts
 	
 	public $DeliveryMode;
 	
-	public $Courier;
 	
 	public function connect(){
 		$servername= "localhost";
@@ -96,8 +95,6 @@ class Contracts
 			
 			$this->DeliveryMode = $row["DeliveryMode"];	
 			
-			$this->Courier = $row["Courier"];	
-			
 			$this->RatingToken = json_decode($row["RatingToken"],true);
 	}
 
@@ -110,6 +107,14 @@ class Contracts
 		$Jdata = json_encode($this->RatingToken);
 		$sql="UPDATE `contracts` SET `RatingToken`= '".$Jdata."' WHERE `ContractID`='".$this->ContractID."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+	}
+	public function getContractID($TempID){
+		$sql = "SELECT * FROM courier WHERE TempID='".$TempID."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		while($row = $result->fetch_assoc())
+		{
+			return $row["ContractID"];
+		}
 	}
 }
 	

@@ -184,7 +184,9 @@ $query = http_build_query(['data' => $jsonData]);
 if(isset($_POST['CheckServiceAccepted'])){
 
 if($_SESSION['Object']->CheckServiceAccepted($_POST['CheckServiceAccepted'])==2){
+
 if($_SESSION['Object']->ToTransfer($_POST['CheckServiceAccepted'])){
+	echo "hi";
 		if($_SESSION['Object']->TransferAmountAcceptService($_POST['CheckServiceAccepted'],$_SESSION['Object']->AmountToTransfer($_POST['CheckServiceAccepted']))){
 		
 		}

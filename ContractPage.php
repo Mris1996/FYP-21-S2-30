@@ -1,6 +1,5 @@
 <?php
 require_once("NavBar.php");
-require_once("couriers.php");
 if(!isset($_SESSION['ID'])){
 	echo '<script> location.replace("index.php")</script> ';
 }
@@ -408,13 +407,35 @@ $ProductObj->InitialiseProduct($ProductID);
 
 
 ?>
-<ol class="progtrckr" data-progtrckr-steps="5">
-<li class="progtrckr-todo" >Contract Negotiation</li>
-<li class="progtrckr-todo">Contract Deal</li>
-<li class="progtrckr-todo">Delivery Confirm</li>
-<li class="progtrckr-todo">Order Processing</li>
-<li class="progtrckr-todo">Delivered</li>
+
+<ol style="display:block;width:100%;"class="progtrckr" data-progtrckr-steps="5">
+<li style="margin-left:auto";" class="progtrckr-done">Sent offer to seller</li>
+<li style="margin:auto;" id="trackerdeal" class="progtrckr-todo">Contract Deal</li>
+<li style="margin:auto;"id="trackercomplete" class="progtrckr-todo">Service Complete</li>
 </ol>
+<?php
+if($ContractObj->Transaction == "On-Going"){
+?>
+<script>
+$('#trackerdeal').removeClass('progtrckr-todo');
+$('#trackerdeal	').addClass('progtrckr-done');
+
+</script>
+<?php
+}
+if($ContractObj->Transaction == "Complete"){
+?>
+<script>
+$('#trackerdeal').removeClass('progtrckr-todo');
+$('#trackerdeal	').addClass('progtrckr-done');	
+$('#trackercomplete').removeClass('progtrckr-todo');
+$('#trackercomplete	').addClass('progtrckr-done');
+</script>
+<?php
+}
+?>
+
+
 <input type="hidden" class="text-box" id="UserID"  value = "<?php echo $_SESSION['ID']?>">
 <input type="hidden" class="text-box" id="contractid"  value = "<?php echo $_GET['ID']?>">
 <input type="hidden" class="text-box" id="usertype"  value = "<?php echo $Type?>">
@@ -422,7 +443,7 @@ $ProductObj->InitialiseProduct($ProductID);
 <input type="hidden" class="text-box" id="Delivery"  value = "<?php echo $ContractObj->DeliveryMode?>">
 <input type="hidden" class="text-box" id="Balance"  value = "<?php echo $_SESSION['Object']->getAccountBalance()?>">
 <input type="hidden" class="text-box" id="TransactionStatus"  value = "<?php echo $ContractObj->Transaction?>">
-<input type="hidden" class="text-box" id="Commission"  value = "<?php echo $_SESSION['Object']->getProductCost()?>">
+<input type="hidden" class="text-box" id="Commission"  value = "<?php echo $_SESSION['Object']->CommissionRate()?>">
 
 <?php
 
@@ -447,7 +468,13 @@ else if($ContractObj->Status == "Buyer has accepted service"){
 
 }
 else if($ContractObj->Status == "Seller has accepted service"){
-	echo 'Seller has accepted service';	
+	if($ContractObj->DeliveryMode == "Courier Delivery"){
+		echo 'Courier has fullfilled service';	
+	}
+	else{
+		echo 'Seller has fullfilled service';	
+	}
+	
 }
 else if($ContractObj->Status == "Buyer has accepted"){
 
@@ -505,7 +532,7 @@ echo 'Terms are being negotiated';
 		}
 		if($Type == "Seller" || $Type== "Admin"){
 		echo'
-			<label>Cost per transaction:</label><b>'.number_format($_SESSION['Object']->getProductCost()*100, 2, '.', '').'% of offer</b></br>
+			<label>Cost per transaction:</label><b>'.number_format($_SESSION['Object']->CommissionRate()*100, 2, '.', '').'% of offer</b></br>
 			<label>Date product is required by:</label>
 			<input type="date" id ="DateRequired" name="DateRequired" oninput="formsyncfunction()" value="'.$ContractObj->DateRequired.'" readonly>';
 		}
@@ -554,35 +581,10 @@ echo 'Terms are being negotiated';
 
 		echo'
 		<label>Delivery Mode</label><br>
-		<table class="table table-borderless table-info">
-		<tr>
-		<th>Courier</th>
-		<th>Delivery Title</th>
-		<th>Price</th>
-		<th>Estimated Date</th>
-		<th>Select</th>
-		</tr>
-		<tr>
-		<td>Seller</td>
-		<td>Self Delivery</td>
-		<td>-</td>
-		<td>-</td>
-		<td><input type="radio" id="Self Delivery" onclick="formsyncfunction()" name="DeliveryMode" value="Self Delivery"><br></td>
+		Self:<input type="radio" id="Self Delivery" onclick="formsyncfunction()" name="DeliveryMode" value="Self Delivery"><br></td>
+		Courier:<input type="radio" id="Courier Delivery" onclick="formsyncfunction()" name="DeliveryMode" value="Courier Delivery"><br></td>
 		</tr>
 		';
-
-		$arr = $_SESSION['Object']->getListOfCouriers();
-		for($x=0;$x<sizeof($arr);$x++){
-			$CourierObj = new Couriers;
-			$CourierObj->InitialiseCouriers($arr[$x]);
-			echo'<tr>
-			<td>'.$CourierObj->CourierName.'</td>
-			<td>'.$CourierObj->DeliveryName.'</td>
-			<td>'.$_SESSION['Object']->getCurrency().number_format($CourierObj->Price, 2, '.', '').'</td>
-			<td>'.$CourierObj->EstimatedTime.'</td>
-			<td><input type="radio" id="'.$CourierObj->DeliveryName.'" onclick="formsyncfunction()" name="DeliveryMode" value="'.$CourierObj->DeliveryName.'"><br></td>
-			</tr>';
-		}
 		echo'
 		</table>
 		</br></br></br></br>';
@@ -604,7 +606,13 @@ echo 'Terms are being negotiated';
 		<?php
 		
 		if($Type=="Buyer" && $ContractObj->Status == "Seller has accepted service"||$Type=="Seller" && $ContractObj->Status == "Deal"){
-			echo'<input type="button" name="service" id="service" onclick="AcceptConfirm()" value="Service fullfilled">';
+			if($Type=="Seller" && $ContractObj->DeliveryMode!="Courier Delivery"){
+					echo'<input type="button" name="service" id="service" onclick="AcceptConfirm()" value="Service fullfilled">';
+			}
+			if($Type=="Buyer"){
+						echo'<input type="button" name="service" id="service" onclick="AcceptConfirm()" value="Service fullfilled">';
+				
+			}
 		}
 		if($Type == "Buyer" && $ContractObj->Transaction == "Complete" &&  $ContractObj->Status!="Refunded Transaction" && $ContractObj->Status!="Rejected" &&  $ContractObj->Status!="Requested Refund"|| $Type == "Buyer" && $ContractObj->Transaction == "On-Going" &&  $ContractObj->Status!="Refunded Transaction"&&  $ContractObj->Status!="Requested Refund" ){
 			if($ContractObj->Status!="Order Cancelled"){
@@ -690,7 +698,7 @@ if(isset($_POST['ResumeTranasction'])){
 		<?php 
 		$_SESSION['Object']->RetrieveChat($ContractObj->ContractID)?>	
 	</div>
-	<div id="connecting">Connecting to web sockets server...</div>
+	
 
 	<input type="text" class="text-box" id="message-input" placeholder="Your Message" onkeyup="handleKeyUp(event)">
 	<p>Press enter to send message</p>
@@ -732,6 +740,16 @@ if($ContractObj->Transaction == "Negotiating"){
 <?php	
 }
 else{
+
+if($ContractObj->DeliveryMode =="Courier Delivery" && $Type == "Seller"){
+?>
+<hr>
+<h1  style="margin-top:10%">Courier Link</h1>
+<h2>Please do not give this link to anybody except your courier</h2>
+<h5>TempID:<?php echo $_SESSION['Object']->generateCourierLink($ContractID) ?></h5>
+<b style="color:red"><?php echo "http://localhost/STIC/CourierPage.php?ID=".$_SESSION['Object']->generateCourierLink($ContractID);?></b>
+<?php
+}
 ?>
 <script>
 document.getElementById('Accept').style.display = "None";
@@ -767,7 +785,7 @@ PaymentType = document.getElementById("Payment").value;
 TransactionStatus = document.getElementById("TransactionStatus").value;
 Comission = document.getElementById("Commission").value;
 var Offer =  document.getElementById("Offer").value.trim();
-Comission = Offer*(Comission/100);
+Comission = Offer*Comission;
 var Delivery = document.getElementById("Delivery").value;
 console.log(Comission);
 SellerBalance = document.getElementById("SellerBalance").value;
@@ -1196,7 +1214,7 @@ function checkserviceaccepted(){
 	ajax.open("POST", "ContractPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("&CheckServiceAccepted=" + ContractID+ "&usertype=" + UserType+"&paymenttype=" +PaymentType);
-	
+	console.log(ajax);
 	}
 	
 }
@@ -1214,17 +1232,9 @@ function checkaccepted(){
 	location.reload();
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-window.WebSocket = window.WebSocket || window.MozWebSocket;
 
 var connection =  new WebSocket(webportconfig);
-var connectingSpan = document.getElementById("connecting");
-connection.onopen = function () {
-	
-	connectingSpan.style.display = "none";
-};
-connection.onerror = function (error) {
-	connectingSpan.innerHTML = "Error occured";
-};
+
 
 connection.onmessage = function (message) {
 	var data = JSON.parse(message.data);

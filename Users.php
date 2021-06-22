@@ -70,6 +70,15 @@ class BaseUser
 		echo '<script> location.replace("LoginPage.php")</script> ';
 		exit();
 	}
+	public function CourierUpdate($TempID){
+		$sql="DELETE FROM courier WHERE TempID='$TempID'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);  
+	}
+	public function CourierAcceptService($ContractID){
+			$sql = " UPDATE `contracts` SET `Status`= 'Seller has accepted service', `TotalAccepted`= '1' WHERE `ContractID`= '".$ContractID."' ";
+			$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		
+	}
 	public function SendVerfication($email){
 		$data            = "";
 		$hashed_password = "";
@@ -743,7 +752,7 @@ class StandardUser extends BaseUser
 		$this->ProfilePic = $Object->ProfilePic;
 		$this->Reported = $Object->Reported;
 		}
-	public function getProductCost(){
+	public function CommissionRate(){
 		return 0.03;
 	}
 	public function NewOffer($Offer,$DateRequired,$SellerID,$ProductID,$InitialOffer){
@@ -1031,6 +1040,22 @@ class StandardUser extends BaseUser
 		}
 		
 	}
+	public function generateCourierLink($ContractID){
+		$sql = "SELECT * FROM courier WHERE ContractID='".$ContractID."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		if ($result->num_rows > 0)
+		{
+			while($row = $result->fetch_assoc())
+			{
+				return $row["TempID"];
+			}
+		}
+		$TempID = rand(1,122).rand(2,122).rand(3,122).rand(4,122);
+		$sql = "INSERT INTO `courier` (`ContractID`, `TempID`) VALUES ('".$ContractID."','".$TempID."')";
+		$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
+	 	return $TempID;
+	}
+
 	public function getContractInfoFromSmartContract($ContractID){
 		$host    = "localhost";
 		$port    = 8080;
@@ -1049,7 +1074,7 @@ class StandardUser extends BaseUser
 		return $data;
 	}
 	public function UpdateContract($offer,$daterequired,$paymentmode,$ContractID,$Type,$DeliveryMode){
-
+		
 		$sql = " UPDATE `contracts` SET `Status`= '".$Type." has updated',`NewOffer`='".$offer."',`DateRequired`= '".$daterequired."',`Payment Mode`= '".$paymentmode."',`TotalAccepted`= '0' ,`DeliveryMode` = '".$DeliveryMode."'  WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		$sql = " UPDATE `contracts` SET `TotalAccepted`=  0 WHERE `TotalAccepted`<0 ";
@@ -1199,6 +1224,9 @@ $Paid = 'half';
 		if($Type == "Full-STICoins"){
 			$Paid = 'full';
 		}
+		if($Type == "Full-STICoins_Later"){
+			$Paid = 'none';
+		}
 		$sql = " UPDATE `contracts` SET `Status`= 'Deal' , `Transaction` = 'On-Going',`Paid`='".$Paid."', `TotalAccepted`= 0 WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);
 	}
@@ -1283,7 +1311,7 @@ $Paid = 'half';
 		{
 			$Seller = $row['SellerUserID'];
 			$Type = $row['Payment Mode'];
-			$TransactionMessage = $row['Transaction'];
+			$Status = $row['Status'];
 		}
 	
 		if($Seller==$this->getUID()){
@@ -1294,11 +1322,11 @@ $Paid = 'half';
 	
 			return True;
 		}
-		if($Type == "Full-STICoins" && $TransactionMessage == "Negotiating"){
+		if($Type == "Full-STICoins" && $Status == "Buyer has accepted"){
 			
 			return True;
 		}
-		if($Type == "Full-STICoins_Later" && $TransactionMessage == "Complete"){
+		if($Type == "Full-STICoins_Later" && $Status == "Buyer has accepted service"){
 				
 				return True;
 		}
@@ -1334,7 +1362,6 @@ $Paid = 'half';
 		}
 	}
 	public function TransferAmountAcceptService($ContractID,$Amount){
-		echo $Amount.'</br>';
 		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		$Transferfrom = '';
@@ -1345,6 +1372,7 @@ $Paid = 'half';
 			$Transferto = $row['SellerUserID'];
 			$Transferfrom = $row['BuyerUserID'];
 			$PaidStatus = $row['Paid'];
+			$TotalAmount = $row['NewOffer'];
 		}
 	
 		if($this->getUID()==$Transferfrom&&$PaidStatus!="full"){
@@ -1385,15 +1413,15 @@ $Paid = 'half';
 		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
 		}
 		socket_close($socket);
-		$raw_data = file_get_contents('http://localhost:3000/TransferAmount');
+		$raw_data = file_get_contents('http://localhost:3090/TransferAmount');
 		$data = json_decode($raw_data, true);
 		if(empty($data)){
 			return false;
 		}
 		else{
-			$cost = $this->getProductCost()* $Amount;
+			$cost = $this->CommissionRate()* $TotalAmount;
 			sleep(10);
-			$this->PayProduct($TransfertoPubkey,$cost);	
+			$this->PayProduct($TransfertoPubkey,$cost,"Commission Payment");	
 		}
 		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
@@ -1473,9 +1501,8 @@ $Paid = 'half';
 			return false;
 		}
 		else{
-			$cost = $this->getProductCost()* $Amount;
+			$cost = $this->CommissionRate()* $Amount;
 			sleep(10);
-			$this->PayProduct($TransfertoPubkey,$cost);	
 		}
 		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
@@ -1772,7 +1799,7 @@ $Paid = 'half';
 			return $data['Transaction'];
 		}
 	}
-	public function PayProduct($PubKey,$Amount){
+	public function PayProduct($PubKey,$Amount,$Title){
 		$host    = "localhost";
 		$port    = 8080;
 
@@ -1783,7 +1810,7 @@ $Paid = 'half';
 		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
 		$iv = substr($secret, 0, 16);
 		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
-		$arr = array('REQUEST' => "PayForProduct",'AMOUNT'=>$Amount,'ESCROWPRIVATE'=> $encryptedMessage ,'ESCROWPUBLIC'=> $EscrowPub ,'PUBKEY' =>$PubKey);
+		$arr = array('REQUEST' => "PayForProduct",'TITLE'=>$Title,'AMOUNT'=>$Amount,'ESCROWPRIVATE'=> $encryptedMessage ,'ESCROWPUBLIC'=> $EscrowPub ,'PUBKEY' =>$PubKey);
 		$message = json_encode($arr);
 		$socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
 		$result = socket_connect($socket, $host, $port) or die("Could not connect to server\n");  
@@ -1802,17 +1829,7 @@ $Paid = 'half';
 		}
 		
 	}
-	public function getListOfCouriers(){
-		$ArrayOfCouriers = array();
-		$sql = "SELECT * FROM users WHERE AccountType='Courier'";
-		$result = $this->connect()->query($sql) or die($this->connect()->error);    
-		while($row = $result->fetch_assoc())
-		{
-			array_push($ArrayOfCouriers ,$row["UserID"]);
 
-		}
-			return $ArrayOfCouriers;
-	}
 	public function ListProduct($Name,$Category,$Description,$Cost,$Caption ,$FileNew){
 
 			$expirydate = date("Y-m-d", strtotime("+6 month"));
@@ -2113,12 +2130,7 @@ class Admin extends StandardUser
 		$result = $this->connect()->query($sql) or die( $this->connect()->error);
 		
 	}
-	public function AddCourier($ID){
-		
-	}
-	public function RemoveCourier($ID){
-		
-	}
+
 	public function AddEscrow($pubkey,$privatekey){
 		$privatekey = preg_replace('/(\'|&#0*39;)/', '', $privatekey);
 		while(true){					
