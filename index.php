@@ -51,7 +51,15 @@
   width:200px;
   margin:auto;
 }
-	
+.Rec_Prod_GUI{
+	width: 100%;
+	display:block;
+	height:500px;
+	float:left;
+	margin-left:100px;
+	margin-bottom:100px;
+
+}	
 </style>
 
 
@@ -118,7 +126,39 @@
 
   </div>
 </div>
+<?php
+if(isset($_SESSION['ID'])){
+	echo"<div class='Rec_Prod_GUI'><hr>
+	<center><h1>Reccomended for you:</h1></center>
+	";
+	$ArrayOfRecProducts = $_SESSION['Object']->UserProductBehaviourAnalysis();
+	foreach($ArrayOfRecProducts as $val){
+		$ProductObj = new Products();
+		$ProductObj->InitialiseProduct($val);
+		echo'
+			
+			<div class="container">
+			<img src="'.$ProductObj->Image.'" class="image" style="width:500px;height:400px">
+			<div class="middle">
+			<div class="text">Seller:<a href="ProfilePage.php?ID='.$ProductObj->SellerUserID.'">'.$ProductObj->SellerUserID.'</a></div>
+			<div class="text">Product Name:'.$ProductObj->ProductName.'</div>
+			<div class="text">Category:'.$ProductObj->ProductCategory.'</div>
+			<div class="text">Date Listed:<i>'.$ProductObj->DateOfListing.'</i></div>
+			<div class="text">Initial Price:'.$_SESSION['Object']->getCurrency().number_format($ProductObj->ProductInitialPrice, 2, '.', '').'</div>
+			<form action="ProductPage.php?ID='.$ProductObj->ProductID.'" method="post"></br>
+			<input type="submit" value="Product Page"/>
+			</form>
+			</div>
+			</div>';
+		
+		
+	}
+	echo'</div>';
+}
+
+?>
 <hr>
+<hr style="margin-top:500px">
 <div class="sorter">
 <form method="post" style="margin-top:20px">
 <Label>Sort By:</Label></br>

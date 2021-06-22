@@ -190,13 +190,14 @@ input[type="text"]{
 			<?php
 			$myfile = fopen("Categories.txt", "r") or die("Unable to open file!");
 			while(($line = fgets($myfile)) !== false) {
-			if($line==$ProductObj->ProductCategory){
+			$arr = explode(":",$line);
+			if($arr[0]==$ProductObj->ProductCategory){
 							echo 
-			"<option style='background-color:black;color:white;' value=".$line." selected>".$line."</option>";
+			"<option style='background-color:black;color:white;' value=".$arr[0]." selected>".$arr[0]."</option>";
 			}
 			else{
 			echo 
-			"<option style='background-color:black;color:white;' value=".$line.">".$line."</option>";
+			"<option style='background-color:black;color:white;' value=".$arr[0].">".$arr[0]."</option>";
 			
 			}}fclose($myfile);
 			?>

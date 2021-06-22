@@ -555,6 +555,7 @@ class BaseUser
 	public function ViewAllProduct($sortby,$Order,$Category,$page,$pagename){
 	
 			if($Category=="All"){
+
 					$sql = "SELECT * FROM product WHERE Status = 'Available' ORDER BY $sortby $Order" ;
 			}
 			
@@ -755,6 +756,85 @@ class StandardUser extends BaseUser
 	public function CommissionRate(){
 		return 0.03;
 	}
+
+	public function UserProductBehaviourAnalysis(){
+		$sql = "SELECT * FROM users  WHERE  UserID ='".$this->getUID()."' ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		while($row = $result->fetch_assoc())
+		{
+			$TagsArray = json_decode($row['Tags'],true);
+			
+		}	
+		
+		$counts = array_count_values($TagsArray);
+		arsort($counts);
+		$top_with_count = array_slice($counts, 0, 2, true);
+		$top = array_keys($top_with_count);	
+		$sql = "SELECT * FROM product WHERE SellerUserID != '".$this->getUID()."' ORDER BY RAND()";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		$recommendedarray = array();
+		$size = sizeof($TagsArray);
+		$newones = array_slice($TagsArray, $size-2, $size, true);
+		
+		$top = array_merge($top,$newones);
+	
+		while($row = $result->fetch_assoc())
+		{
+		
+			$counter = 0;
+			$TagsArray = json_decode($row['Tags'],true);
+			foreach($TagsArray as $val){
+				if(array_search(strtoupper($val),$top)){
+					$counter++;
+				}
+			}
+			$recommendedarray[$row['ProductID']]=$counter;
+
+			
+		}	
+		arsort($recommendedarray);
+		$recommendedarray = array_slice($recommendedarray, 0, 3, true);
+		$recommendedarray = array_keys($recommendedarray);
+		return $recommendedarray;
+	}
+	
+	public function AddUserTags($Tag){
+		
+		$Tag = strtoupper($Tag);
+		$sql = "SELECT * FROM users  WHERE  UserID ='".$this->getUID()."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		while($row = $result->fetch_assoc())
+		{
+			$TagsArray = json_decode($row['Tags'],true);
+			
+				
+		}
+		if(empty($TagsArray )){
+			$TagsArray = array();
+		}
+		array_push($TagsArray,$Tag);
+		if(sizeof($TagsArray)>30){
+			$totalremove = sizeof($TagsArray) - 30;
+			$TagsArray = array_slice($TagsArray,0, $totalremove); 
+		}
+		$to_remove = array();
+		$myfile = fopen("Wordstoremove.txt", "r") or die("Unable to open file!");
+		while(($line = fgets($myfile)) !== false) {
+
+			array_push($to_remove,preg_replace("/\s+/", "", strtoupper($line)));
+	
+		}
+		fclose($myfile);
+
+		$TagsArray = array_diff($TagsArray, $to_remove);
+		$TagsArray = array_unique($TagsArray);
+		$JsonData = json_encode($TagsArray);
+		
+		$sql = "UPDATE `users` SET `Tags`='".$JsonData."' WHERE  UserID='".$this->getUID()."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);  
+	
+	}
+	
 	public function NewOffer($Offer,$DateRequired,$SellerID,$ProductID,$InitialOffer){
 
 		while(true){					
@@ -1829,14 +1909,21 @@ $Paid = 'half';
 		}
 		
 	}
-
+	
 	public function ListProduct($Name,$Category,$Description,$Cost,$Caption ,$FileNew){
 
 			$expirydate = date("Y-m-d", strtotime("+6 month"));
 			$Name = filter_var($Name,FILTER_SANITIZE_SPECIAL_CHARS);
 			$Description = filter_var($Description,FILTER_SANITIZE_SPECIAL_CHARS);
 			$Caption = filter_var($Caption,FILTER_SANITIZE_SPECIAL_CHARS);
-			
+			$TagArray = array();
+			$split = preg_split("/[^\w]*([\s]+[^\w]*|$)/", $Name, -1, PREG_SPLIT_NO_EMPTY);
+			$TagArray = array_merge($split,$TagArray);
+			$split = preg_split("/[^\w]*([\s]+[^\w]*|$)/", $Category, -1, PREG_SPLIT_NO_EMPTY);
+			$TagArray = array_merge($split,$TagArray);
+			$split = preg_split("/[^\w]*([\s]+[^\w]*|$)/", $Description, -1, PREG_SPLIT_NO_EMPTY);
+			$TagArray = array_merge($split,$TagArray);
+			$JsonData = json_encode($TagArray);
 			while(true){					
 					$ProductID = chr(rand(97,122)).chr(rand(97,122)).chr(rand(97,122)).str_pad(rand(0000,9999),4,0,STR_PAD_LEFT). substr(rand(0000,9999), 2, 4);
 					$result = $this->connect()->query("SELECT count(*) as 'c' FROM product WHERE ProductID='".$ProductID."'");
@@ -1848,7 +1935,7 @@ $Paid = 'half';
 				}
 	
 	
-			 mysqli_query($this->connect(),"INSERT INTO `product` (`ProductID`, `ProductCategory`, `ProductDescription`, `ProductCaption`, `ProductInitialPrice`, `ProductName`,`SellerUserID`,`Image`,`DateOfListing`,`DateOfExpiry`) VALUES ('".$ProductID."','".$Category."','".$Description."','".$Caption."','".$Cost."','".$Name."','".$this->getUID()."','".$FileNew."','".time()."','".$expirydate."')") or die(mysqli_error($this->connect()));
+			 mysqli_query($this->connect(),"INSERT INTO `product` (`ProductID`, `ProductCategory`, `ProductDescription`, `ProductCaption`, `ProductInitialPrice`, `ProductName`,`SellerUserID`,`Image`,`DateOfListing`,`DateOfExpiry`,`Tags`) VALUES ('".$ProductID."','".$Category."','".$Description."','".$Caption."','".$Cost."','".$Name."','".$this->getUID()."','".$FileNew."','".time()."','".$expirydate."','".$JsonData."')") or die(mysqli_error($this->connect()));
 	 	
 				return $ProductID;
 	}
@@ -1857,10 +1944,30 @@ $Paid = 'half';
 				$Category = filter_var($Category,FILTER_SANITIZE_SPECIAL_CHARS);
 				$Description = filter_var($Description,FILTER_SANITIZE_SPECIAL_CHARS);
 				$Caption = filter_var($Caption,FILTER_SANITIZE_SPECIAL_CHARS);
-				$sql = "UPDATE `product` SET `ProductName`= '$Name',`ProductCategory`='$Category',`ProductDescription`='$Description',`ProductCaption`='$Caption',`ProductInitialPrice`='$Cost',`Image`='$File' WHERE `ProductID` = '$ProductID'";
+				$TagArray = array();
+				$split = preg_split("/[^\w]*([\s]+[^\w]*|$)/", $Name, -1, PREG_SPLIT_NO_EMPTY);
+				$TagArray = array_merge($split,$TagArray);
+				$split = preg_split("/[^\w]*([\s]+[^\w]*|$)/", $Category, -1, PREG_SPLIT_NO_EMPTY);
+				$TagArray = array_merge($split,$TagArray);
+				$split = preg_split("/[^\w]*([\s]+[^\w]*|$)/", $Description, -1, PREG_SPLIT_NO_EMPTY);
+				$TagArray = array_merge($split,$TagArray);
+				$JsonData = json_encode($TagArray);
+				$sql = "UPDATE `product` SET `ProductName`= '$Name',`ProductCategory`='$Category',`ProductDescription`='$Description',`ProductCaption`='$Caption',`ProductInitialPrice`='$Cost',`Image`='$File',`Tags`='$JsonData' WHERE `ProductID` = '$ProductID'";
 				$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
 			
 				return true;
+	}
+	public function temp(){
+		$sql = "SELECT * FROM product";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		while($row = $result->fetch_assoc())
+		{ 	
+			$ProductObj = new Products();
+			$ProductObj->InitialiseProduct($row['ProductID']);
+			$this->UpdateProduct($ProductObj->ProductID,$ProductObj->ProductName,$ProductObj->ProductCategory,$ProductObj->ProductDescription,$ProductObj->ProductInitialPrice,$ProductObj->ProductCaption,$ProductObj->Image);
+		}	
+	
+		
 	}
 	public function EditProfileValidate($Email,$FName,$LName,$ContactNumber,$DispName,$Address,$ProfilePicCurrent,$ProfilePicDest){
 		$Email = preg_replace('/(\'|&#0*39;)/', '', $Email);

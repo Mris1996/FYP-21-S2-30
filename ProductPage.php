@@ -224,5 +224,21 @@ $_SESSION['Temp_Product']=$_GET['ID'];
 echo '<script> location.replace("OfferPage.php")</script> ';	
 
 }
+if(isset($_SESSION['Object'])){
+$Owner = $_SESSION['Object']->getProductOwner($ProductID);
+if($_SESSION['ID']!=$Owner){
+$TagArray = array();
+$split = preg_split("/[^\w]*([\s]+[^\w]*|$)/", $ProductObj->ProductName, -1, PREG_SPLIT_NO_EMPTY);
+$TagArray = array_merge($split,$TagArray);
+array_push($TagArray,$ProductObj->ProductCategory);
+$split = preg_split("/[^\w]*([\s]+[^\w]*|$)/", $ProductObj->ProductCaption, -1, PREG_SPLIT_NO_EMPTY);
+$TagArray = array_merge($split,$TagArray);
+$TagArray = array_unique($TagArray);
+foreach ($TagArray as $Val){
+	
+	$_SESSION['Object']->AddUserTags($Val);
+}
+}
+}
 ?>
 <?php require_once("Footer.php");?> 

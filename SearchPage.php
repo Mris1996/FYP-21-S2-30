@@ -84,7 +84,9 @@ if (!isset ($_GET['Sb']) ) {
 } else {  
 	$Sortby = $_GET['Sb'];
 }
-
+if(isset($_SESSION['Object'])){
+	$_SESSION['Object']->AddUserTags($_SESSION['Searchquery']);
+}
 $BaseUserOBJ = new BaseUser("Search page");	
 
 if(isset($_POST['SortDate'])){

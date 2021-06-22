@@ -224,5 +224,10 @@ if(isset($_POST['reviewtextsubmit'])){
 	echo '<script> location.reload()</script> ';
 	exit();	
 }
+if(isset($_SESSION['Object'])){
+	if($ID!=$_SESSION['Object']->getUID()){
+		$_SESSION['Object']->AddUserTags($ID);
+	}
+}
 ?>
 <?php require_once("Footer.php");?>
