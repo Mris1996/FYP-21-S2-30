@@ -50,14 +50,18 @@
 	width:300px;
 	 margin-right:200px;
 }
- .dropbtn{
+.dropbtn{
 margin-left:100px;
 border-color: purple;
 border-style: solid;
 width:80px;
 height:80px;
-
 border-radius: 50%;
+}
+.dropbtn2{
+margin-left:100px;
+width:80px;
+height:80px;
 }
 .dropdown-content a:hover {background-color: #ddd;}
 
@@ -116,6 +120,10 @@ border-radius: 50%;
 //webportconfig = 'ws://8.tcp.ngrok.io:10810';
 webportconfig = 'ws://localhost:3030';
 window.WebSocket = window.WebSocket || window.MozWebSocket;
+function deletenotification(){
+	alert("ASd");
+	
+}
 </script>
 </head>
 <div class="topnavbg">
@@ -178,6 +186,24 @@ echo'
 
 if(isset($_SESSION['ID'])){
 echo'
+<div class="dropdown">
+	<img class="dropbtn2" src="systemimages/Notification.png" height="80" width="80">
+	<div id="notifications" class="dropdown-content">';
+	$NotificationArr = $_SESSION['Object']->getNotification();
+	sort($NotificationArr);
+	foreach($NotificationArr as $val){
+		
+		$NotificationMessageArr = $_SESSION['Object']->getNotificationMessage($val);
+		 echo '<a  id="'.$val.'" style="background-color:purple;color:white;width:300px" onhover="deletenotification()" href="'.$NotificationMessageArr['hreflink'].'">'.$NotificationMessageArr['msg'].'</a><hr>';
+		
+	}
+	
+	
+	echo'
+	</div>
+	</div>';
+	
+echo'
 <form method="post">
 	<div class="dropdown">
 	<img class="dropbtn" src="'.$_SESSION['Object']->ProfilePic.'" height="80" width="80">
@@ -203,10 +229,15 @@ echo '<a style="background-color:purple;color:white" id="Account_Balance">Please
 
 Currency = "SGD$";
 var ajax = new XMLHttpRequest();
+ajax.open("POST", "RealTimeNotification.php", true);
+ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+ajax.send("Notification=1");
+
+var ajax = new XMLHttpRequest();
 ajax.open("POST", "RealTimeBalance.php", true);
 ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 ajax.send("UpdateBalance=1");
-	
+
 setInterval(function() {
 var ajax = new XMLHttpRequest();
 	ajax.open("POST", "RealTimeBalance.php", true);
@@ -221,10 +252,12 @@ connection.onmessage = function (message) {
 	data = JSON.parse(data);
 
 	if(data.PubKey==document.getElementById("PubKey").value){
-		document.getElementById("Account_Balance").innerHTML = "Balance"+"</br>"+Currency+data.Balance.toFixed(2);
-		ajax.open("POST", "RealTimeBalance.php", true);
-		ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		ajax.send("ServerBalance=" + data.Balance);
+		if(data.Balance!=undefined){
+			document.getElementById("Account_Balance").innerHTML = "Balance"+"</br>"+Currency+data.Balance.toFixed(2);
+			ajax.open("POST", "RealTimeBalance.php", true);
+			ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			ajax.send("ServerBalance=" + data.Balance);
+		}
 		
 	}
 }

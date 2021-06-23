@@ -924,6 +924,11 @@ function Accept(){
 				window.open("ConvertPage.php");
 				location.reload();
 			}
+			else{
+				ajax.open("POST", "ContractPageController.php", true);
+				ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+				ajax.send("sendnotification=" +  User + "&contractid=" + ContractID);
+			}
 		}
 		else{
 			if(UserType =="Seller"){
@@ -1030,6 +1035,11 @@ if(document.getElementById('PaymentMode3').checked){
 			window.open("ConvertPage.php");
 			location.reload();
 		}
+		else{
+				ajax.open("POST", "ContractPageController.php", true);
+				ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+				ajax.send("sendnotification=" +  User + "&contractid=" + ContractID);
+			}
 	}
 	else{
 		if(UserType =="Seller"){
@@ -1170,6 +1180,9 @@ function Refund_Admin(){
 		console.log( Number(document.getElementById("Offer").value))
 		alert("Seller have insufficient balance,please top up");
 		location.reload();
+		ajax.open("POST", "ContractPageController.php", true);
+		ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		ajax.send("sendnotification=" +  User + "&contractid=" + ContractID);	
 	}
 	else{
 		SendRefund_Admin();

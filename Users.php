@@ -737,6 +737,7 @@ class BaseUser
 class StandardUser extends BaseUser 
 {
 	private $EscrowPrivate;
+	public $notficationsize;
 	public function __construct($Object){
 	
 		$this->UID = $Object->getUID();
@@ -756,7 +757,37 @@ class StandardUser extends BaseUser
 	public function CommissionRate(){
 		return 0.03;
 	}
-
+	public function addNotification($UID,$Message,$Link){
+	
+		$sql = "INSERT INTO `notification`(`UserID`, `Message`, `Hyperlink`) VALUES ('".$UID."','".$Message."','".$Link."')";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+			echo "hi";
+	}
+	public function getNotification(){
+		$returnarr = array();
+		$sql = "SELECT * FROM `notification`  WHERE  UserID ='".$this->getUID()."' Order BY `NotificationID` DESC LIMIT 10 ";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		while($row = $result->fetch_assoc())
+		{
+			array_push($returnarr,$row['NotificationID']);
+			
+		}	
+		$this->notficationsize = sizeof($returnarr);
+		return $returnarr;
+	}
+	public function getNotificationMessage($ID){
+		$returnarr = array();
+		$sql = "SELECT * FROM `notification`  WHERE  NotificationID ='".$ID."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		while($row = $result->fetch_assoc())
+		{
+			$returnarr['msg']=$row['Message'];
+			$returnarr['hreflink']= $row['Hyperlink'];
+			
+		}	
+		
+		return $returnarr;
+	}
 	public function UserProductBehaviourAnalysis(){
 		$sql = "SELECT * FROM users  WHERE  UserID ='".$this->getUID()."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
@@ -849,6 +880,7 @@ class StandardUser extends BaseUser
 				
 		$sql = "INSERT INTO `contracts`(`ContractID`,`InitialOffer`,`NewOffer`,`DateRequired`, `BuyerUserID`, `SellerUserID`, `ProductID`) VALUES ('".$ContractID."','".$InitialOffer."','".$Offer."','".$DateRequired."','".$this->getUID()."','".$SellerID."','".$ProductID."')";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		$this->addNotification($SellerID,"ContractID:".$ContractID.", new offer has been made","MyContractsPage.php");
 		return $ContractID;
 	}
 	public function ListOfTransactions($Type){
@@ -1082,7 +1114,23 @@ class StandardUser extends BaseUser
 			$JSONdata = Json_encode($FullMessageArray);
 			$sql = "UPDATE `contracts` SET `Message`='".$JSONdata."' WHERE ContractID='".$ContractID."'";
 			$result = $this->connect()->query($sql) or die($this->connect()->error);  
-		}               
+		}
+		$sql = "SELECT * FROM contracts WHERE ContractID='".$ContractID."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		while($row = $result->fetch_assoc())
+		{ 
+		
+			$seller = $row["SellerUserID"];
+			$buyer = $row["BuyerUserID"];
+
+		}
+		if($User!=$buyer){
+			$this->addNotification($buyer,"ContractID:".$ContractID.", new message","MyContractsPage.php");
+		}
+		if($User!=$seller){
+			$this->addNotification($seller,"ContractID:".$ContractID.", new message","MyContractsPage.php");
+		}
+			
 	}
 	public function RetrieveChat($ContractID){
 	
@@ -1190,7 +1238,15 @@ class StandardUser extends BaseUser
 
 		$sql = " UPDATE `contracts` SET `Status`= 'Requested Refund', `TotalAccepted`= 0 WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		$sql = "SELECT * FROM contracts WHERE ContractID='".$ContractID."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		while($row = $result->fetch_assoc())
+		{ 
 		
+			$seller = $row["SellerUserID"];
+
+		}
+		$this->addNotification($seller ,"ContractID:".$ContractID.", Buyer has requested refund","MyContractsPage.php");
 	}
 	public function CancelOrder($ContractID){
 
@@ -1282,7 +1338,7 @@ $Paid = 'half';
 		}
 		}
 		}
-
+		$this->addNotification($Transferto ,"ContractID:".$ContractID.", Seller has cancelled order","MyContractsPage.php");
 		
 		return;
 			
@@ -1294,6 +1350,7 @@ $Paid = 'half';
 		while($row = $result->fetch_assoc())
 		{	
 			$Type = $row['Payment Mode'];
+			$SellerUID = $row['SellerUserID'];
 		}
 
 		if($Type == "Half-STICoins")
@@ -1307,6 +1364,7 @@ $Paid = 'half';
 		if($Type == "Full-STICoins_Later"){
 			$Paid = 'none';
 		}
+		$this->addNotification($SellerUID,"ContractID:".$ContractID.", deal has been made","MyContractsPage.php");
 		$sql = " UPDATE `contracts` SET `Status`= 'Deal' , `Transaction` = 'On-Going',`Paid`='".$Paid."', `TotalAccepted`= 0 WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);
 	}
@@ -1322,7 +1380,7 @@ $Paid = 'half';
 			$Jdata = json_encode($Data);
 			$sql = " UPDATE `contracts` SET `Status`= 'Transaction Complete' ,`Paid`='full',`TransactionCloseDate`= '".date("Y-m-d")."',`RatingToken` = '".$Jdata."', `Transaction` = 'Complete' WHERE `ContractID`= '".$ContractID."' ";
 			$result = $this->connect()->query($sql) or die($this->connect()->error);
-		
+			$this->addNotification($SellerUID,"ContractID:".$ContractID.", transaction is complete","MyContractsPage.php");
 	}
 	public function CheckAccepted($ContractID){
 		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
@@ -1702,6 +1760,7 @@ $Paid = 'half';
 			while($row = $result->fetch_assoc())
 			{ 
 				$Data = $row['Review'];
+				$Seller = $row['SellerUserID'];
 			}
 			$Data = json_decode($Data, true);
 			$NewData= array("Review"=>$Review, "ProductID"=>$ProductID, "User"=>$this->getUID(),"Date"=>date("Y-m-d"));
@@ -1709,6 +1768,7 @@ $Paid = 'half';
 			$JData = json_encode($Data);
 			$sql="UPDATE `product` SET `Review`='".$JData."' WHERE `ProductID`='".$ProductID."'";
 			$result = $this->connect()->query($sql) or die($this->connect()->error);    
+			$this->addNotification($Seller,"ProductID:".$ProductID.", ".$this->getUID()." has added a review on your product","ProductPage.php?ID=".$ProductID);
 		}
 		public function addNewUserReview($Review,$UserID){
 			$Review = filter_var($Review,FILTER_SANITIZE_SPECIAL_CHARS);
@@ -1724,6 +1784,7 @@ $Paid = 'half';
 			$JData = json_encode($Data);
 			$sql="UPDATE `users` SET `Review`='".$JData."' WHERE `UserID`='".$UserID."'";
 			$result = $this->connect()->query($sql) or die($this->connect()->error);    
+			$this->addNotification($UserID,$this->getUID()." has added a review on your profile","ProfilePage.php?ID=".$UserID);
 		}
 		public function RateUser($Rating,$UserID) {
 		$sql = "SELECT * FROM users WHERE UserID='".$UserID."'" ;
@@ -2150,6 +2211,8 @@ class Admin extends StandardUser
 			$sql = " UPDATE `contracts` SET `Status`='Refunded Transaction' ,`Paid`='refunded',`Transaction`='Complete',`TransactionCloseDate`='".date("Y-m-d")."'  WHERE `ContractID`= '".$ContractID."' ";
 			$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		}
+		$this->addNotification($Transferfrom ,"ContractID:".$ContractID.", Buyer has been refunded successfully","MyContractsPage.php");
+		$this->addNotification($Transferto ,"ContractID:".$ContractID.", You have been refunded successfully","MyContractsPage.php");
 		return;
 	}
 	public function ListOfUsers(){

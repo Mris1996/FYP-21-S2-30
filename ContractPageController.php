@@ -126,6 +126,16 @@ $query = http_build_query(['data' => $jsonData]);
 
 
 //#############################################################
+if(isset($_POST['sendnotification'])){
+$ContractObj = new Contracts();
+$ContractObj->initialiseContract($ContractID);
+
+$_SESSION['Object']->addNotification($ContractObj->SellerUserID,"ContractID:".$_POST['contractid'].", Contract cannot proceed with the transaction until you top up,please top up your balance","ConvertPage.php");
+	
+}
+
+
+//#############################################################
 
 if(isset($_POST['ContractInformation'])){
 $data = $_SESSION['Object']->getContractInfoFromSmartContract($_POST['contractid']);
