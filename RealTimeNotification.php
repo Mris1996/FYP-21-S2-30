@@ -8,13 +8,17 @@ curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 
 //#############################################################
 if(isset($_POST['Notification'])){
-$jsonData = json_encode(['NotificationData'=>$_SESSION['Object']->getNotification(),'PubKey'=>$_SESSION['Object']->getPubKey()]);
+$jsonData = json_encode(['NotificationUserID'=>$_POST['Notification'],'NotificationMessage'=>$_POST['NotificationMessage'],'NotificationHyperlink'=>$_POST['NotificationHyperlink'],'NotificationID'=>$_POST['NotificationID']]);
 
 $query = http_build_query(['data' => $jsonData]);	
 }
 
 //#############################################################
+if(isset($_POST['Delete'])){
+$_SESSION['Object']->RemoveNotification($_POST['Delete']);
+}
 
+//#############################################################
 if(isset($query)){
 	
 curl_setopt($ch, CURLOPT_POSTFIELDS, $query);

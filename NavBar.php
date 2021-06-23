@@ -115,14 +115,45 @@ height:80px;
 	width:100%;
 	margin-top:20px;
 }
+.close {
+  cursor: pointer;
+  position: absolute;
+  color:white;
+  top: 25%;
+  right: 0%;
+  padding: 12px 16px;
+  transform: translate(0%, -10%);
+}
+#notifications{
+	 max-height:250px;
+    overflow:auto;
+	overflow-x: hidden;
+}
+#notifications::-webkit-scrollbar {
+    width: 0.2em;
+
+}
+ 
+#notifications:-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+ 
+#notifications::-webkit-scrollbar-thumb {
+  background-color: black;
+  outline: 1px solid black;
+  
+}
 </style>
 <script>
 //webportconfig = 'ws://8.tcp.ngrok.io:10810';
 webportconfig = 'ws://localhost:3030';
 window.WebSocket = window.WebSocket || window.MozWebSocket;
-function deletenotification(){
-	alert("ASd");
-	
+function deletenotification(ID){
+	alert(ID);
+var ajax = new XMLHttpRequest();
+ajax.open("POST", "RealTimeNotification.php", true);
+ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+ajax.send("Delete="+ID);
 }
 </script>
 </head>
@@ -166,7 +197,7 @@ if(isset($_SESSION['ID'])){
 echo'<style> input[name="Nav_SignUp"]{display:none;}</style>';
 echo'<style> input[name="Nav_Login"]{display:none;}</style>';
 echo'<style> input[name="Nav_LogOut"]{display:visible;}</style>';
-
+ echo '<input type="hidden" id="User" value="'.$_SESSION['Object']->getUID().'">'; 
  echo '<input type="hidden" id="PubKey" value="'.$_SESSION['Object']->getPubKey().'">'; 
 }
 echo'
@@ -194,10 +225,12 @@ echo'
 	foreach($NotificationArr as $val){
 		
 		$NotificationMessageArr = $_SESSION['Object']->getNotificationMessage($val);
-		 echo '<a  id="'.$val.'" style="background-color:purple;color:white;width:300px" onhover="deletenotification()" href="'.$NotificationMessageArr['hreflink'].'">'.$NotificationMessageArr['msg'].'</a><hr>';
-		
+		 echo '<a  id="'.$val.'" style="background-color:purple;color:white;width:300px" onclick="deletenotification(this.id)" href="'.$NotificationMessageArr['hreflink'].'">'.$NotificationMessageArr['msg'].'</a>';
 	}
-	
+	if(empty($NotificationArr)){
+		
+		 echo '<a id="nonotification" style="background-color:purple;color:white;width:300px">You have no notification</a>';
+	}
 	
 	echo'
 	</div>
@@ -228,10 +261,6 @@ echo '<a style="background-color:purple;color:white" id="Account_Balance">Please
 
 
 Currency = "SGD$";
-var ajax = new XMLHttpRequest();
-ajax.open("POST", "RealTimeNotification.php", true);
-ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-ajax.send("Notification=1");
 
 var ajax = new XMLHttpRequest();
 ajax.open("POST", "RealTimeBalance.php", true);
@@ -250,6 +279,7 @@ var connection =  new WebSocket(webportconfig);
 connection.onmessage = function (message) {
 	var data = message.data;
 	data = JSON.parse(data);
+	console.log(data);
 
 	if(data.PubKey==document.getElementById("PubKey").value){
 		if(data.Balance!=undefined){
@@ -258,8 +288,26 @@ connection.onmessage = function (message) {
 			ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 			ajax.send("ServerBalance=" + data.Balance);
 		}
+	
 		
 	}
+	if(data.NotificationUserID!=undefined){
+	  if(data.NotificationUserID==document.getElementById("User").value){
+		  
+			var newnotification = document.createElement("a");
+			newnotification.innerHTML = data.NotificationMessage;  
+			newnotification.href = data.NotificationHyperlink;  
+			newnotification.id = data.NotificationID;  
+			newnotification.onclick = deletenotification(newnotification.id);
+			newnotification.style = "background-color:purple;color:white;width:300px";
+			document.getElementById("notifications").appendChild(newnotification);  
+
+		}
+		if(document.getElementById("nonotification")!=undefined){
+			document.getElementById("nonotification").remove();
+		}
+	}
+	
 }
 
 </script>

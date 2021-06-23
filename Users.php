@@ -758,11 +758,31 @@ class StandardUser extends BaseUser
 		return 0.03;
 	}
 	public function addNotification($UID,$Message,$Link){
-	
-		$sql = "INSERT INTO `notification`(`UserID`, `Message`, `Hyperlink`) VALUES ('".$UID."','".$Message."','".$Link."')";
-		$result = $this->connect()->query($sql) or die($this->connect()->error); 
-			echo "hi";
+	$NotificationID = 0;
+	while(true){					
+		$NotificationID = rand(0,100000000);
+		$result = $this->connect()->query("SELECT count(*) as 'c' FROM notification WHERE NotificationID='".$NotificationID."'");
+		$count = $result->fetch_object()->c;
+		if ($count==0)
+		  {
+			break;
+		  }
 	}
+
+		$sql = "INSERT INTO `notification`(`UserID`, `Message`, `Hyperlink`,`NotificationID`) VALUES ('".$UID."','".$Message."','".$Link."','".$NotificationID."')";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+	
+		?>
+		<script>
+			var ajax = new XMLHttpRequest();
+			ajax.open("POST", "RealTimeNotification.php", true);
+			ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			ajax.send("Notification="+'<?php echo $UID?>'+"&NotificationMessage="+'<?php echo $Message?>'+"&NotificationHyperlink="+'<?php echo $Link?>'+"&NotificationID="+'<?php echo $NotificationID?>');
+			console.log(ajax);
+		</script>
+		<?php
+	}
+
 	public function getNotification(){
 		$returnarr = array();
 		$sql = "SELECT * FROM `notification`  WHERE  UserID ='".$this->getUID()."' Order BY `NotificationID` DESC LIMIT 10 ";
@@ -772,7 +792,6 @@ class StandardUser extends BaseUser
 			array_push($returnarr,$row['NotificationID']);
 			
 		}	
-		$this->notficationsize = sizeof($returnarr);
 		return $returnarr;
 	}
 	public function getNotificationMessage($ID){
@@ -787,6 +806,10 @@ class StandardUser extends BaseUser
 		}	
 		
 		return $returnarr;
+	}
+	public function RemoveNotification($ID){
+		$sql = "DELETE FROM notification WHERE NotificationID='".$ID."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 	}
 	public function UserProductBehaviourAnalysis(){
 		$sql = "SELECT * FROM users  WHERE  UserID ='".$this->getUID()."' ";
