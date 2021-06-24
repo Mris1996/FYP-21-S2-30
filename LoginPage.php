@@ -41,7 +41,7 @@ input[type="text"]{
 
 </html>
 <?php 
-include("NavBar.php");
+require_once("NavBar.php");
 $LoginLoginIDerror = $MainError = $PasswordPassworderror = "";
 if(isset($_SESSION['ID'])){
 	echo '<script> location.replace("index.php")</script> ';

@@ -129,7 +129,7 @@
 <?php
 if(isset($_SESSION['ID'])){
 	echo"<div class='Rec_Prod_GUI'><hr>
-	<center><h1>Reccomended for you:</h1></center>
+	<center><h1>Recommended for you:</h1></center>
 	";
 	$ArrayOfRecProducts = $_SESSION['Object']->UserProductBehaviourAnalysis();
 	foreach($ArrayOfRecProducts as $val){

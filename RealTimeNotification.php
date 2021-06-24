@@ -8,6 +8,7 @@ curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 
 //#############################################################
 if(isset($_POST['Notification'])){
+echo"hi";
 $jsonData = json_encode(['NotificationUserID'=>$_POST['Notification'],'NotificationMessage'=>$_POST['NotificationMessage'],'NotificationHyperlink'=>$_POST['NotificationHyperlink'],'NotificationID'=>$_POST['NotificationID']]);
 
 $query = http_build_query(['data' => $jsonData]);	

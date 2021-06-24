@@ -757,7 +757,7 @@ class StandardUser extends BaseUser
 	public function CommissionRate(){
 		return 0.03;
 	}
-	public function addNotification($UID,$Message,$Link){
+		public function addNotification($UID,$Message,$Link){
 	$NotificationID = 0;
 	while(true){					
 		$NotificationID = rand(0,100000000);
@@ -768,24 +768,23 @@ class StandardUser extends BaseUser
 			break;
 		  }
 	}
-
 		$sql = "INSERT INTO `notification`(`UserID`, `Message`, `Hyperlink`,`NotificationID`) VALUES ('".$UID."','".$Message."','".$Link."','".$NotificationID."')";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
-	
+			
 		?>
 		<script>
-			var ajax = new XMLHttpRequest();
-			ajax.open("POST", "RealTimeNotification.php", true);
-			ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-			ajax.send("Notification="+'<?php echo $UID?>'+"&NotificationMessage="+'<?php echo $Message?>'+"&NotificationHyperlink="+'<?php echo $Link?>'+"&NotificationID="+'<?php echo $NotificationID?>');
-			console.log(ajax);
+		console.log('<?php echo $NotificationID?>');
+		ajax.open("POST", "RealTimeNotification.php", true);
+		ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		ajax.send("Notification="+'<?php echo $UID ?>'+"&NotificationMessage="+'<?php echo $Message?>'+"&NotificationID="+"<?php echo $Message?>"+"&NotificationHyperlink="+'<?php echo $Link?>');
+		console.log(ajax);	
 		</script>
 		<?php
 	}
-
+		
 	public function getNotification(){
 		$returnarr = array();
-		$sql = "SELECT * FROM `notification`  WHERE  UserID ='".$this->getUID()."' Order BY `NotificationID` DESC LIMIT 10 ";
+		$sql = "SELECT * FROM `notification`  WHERE  UserID ='".$this->getUID()."' Order BY `NotificationID` DESC ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		while($row = $result->fetch_assoc())
 		{
@@ -809,6 +808,10 @@ class StandardUser extends BaseUser
 	}
 	public function RemoveNotification($ID){
 		$sql = "DELETE FROM notification WHERE NotificationID='".$ID."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+	}
+	public function RemoveNotificationInPage($Link){
+		$sql = "DELETE FROM notification WHERE Hyperlink='".$Link."' AND UserID='".$this->getUID()."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 	}
 	public function UserProductBehaviourAnalysis(){

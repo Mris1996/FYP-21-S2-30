@@ -1,4 +1,10 @@
-
+<?php
+date_default_timezone_set("Singapore");
+require_once("Users.php");
+require_once("Products.php");
+require_once("Contracts.php");
+session_start();
+?>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -6,7 +12,7 @@
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 
  .navbar{
@@ -60,8 +66,8 @@ border-radius: 50%;
 }
 .dropbtn2{
 margin-left:100px;
-width:80px;
-height:80px;
+width:70px;
+height:70px;
 }
 .dropdown-content a:hover {background-color: #ddd;}
 
@@ -143,13 +149,23 @@ height:80px;
   outline: 1px solid black;
   
 }
+.badge {
+  position: absolute;
+  width:30px;
+  height:30px;
+  font-size:20px;
+  border-radius: 50%;
+  background-color: red;
+  color: white;
+}
 </style>
+
 <script>
-//webportconfig = 'ws://8.tcp.ngrok.io:10810';
-webportconfig = 'ws://localhost:3030';
+webportconfig = 'ws://0.tcp.ngrok.io:16905';
+//webportconfig = 'ws://localhost:3030';
 window.WebSocket = window.WebSocket || window.MozWebSocket;
 function deletenotification(ID){
-	alert(ID);
+	
 var ajax = new XMLHttpRequest();
 ajax.open("POST", "RealTimeNotification.php", true);
 ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -161,11 +177,8 @@ ajax.send("Delete="+ID);
 	<nav class="navbar">
 	
 <?php 
-date_default_timezone_set("Singapore");
-require_once("Users.php");
-require_once("Products.php");
-require_once("Contracts.php");
-session_start();
+
+
 if(isset($_POST['Nav_Main'])){
 header("Location:index.php");
 exit;
@@ -219,9 +232,10 @@ if(isset($_SESSION['ID'])){
 echo'
 <div class="dropdown">
 	<img class="dropbtn2" src="systemimages/Notification.png" height="80" width="80">
-	<div id="notifications" class="dropdown-content">';
+	<span id="notificationbadge" class="badge"></span><div id="notifications" class="dropdown-content">';
 	$NotificationArr = $_SESSION['Object']->getNotification();
 	sort($NotificationArr);
+	
 	foreach($NotificationArr as $val){
 		
 		$NotificationMessageArr = $_SESSION['Object']->getNotificationMessage($val);
@@ -230,6 +244,10 @@ echo'
 	if(empty($NotificationArr)){
 		
 		 echo '<a id="nonotification" style="background-color:purple;color:white;width:300px">You have no notification</a>';
+	}
+	else{
+		
+		echo'<script>document.getElementById("notificationbadge").innerHTML='.sizeof($NotificationArr).';</script>';
 	}
 	
 	echo'
@@ -301,6 +319,12 @@ connection.onmessage = function (message) {
 			newnotification.onclick = deletenotification(newnotification.id);
 			newnotification.style = "background-color:purple;color:white;width:300px";
 			document.getElementById("notifications").appendChild(newnotification);  
+			var notificationcount = document.getElementById("notificationbadge").innerHTML;
+			if(notificationcount==""){
+				notificationcount=0;
+			}
+			notificationcount = parseInt(notificationcount)+1;
+			document.getElementById("notificationbadge").innerHTML = notificationcount;
 
 		}
 		if(document.getElementById("nonotification")!=undefined){

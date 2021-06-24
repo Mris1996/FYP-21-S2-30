@@ -20,7 +20,7 @@ if($ContractObj->DeliveryMode == "Courier Delivery"  && $_SESSION['Object']->get
 
 }
 }
-
+$_SESSION['Object']->RemoveNotificationInPage('ContractPage.php');
 
 ?>
 
