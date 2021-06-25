@@ -7,7 +7,7 @@ Is an interface for Sellers to list their products
 Program written by: Samuel
 
 3. Date and time of last modified
-Last Modified: 25 June 2021 12:43AM
+Last Modified: 25 June 2021 8:21PM
 
 User Story:
 #246 As a seller, I want to advertise my product on the front page by paying a fee, so that I can promote my product
@@ -30,17 +30,27 @@ http://localhost/AdvertiseProduct.php
 	// Event Listener 
 	if (isset($_POST['submitAdvertiseProductForm'])) {
 		$successfullyProcessedForm = false;
-		$processExecutionCode = 1;
+		$isDateCorrect = 1;
+		$isImageFileCorrect = 1;
 		
-		$processExecutionCode = $testing->verifyDate($_POST["advertisingStartDate"]);
+		$isDateCorrect = $testing->verifyDate($_POST["advertisingStartDate"]);
+		$isImageFileCorrect = $testing->verifyFileIntegrity($_FILES); // WIP
 		
-		if ($processExecutionCode == 0) {
+		if ($isDateCorrect == 0) {
 			$successfullyProcessedForm = true;
 			$systemMessage = "SUCCESSFULLY submitted form";
 		}
 		else {
-			$systemMessage = "Invalid Date! Please Try Again!";
+			$systemMessage = "Invalid Date! Please Try Again! \r\n";
 		}
+		
+		if ($isImageFileCorrect == 0) {
+			$successfullyProcessedForm = true;
+			$systemMessage = "SUCCESSFULLY submitted form";
+		} else {
+			$systemMessage = "Invalid Image! Please Try Again! \r\n";
+		}
+		
 	}
 	else {
 		// Reset
@@ -58,10 +68,15 @@ http://localhost/AdvertiseProduct.php
 	<body>
 		<p>This is where you can advertise products.</p>
 		
-		<form autocomplete="off" method="post" name="advertiseProductForm">
+		<form autocomplete="off" method="post" name="advertiseProductForm" enctype="multipart/form-data">
 			<!--1. Asks for when/what starting date should advertisement will be put up(Can have basic validation)-->
 			<label for="advertisingStartDate">Start Date for Advertising:</label>
 			<input type="date" id="advertisingStartDate" name="advertisingStartDate" required>
+			<br>
+			
+			<!--2. Asks for image to be advertised-->
+			<label for="imageForAdvertisement">Select image to be uploaded for advertisement:</label>
+			<input type="file" name="imageForAdvertisement" id="imageForAdvertisement" required>
 			
 			<br>
 			<input type="submit" value="Submit" name="submitAdvertiseProductForm">
@@ -97,10 +112,13 @@ https://www.w3schools.com/html/html_forms.asp
 
 File upload
 https://www.w3schools.com/php/php_file_upload.asp
-https://www.etutorialspoint.com/index.php/57-file-upload-validation-in-php
+https://www.php.net/manual/en/features.file-upload.post-method.php
 https://learnwebtutorials.com/file-upload-in-php-tutorial
 https://phppot.com/php/php-image-upload-with-size-type-dimension-validation/
 https://documentation.concrete5.org/developers/security/validating-file-uploads
+
+What is $_FILES?
+https://www.w3resource.com/php/super-variables/$_FILES.php
 https://www.php.net/manual/en/features.file-upload.post-method.php
 
 Difference between "require" and "require_once"
