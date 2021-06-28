@@ -7,7 +7,7 @@ Is an interface for Sellers to list their products
 Program written by: Samuel
 
 3. Date and time of last modified
-Last Modified: 25 June 2021 8:21PM
+Last Modified: 28 June 2021 10:54PM
 
 User Story:
 #246 As a seller, I want to advertise my product on the front page by paying a fee, so that I can promote my product
@@ -23,38 +23,40 @@ http://localhost/AdvertiseProduct.php
 	require_once("ProcessAdvertising.php");
 
 	$testing = new ProcessAdvertising();
-	//$testing->checkIfSellerIsLoggedIn(); // ENABLE ON ACTUAL VERSION
+	$testing->checkIfSellerIsLoggedIn();
 
 	$systemMessage = "";
 	
 	// Event Listener 
 	if (isset($_POST['submitAdvertiseProductForm'])) {
-		$successfullyProcessedForm = false;
-		$isDateCorrect = 1;
-		$isImageFileCorrect = 1;
 		
-		$isDateCorrect = $testing->verifyDate($_POST["advertisingStartDate"]);
-		$isImageFileCorrect = $testing->verifyFileIntegrity($_FILES); // WIP
-		
-		if ($isDateCorrect == 0) {
-			$successfullyProcessedForm = true;
-			$systemMessage = "SUCCESSFULLY submitted form";
-		}
-		else {
-			$systemMessage = "Invalid Date! Please Try Again! \r\n";
+		try {
+			$testing->processForm($_POST["advertisingStartDate"], $_FILES);
+		} catch (Exception $e) {
+			$systemMessage = "Processing Error, please try again!";
 		}
 		
-		if ($isImageFileCorrect == 0) {
-			$successfullyProcessedForm = true;
-			$systemMessage = "SUCCESSFULLY submitted form";
+		if ($testing->getProcessingResult()) {
+			$systemMessage = "Form processed successfully.";
 		} else {
-			$systemMessage = "Invalid Image! Please Try Again! \r\n";
+			$systemMessage = whatIsTheError($testing);
 		}
-		
 	}
 	else {
 		// Reset
 		$systemMessage = "";
+	}
+	
+	function whatIsTheError($testing) {
+		$yes = 0;
+		if ($testing->getIsDateCorrect() == $yes) {} 
+		else {
+			return "Invalid Date!";
+		}
+		if ($testing->getIsImageFileCorrect() == $yes) {}
+		else {
+			return "Invalid image! Only jpg, png, jpeg, gif are allowed. File size must be 150kB.";
+		}
 	}
 ?>
 <!DOCTYPE html>
