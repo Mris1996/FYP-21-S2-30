@@ -7,13 +7,13 @@ Is an interface for Sellers to list their products
 Program written by: Samuel
 
 3. Date and time of last modified
-Last Modified: 28 June 2021 10:54PM
+Last Modified: 30 June 2021 1:00AM
 
 User Story:
 #246 As a seller, I want to advertise my product on the front page by paying a fee, so that I can promote my product
 Boundary: AdvertiseProduct.php
 Controller: ProcessAdvertising.php
-Entity:
+Entity: StoreAdvertising.php
 
 To see page:
 http://localhost/AdvertiseProduct.php
@@ -29,6 +29,10 @@ http://localhost/AdvertiseProduct.php
 	
 	// Event Listener 
 	if (isset($_POST['submitAdvertiseProductForm'])) {
+		
+		// Can change this to the "washing machine"/"laundromat" logic
+		// So you have "mutators" which set the various variables to be processed
+		// Then you just call "processForm" as the "start" button for processing.
 		
 		try {
 			$testing->processForm($_POST["advertisingStartDate"], $_FILES);
@@ -55,7 +59,7 @@ http://localhost/AdvertiseProduct.php
 		}
 		if ($testing->getIsImageFileCorrect() == $yes) {}
 		else {
-			return "Invalid image! Only jpg, png, jpeg, gif are allowed. File size must be 150kB.";
+			return "Invalid image! Only jpg, png, jpeg, gif formats are allowed. File size maximum limit is 150kB.";
 		}
 	}
 ?>
@@ -70,17 +74,34 @@ http://localhost/AdvertiseProduct.php
 	<body>
 		<p>This is where you can advertise products.</p>
 		
+		<!--3. Displays advertising fee ($2000) [fixed value]-->
+		<p><strong>Advertising fee is $2000.</strong></p>
+		
+		<!--4. Booking system is ‘slot’ based. (Weekly booking only; 1 week fixed)-->
+		<p>Booking of advertisement is on a <strong>per Weekly</strong> basis.</p>
+		
+		<!--5. Users can only book once until their previous booking has ended.-->
+		<p>You can only book <strong><u>once</u></strong> until your previous booking has ended</p>
+		
+		<!--6. Index page is where ads are displayed-->
+		<p>Your advertisements will be displayed on the Front page.</p>
+		
 		<form autocomplete="off" method="post" name="advertiseProductForm" enctype="multipart/form-data">
+			<br>
 			<!--1. Asks for when/what starting date should advertisement will be put up(Can have basic validation)-->
 			<label for="advertisingStartDate">Start Date for Advertising:</label>
 			<input type="date" id="advertisingStartDate" name="advertisingStartDate" required>
 			<br>
 			
+			<br>
+			<!--7. Specify File Format types of image which can be uploaded-->
+			<p><strong>Only jpg, png, jpeg, gif formats are allowed. File size maximum limit is 150kB.</strong></p>
+			
 			<!--2. Asks for image to be advertised-->
 			<label for="imageForAdvertisement">Select image to be uploaded for advertisement:</label>
 			<input type="file" name="imageForAdvertisement" id="imageForAdvertisement" required>
-			
 			<br>
+			
 			<input type="submit" value="Submit" name="submitAdvertiseProductForm">
 			<br>
 			
@@ -97,7 +118,7 @@ http://localhost/AdvertiseProduct.php
 	</body>
 </html>
 
-<!--Links Used -->
+<!--Links Used-->
 <!-- 
 Base Layout of website:
 https://www.sitepoint.com/a-basic-html5-template/

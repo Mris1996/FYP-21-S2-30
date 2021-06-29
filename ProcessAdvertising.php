@@ -1,28 +1,30 @@
 <!-- 
 (Controller Class)
 1. Purpose of Program
-It is a processing/utility class to handle data from AdvertiseProduct.php (Boundary) and Entity class
+It is a processing/utility class to handle data from AdvertiseProduct.php (Boundary) and StoreAdvertising.php (Entity)
 
 2. Author of Program
 Program written by: Samuel
 
 3. Date and time of last modified
-Last Modified: 28 June 2021 10:54PM
+Last Modified: 30 June 2021 1:00AM
 
 User Story:
 #246 As a seller, I want to advertise my product on the front page by paying a fee, so that I can promote my product
 Boundary: AdvertiseProduct.php
 Controller: ProcessAdvertising.php
-Entity:
+Entity: StoreAdvertising.php
 
 To see page:
 http://localhost/AdvertiseProduct.php
 -->
 <?php 
+require_once("StoreAdvertising.php");
+
 class ProcessAdvertising
 {
 	// Settings for script. Variable can be outsourced to pull "location to store" from SQL DB 
-	private $directoryToStoreFiles = "ads/";
+	private $folderToStoreFiles = "ads/";
 	private $fileSizeLimit = 150000; //150kB
 	
 	private $processingResult = false;
@@ -34,6 +36,7 @@ class ProcessAdvertising
 	
 	public function __construct() {}
 	
+	// Accessors
 	public function getProcessingResult() { return $this->processingResult; }
 	public function getIsDateCorrect() { return $this->isDateCorrect; }
 	public function getIsImageFileCorrect() { return $this->isImageFileCorrect; }
@@ -45,6 +48,7 @@ class ProcessAdvertising
 		}
 	}
 	
+	// WIP
 	public function processForm($advertisingStartDate, $file) {
 		$this->dateToBeVerified = $advertisingStartDate;
 		$this->fileToBeChecked = $file;
@@ -55,17 +59,24 @@ class ProcessAdvertising
 		$yes = 0;
 		
 		if ($this->isDateCorrect == $yes and $this->isImageFileCorrect == $yes) {
+			$this->sendFileForStoring();
+			//$this->sendDateForStoring();
+			
+			
+			
+			
+			
+			
 			$this->processingResult = true;
 		} else {
 			$this->processingResult = false;
-		}
-		
+		}	
 	}
 
 	// 1. Do input validation and sanitization for date
 	public function verifyDate() {
 		$dateToBeVerified = $this->dateToBeVerified;
-		$isItEmpty = empty($dateToBeVerified);
+		$isItEmpty = empty($dateToBeVerified); 
 		$isItValidDate = $this->checkValidDate();
 		
 		$success = 0;
@@ -91,27 +102,21 @@ class ProcessAdvertising
 		$fail = 1;
 		
 		if ($isFileUploadSuccessful == $success) {
-			$directoryWhereFileWillBeStored = $this->directoryToStoreFiles . basename($this->fileToBeChecked["imageForAdvertisement"]["name"]);
-			$fileExtensionToBeVerified = strtolower(pathinfo($directoryWhereFileWillBeStored, PATHINFO_EXTENSION));
+			$directoryWhereFileWillBeStored = $this->getWhereToStoreFiles();
+			$fileExtensionToBeVerified      = $this->getFileExtension($directoryWhereFileWillBeStored);
 			
-			$isFileAnActualImage = $this->checkFileIsActualImage(); 
-			$doesFileAlreadyExist = file_exists($directoryWhereFileWillBeStored);
-			$isFileTooBigInSize = $this->checkFileSize();
+			$isFileAnActualImage    = $this->checkFileIsActualImage(); 
+			$doesFileAlreadyExist   = file_exists($directoryWhereFileWillBeStored); 
+			$isFileTooBigInSize     = $this->checkFileSize();
 			$isFileExtensionCorrect = $this->checkFileExtension($fileExtensionToBeVerified);
 			
-			// Finish the base function at this link.
-			// https://www.w3schools.com/php/php_file_upload.asp
-			
-			if ($isFileAnActualImage and 
-			    !$doesFileAlreadyExist and 
-				!$isFileTooBigInSize and 
-				$isFileExtensionCorrect) {
+			if ($isFileAnActualImage and !$doesFileAlreadyExist and 
+				!$isFileTooBigInSize and $isFileExtensionCorrect) {
 				return $success;
 			}
 			else {
 				return $fail;
 			}
-			
 		} else {
 			// File is empty or upload has failed!
 			return $fail; 
@@ -120,6 +125,14 @@ class ProcessAdvertising
 
 	public function checkFileUploadStatus() {
 		return  $this->fileToBeChecked["imageForAdvertisement"]["error"];
+	}
+	
+	public function getWhereToStoreFiles() {
+		return $this->folderToStoreFiles . basename($this->fileToBeChecked["imageForAdvertisement"]["name"]);
+	}
+	
+	public function getFileExtension($directoryWhereFileWillBeStored) {
+		return strtolower(pathinfo($directoryWhereFileWillBeStored, PATHINFO_EXTENSION));
 	}
 	
 	public function checkFileIsActualImage() {
@@ -144,9 +157,25 @@ class ProcessAdvertising
 			return $invalidFileExtension;
 		}
 	}
+	
+	// 5. If date and image is valid, it will send both to corresponding entity class for storing
+	// Finish the base function at this link.
+	// https://www.w3schools.com/php/php_file_upload.asp
+	public function sendFileForStoring() {
+		$verifiedFileToBeStored = $this->fileToBeChecked;
+		$directoryWhereFileWillBeStored = $this->getWhereToStoreFiles();
+		
+		$storageProcessing = new StoreAdvertising();
+		$storageProcessing->saveFileOnServer($verifiedFileToBeStored, $directoryWhereFileWillBeStored);
+	}
+	
+	public function sendDateForStoring() {
+		//echo "Hello World!";
+	}
+	
 }
 ?>
-<!--Links Used -->
+<!--Links Used-->
 <!--
 Base format for a class
 https://dzone.com/articles/learn-php-how-write-class-php
