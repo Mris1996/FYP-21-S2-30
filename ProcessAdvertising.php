@@ -7,7 +7,7 @@ It is a processing/utility class to handle data from AdvertiseProduct.php (Bound
 Program written by: Samuel
 
 3. Date and time of last modified
-Last Modified: 30 June 2021 1:00AM
+Last Modified: 30 June 2021 11:40PM
 
 User Story:
 #246 As a seller, I want to advertise my product on the front page by paying a fee, so that I can promote my product
@@ -27,45 +27,43 @@ class ProcessAdvertising
 	private $folderToStoreFiles = "ads/";
 	private $fileSizeLimit = 150000; //150kB
 	
-	private $processingResult = false;
-	private $isDateCorrect = 1;
-	private $isImageFileCorrect = 1;
+	private $processingResult   = false;
+	private $isUserIdCorrect    = false;
+	private $isDateCorrect      = false;
+	private $isImageFileCorrect = false;
 
-	private $dateToBeVerified = "";
-	private $fileToBeChecked = "";
+	private $userIDToBeVerified = "";
+	private $dateToBeVerified   = "";
+	private $fileToBeVerified   = "";
 	
-	public function __construct() {}
-	
-	// Accessors
-	public function getProcessingResult() { return $this->processingResult; }
-	public function getIsDateCorrect() { return $this->isDateCorrect; }
-	public function getIsImageFileCorrect() { return $this->isImageFileCorrect; }
-	
-	public function checkIfSellerIsLoggedIn() {
-		if(!isset($_SESSION['ID'])) {
-			echo '<script type="text/javascript"> location.replace("index.php")</script> ';
-			die("Redirecting to index.php");
-		}
+	public function __construct($userID, $advertisingStartDate, $fileForProcessing) {
+		$this->userIDToBeVerified = $userID;
+		$this->dateToBeVerified   = $advertisingStartDate;
+		$this->fileToBeVerified   = $fileForProcessing;
 	}
 	
+	public function getProcessingResult()   { return $this->processingResult;   }
+	public function getIsUserIdCorrect()    { return $this->isUserIdCorrect;    }
+	public function getIsDateCorrect()      { return $this->isDateCorrect;      }
+	public function getIsImageFileCorrect() { return $this->isImageFileCorrect; }
+	
 	// WIP
-	public function processForm($advertisingStartDate, $file) {
-		$this->dateToBeVerified = $advertisingStartDate;
-		$this->fileToBeChecked = $file;
+	public function processForm() {
 		
-		$this->isDateCorrect = $this->verifyDate();
-		$this->isImageFileCorrect = $this->verifyFileIntegrity();
+		$this->isUserIdCorrect    = $this->verifyUserID(); 
+		$this->isDateCorrect      = $this->verifyDate();
+		$this->isImageFileCorrect = $this->verifyFileIntegrity(); 
 		
-		$yes = 0;
+		$yes = true;
+		$no = false;
+		if ($this->isUserIdCorrect    == $yes and 
+			$this->isDateCorrect      == $yes and 
+			$this->isImageFileCorrect == $yes) {
 		
-		if ($this->isDateCorrect == $yes and $this->isImageFileCorrect == $yes) {
 			$this->sendFileForStoring();
-			//$this->sendDateForStoring();
+			$this->sendDateForStoring();
 			
-			
-			
-			
-			
+			// WIP
 			
 			$this->processingResult = true;
 		} else {
@@ -73,15 +71,27 @@ class ProcessAdvertising
 		}	
 	}
 
+	public function verifyUserID() {
+		$accessDatabase = new StoreAdvertising();
+		$accessDatabase->checkIfUserIdIsInDatabase($this->userIDToBeVerified);	
+		$isUserIdInDatabase = $accessDatabase->getresult();
+		return $isUserIdInDatabase;
+		// Can have further Validation and Sanitization of the field.
+		// Refer to "forget password" system for the validation and sanitization code		
+	}
+
 	// 1. Do input validation and sanitization for date
 	public function verifyDate() {
-		$dateToBeVerified = $this->dateToBeVerified;
-		$isItEmpty = empty($dateToBeVerified); 
+		$isItEmpty     = $this->checkIfDateIsEmpty();
 		$isItValidDate = $this->checkValidDate();
 		
-		$success = 0;
-		$fail = 1;
+		$success = true;
+		$fail = false;
 		return (!$isItEmpty and $isItValidDate) ? $success : $fail;
+	}
+	
+	public function checkIfDateIsEmpty() {
+		return empty($this->dateToBeVerified); 
 	}
 	
 	public function checkValidDate() {
@@ -98,37 +108,37 @@ class ProcessAdvertising
 	// Future Implementation: Secure File Upload according to OWASP standard
 	public function verifyFileIntegrity() {
 		$isFileUploadSuccessful = $this->checkFileUploadStatus();
-		$success = 0;
-		$fail = 1;
 		
-		if ($isFileUploadSuccessful == $success) {
+		$yes = 0;
+		$no = 1;
+		if ($isFileUploadSuccessful == $yes) {
 			$directoryWhereFileWillBeStored = $this->getWhereToStoreFiles();
 			$fileExtensionToBeVerified      = $this->getFileExtension($directoryWhereFileWillBeStored);
 			
-			$isFileAnActualImage    = $this->checkFileIsActualImage(); 
-			$doesFileAlreadyExist   = file_exists($directoryWhereFileWillBeStored); 
-			$isFileTooBigInSize     = $this->checkFileSize();
-			$isFileExtensionCorrect = $this->checkFileExtension($fileExtensionToBeVerified);
+			$isFileAnActualImage      = $this->checkFileIsActualImage(); 
+			$isFileAlreadyInDirectory = $this->checkForFileInDirecory($directoryWhereFileWillBeStored);
+			$isFileTooBigInSize       = $this->checkFileSize();
+			$isFileExtensionCorrect   = $this->checkFileExtension($fileExtensionToBeVerified);
 			
-			if ($isFileAnActualImage and !$doesFileAlreadyExist and 
+			if ($isFileAnActualImage and !$isFileAlreadyInDirectory and 
 				!$isFileTooBigInSize and $isFileExtensionCorrect) {
-				return $success;
+				return true;
 			}
 			else {
-				return $fail;
+				return false;
 			}
 		} else {
 			// File is empty or upload has failed!
-			return $fail; 
+			return false; 
 		}
 	}
 
 	public function checkFileUploadStatus() {
-		return  $this->fileToBeChecked["imageForAdvertisement"]["error"];
+		return  $this->fileToBeVerified["imageForAdvertisement"]["error"];
 	}
 	
 	public function getWhereToStoreFiles() {
-		return $this->folderToStoreFiles . basename($this->fileToBeChecked["imageForAdvertisement"]["name"]);
+		return $this->folderToStoreFiles . basename($this->fileToBeVerified["imageForAdvertisement"]["name"]);
 	}
 	
 	public function getFileExtension($directoryWhereFileWillBeStored) {
@@ -136,12 +146,16 @@ class ProcessAdvertising
 	}
 	
 	public function checkFileIsActualImage() {
-		$canCommandBeExecuted = getimagesize($this->fileToBeChecked["imageForAdvertisement"]["tmp_name"]);
+		$canCommandBeExecuted = getimagesize($this->fileToBeVerified["imageForAdvertisement"]["tmp_name"]);
 		return ($canCommandBeExecuted != false) ? true : false;
 	}
 	
+	public function checkForFileInDirecory($directoryWhereFileWillBeStored) {
+		return file_exists($directoryWhereFileWillBeStored);
+	}
+	
 	public function checkFileSize() {
-		return ($this->fileToBeChecked["imageForAdvertisement"]["size"] > $this->fileSizeLimit) ? true : false;	
+		return ($this->fileToBeVerified["imageForAdvertisement"]["size"] > $this->fileSizeLimit) ? true : false;	
 	}
 	
 	public function checkFileExtension($fileExtensionToBeVerified) {
@@ -159,17 +173,19 @@ class ProcessAdvertising
 	}
 	
 	// 5. If date and image is valid, it will send both to corresponding entity class for storing
-	// Finish the base function at this link.
-	// https://www.w3schools.com/php/php_file_upload.asp
 	public function sendFileForStoring() {
-		$verifiedFileToBeStored = $this->fileToBeChecked;
+		$verifiedFileToBeStored = $this->fileToBeVerified;
 		$directoryWhereFileWillBeStored = $this->getWhereToStoreFiles();
 		
 		$storageProcessing = new StoreAdvertising();
 		$storageProcessing->saveFileOnServer($verifiedFileToBeStored, $directoryWhereFileWillBeStored);
 	}
 	
+	// WIP
 	public function sendDateForStoring() {
+		//https://techone.in/how-to-insert-date-in-mysql-using-php/
+		//https://www.php.net/manual/en/class.datetime.php
+		// stopped here
 		//echo "Hello World!";
 	}
 	
@@ -179,8 +195,6 @@ class ProcessAdvertising
 <!--
 Base format for a class
 https://dzone.com/articles/learn-php-how-write-class-php
-https://www.w3schools.com/php/php_oop_classes_objects.asp
-https://stackoverflow.com/questions/3032808/purpose-of-php-constructors
 
 Validate Date Input
 https://www.codexworld.com/how-to/validate-date-input-string-in-php/
@@ -197,13 +211,6 @@ https://www.w3schools.com/php/php_operators.asp
 
 Validating Image Files
 https://www.w3schools.com/php/php_file_upload.asp
-https://www.php.net/manual/en/features.file-upload.post-method.php
-https://stackoverflow.com/questions/27614822/the-most-reliable-way-to-check-upload-file-is-an-image
-https://www.php.net/manual/en/features.file-upload.php
-https://stackoverflow.com/questions/10096977/how-to-check-if-the-file-input-field-is-empty
-https://stackoverflow.com/questions/27614822/the-most-reliable-way-to-check-upload-file-is-an-image
-https://www.php.net/manual/en/function.exif-imagetype.php
-https://www.geeksforgeeks.org/php-exif_imagetype-function/
 
 Why "getimagesize" alone is not enough for image validation
 https://www.php.net/manual/en/function.getimagesize.php
@@ -228,5 +235,15 @@ https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html
 https://www.opswat.com/blog/file-upload-protection-best-practices
 https://www.sans.org/blog/8-basic-rules-to-implement-secure-file-uploads/
 
+Validating date range
+https://www.php.net/manual/en/class.datetime.php
+https://www.codegrepper.com/code-examples/php/check+if+date+is+within+range+php
+https://www.plus2net.com/sql_tutorial/between-date.php
+https://www.php.net/manual/en/class.dateperiod.php
+https://www.nicesnippets.com/blog/how-to-check-current-date-between-two-dates-in-php
+https://techone.in/how-to-insert-date-in-mysql-using-php/
+
+Constructors
+https://www.php.net/manual/en/language.oop5.decon.php
 
 -->

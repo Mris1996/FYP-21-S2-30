@@ -7,7 +7,7 @@ Is an interface for Sellers to list their products
 Program written by: Samuel
 
 3. Date and time of last modified
-Last Modified: 30 June 2021 1:00AM
+Last Modified: 30 June 2021 11:40PM
 
 User Story:
 #246 As a seller, I want to advertise my product on the front page by paying a fee, so that I can promote my product
@@ -22,22 +22,24 @@ http://localhost/AdvertiseProduct.php
 	require_once("NavBar.php");
 	require_once("ProcessAdvertising.php");
 
-	$testing = new ProcessAdvertising();
-	$testing->checkIfSellerIsLoggedIn();
-
+	checkIfSellerIsLoggedIn();
 	$systemMessage = "";
 	
 	// Event Listener 
 	if (isset($_POST['submitAdvertiseProductForm'])) {
+		$userID               = $_SESSION["Object"]->getUID();
+		$advertisingStartDate = $_POST["advertisingStartDate"];
+		$fileForProcessing    = $_FILES;
 		
-		// Can change this to the "washing machine"/"laundromat" logic
-		// So you have "mutators" which set the various variables to be processed
-		// Then you just call "processForm" as the "start" button for processing.
+		$testing = new ProcessAdvertising($userID, $advertisingStartDate, $fileForProcessing);
 		
+		// Catches error from processing issues
 		try {
-			$testing->processForm($_POST["advertisingStartDate"], $_FILES);
+			$testing->processForm();
+			
 		} catch (Exception $e) {
 			$systemMessage = "Processing Error, please try again!";
+			$systemMessage .= $e->getMessage();
 		}
 		
 		if ($testing->getProcessingResult()) {
@@ -45,18 +47,32 @@ http://localhost/AdvertiseProduct.php
 		} else {
 			$systemMessage = whatIsTheError($testing);
 		}
-	}
-	else {
+		
+	} else {
 		// Reset
 		$systemMessage = "";
 	}
 	
+	function checkIfSellerIsLoggedIn() {
+		if(!isset($_SESSION['ID'])) {
+			echo '<script type="text/javascript"> location.replace("index.php")</script> ';
+			die("Redirecting to index.php");
+		}
+	}
+	
 	function whatIsTheError($testing) {
-		$yes = 0;
+		$yes = true;
+		
+		if ($testing->getIsUserIdCorrect() == $yes) {} 
+		else {
+			return "Invalid UserID, Please re-login!";
+		}
+		
 		if ($testing->getIsDateCorrect() == $yes) {} 
 		else {
 			return "Invalid Date!";
 		}
+		
 		if ($testing->getIsImageFileCorrect() == $yes) {}
 		else {
 			return "Invalid image! Only jpg, png, jpeg, gif formats are allowed. File size maximum limit is 150kB.";
