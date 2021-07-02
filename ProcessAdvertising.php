@@ -7,7 +7,7 @@ It is a processing/utility class to handle data from AdvertiseProduct.php (Bound
 Program written by: Samuel
 
 3. Date and time of last modified
-Last Modified: 30 June 2021 11:40PM
+Last Modified:  2 July 2021 9:42PM
 
 User Story:
 #246 As a seller, I want to advertise my product on the front page by paying a fee, so that I can promote my product
@@ -36,6 +36,8 @@ class ProcessAdvertising
 	private $dateToBeVerified   = "";
 	private $fileToBeVerified   = "";
 	
+	private $didRecordAdvertisingDetailsSucceed = false;
+	
 	public function __construct($userID, $advertisingStartDate, $fileForProcessing) {
 		$this->userIDToBeVerified = $userID;
 		$this->dateToBeVerified   = $advertisingStartDate;
@@ -47,30 +49,16 @@ class ProcessAdvertising
 	public function getIsDateCorrect()      { return $this->isDateCorrect;      }
 	public function getIsImageFileCorrect() { return $this->isImageFileCorrect; }
 	
-	// WIP
 	public function processForm() {
 		
 		$this->isUserIdCorrect    = $this->verifyUserID(); 
 		$this->isDateCorrect      = $this->verifyDate();
 		$this->isImageFileCorrect = $this->verifyFileIntegrity(); 
 		
-		$yes = true;
-		$no = false;
-		if ($this->isUserIdCorrect    == $yes and 
-			$this->isDateCorrect      == $yes and 
-			$this->isImageFileCorrect == $yes) {
-		
-			$this->sendFileForStoring();
-			$this->sendDateForStoring();
-			
-			// WIP
-			
-			$this->processingResult = true;
-		} else {
-			$this->processingResult = false;
-		}	
+		$this->checkIfFormMeetsRequirements();	
 	}
 
+	// 9. May need to do UserID validate before passing it to entity class to register in sql database 
 	public function verifyUserID() {
 		$accessDatabase = new StoreAdvertising();
 		$accessDatabase->checkIfUserIdIsInDatabase($this->userIDToBeVerified);	
@@ -95,9 +83,8 @@ class ProcessAdvertising
 	}
 	
 	public function checkValidDate() {
-		$dateToBeVerified = $this->dateToBeVerified;
 		try {
-			$validDate = new DateTime($dateToBeVerified);
+			$validDate = new DateTime($this->dateToBeVerified);
 			return true;
 		} catch (Exception $e) {
 			return false;
@@ -111,6 +98,7 @@ class ProcessAdvertising
 		
 		$yes = 0;
 		$no = 1;
+		
 		if ($isFileUploadSuccessful == $yes) {
 			$directoryWhereFileWillBeStored = $this->getWhereToStoreFiles();
 			$fileExtensionToBeVerified      = $this->getFileExtension($directoryWhereFileWillBeStored);
@@ -127,6 +115,7 @@ class ProcessAdvertising
 			else {
 				return false;
 			}
+			
 		} else {
 			// File is empty or upload has failed!
 			return false; 
@@ -173,6 +162,28 @@ class ProcessAdvertising
 	}
 	
 	// 5. If date and image is valid, it will send both to corresponding entity class for storing
+	public function checkIfFormMeetsRequirements() {
+		$yes = true;
+		$no = false;
+		
+		if ($this->isUserIdCorrect    == $yes and 
+			$this->isDateCorrect      == $yes and 
+			$this->isImageFileCorrect == $yes) {
+		
+			$this->sendFileForStoring();
+			$this->recordAdvertisingDetailsInSqlDatabase();
+			
+			if ($this->didRecordAdvertisingDetailsSucceed) {
+				$this->processingResult = true;
+			} else {
+				$this->processingResult = false;
+			}
+			
+		} else {
+			$this->processingResult = false;
+		}
+	}
+	
 	public function sendFileForStoring() {
 		$verifiedFileToBeStored = $this->fileToBeVerified;
 		$directoryWhereFileWillBeStored = $this->getWhereToStoreFiles();
@@ -181,14 +192,31 @@ class ProcessAdvertising
 		$storageProcessing->saveFileOnServer($verifiedFileToBeStored, $directoryWhereFileWillBeStored);
 	}
 	
-	// WIP
-	public function sendDateForStoring() {
-		//https://techone.in/how-to-insert-date-in-mysql-using-php/
-		//https://www.php.net/manual/en/class.datetime.php
-		// stopped here
-		//echo "Hello World!";
+	public function recordAdvertisingDetailsInSqlDatabase() {
+		$userID    = $this->userIDToBeVerified;
+		$startDate = $this->getStartDate();
+		$endDate   = $this->getEndDate();
+		$fileName  = $this->getOriginalFileName();
+		
+		$storeInSqlDatabase = new StoreAdvertising();
+		$storeInSqlDatabase->insertInToSqlDatabase($userID, $startDate, $endDate, $fileName);
+		
+		$this->didRecordAdvertisingDetailsSucceed = $storeInSqlDatabase->getInsertAdvertisingDetailsResult();
 	}
 	
+	public function getStartDate() {
+		return new DateTime($this->dateToBeVerified);
+	}
+	
+	public function getEndDate() {
+		$endDate = new DateTime($this->dateToBeVerified);
+		$endDate->add(new DateInterval('P7D'));
+		return $endDate;
+	}
+	
+	public function getOriginalFileName() {
+		return $this->fileToBeVerified["imageForAdvertisement"]["name"];
+	}
 }
 ?>
 <!--Links Used-->
@@ -234,6 +262,7 @@ Securing File Upload from OWASP
 https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html
 https://www.opswat.com/blog/file-upload-protection-best-practices
 https://www.sans.org/blog/8-basic-rules-to-implement-secure-file-uploads/
+https://www.php.net/manual/en/features.file-upload.post-method.php
 
 Validating date range
 https://www.php.net/manual/en/class.datetime.php
@@ -245,5 +274,8 @@ https://techone.in/how-to-insert-date-in-mysql-using-php/
 
 Constructors
 https://www.php.net/manual/en/language.oop5.decon.php
+
+DateTime Object 
+https://www.php.net/manual/en/class.datetime.php
 
 -->

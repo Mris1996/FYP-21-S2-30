@@ -7,7 +7,7 @@ Is an interface for Sellers to list their products
 Program written by: Samuel
 
 3. Date and time of last modified
-Last Modified: 30 June 2021 11:40PM
+Last Modified: 1 July 2021 10:24PM
 
 User Story:
 #246 As a seller, I want to advertise my product on the front page by paying a fee, so that I can promote my product

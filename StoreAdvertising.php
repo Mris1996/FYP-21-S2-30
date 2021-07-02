@@ -7,7 +7,7 @@ Is an Entity class which is called by ProcessAdvertising.php (Controller). Used 
 Program written by: Samuel
 
 3. Date and time of last modified
-Last Modified: 30 June 2021 1:00AM
+Last Modified:  2 July 2021 9:42PM
 
 User Story:
 #246 As a seller, I want to advertise my product on the front page by paying a fee, so that I can promote my product
@@ -24,14 +24,16 @@ require_once("Users.php");
 class StoreAdvertising
 {	
 	private $doesUserIdExist = false; 
+	private $didQuerySucceed = false;
 
 	public function __construct() {}
 
 	public function getresult() { return $this->doesUserIdExist; }
+	public function getInsertAdvertisingDetailsResult() { return $this->didQuerySucceed; }
 
 	public function checkIfUserIdIsInDatabase($userIDToBeVerified) {
 		$connectionToDatabase = $this->getConnectionToSqlDatabase();
-		$sqlQueryToExecute    = $this->constructQueryToBeExecuted($userIDToBeVerified);
+		$sqlQueryToExecute    = $this->constructSelectUserIdQuery($userIDToBeVerified);
 		$resultOfQuery        = $this->queryUserIdInDatabase($connectionToDatabase, $sqlQueryToExecute);
 		$this->processResultOfQuery($resultOfQuery);
 	}
@@ -41,17 +43,17 @@ class StoreAdvertising
 		return $temporaryInstanceOfUser->connect();
 	}
 	
-	public function constructQueryToBeExecuted($userIDToBeVerified) {
+	public function constructSelectUserIdQuery($userIDToBeVerified) {
 		return "SELECT * FROM users WHERE UserID='".$userIDToBeVerified."'" ;
 	}
 	
 	public function queryUserIdInDatabase($connectionToDatabase, $sqlQueryToExecute) {
 		$result = "";
 		if ($result = $connectionToDatabase->query($sqlQueryToExecute)) {
-			$connectionToDatabase -> close();
+			$connectionToDatabase->close();
 			return $result;
 		} else {
-			$connectionToDatabase -> close();
+			$connectionToDatabase->close();
 			throw new Exception("Query Failed to Execute.");
 		} 
 	}
@@ -64,8 +66,6 @@ class StoreAdvertising
 		}
 	}
 		
-	// 1. SQL Database to store bookings (userID, start date, end date, image name)
-
 	// 5. Can have a method for storing the advertisement to be displayed.
 	public function saveFileOnServer($fileToBeStored, $locationToStoreFiles) {
 		$didFileStoreProperly = $this->storeTheFileInSpecifiedDirectory($fileToBeStored, $locationToStoreFiles);	
@@ -86,7 +86,34 @@ class StoreAdvertising
 	public function getNameOfFile($fileToBeStored) {
 		return htmlspecialchars(basename($fileToBeStored["imageForAdvertisement"]["name"]));
 	}
+	
+	// 1. SQL Database to store bookings (userID, start date, end date, image name)
+	public function insertInToSqlDatabase($userID, $startDate, $endDate, $fileName) {
 
+		$connectionToDatabase = $this->getConnectionToSqlDatabase();
+		$sqlQueryToExecute    = $this->constructQueryForInsertingAdvertisingDetails($userID, $startDate, $endDate, $fileName);
+		
+		$this->exeuteQueryToInsertAdvertisingDetails($connectionToDatabase, $sqlQueryToExecute);
+	}
+	
+	// 4. Can have a method for inserting date into a new table
+	public function constructQueryForInsertingAdvertisingDetails($userID, $startDate, $endDate, $fileName) {
+		// DATETIME Object needs to be converted to string before it can be inserted into database
+		$stringStartDate = $startDate->format('Y-m-d H:i:s');
+		$stringEndDate   = $endDate->format('Y-m-d H:i:s');
+		return  "INSERT INTO advertising (UserID, StartDate, EndDate, adImage) VALUES ('".$userID."', '".$stringStartDate."', '".$stringEndDate."', '".$fileName."')";
+	}
+	
+	// 5. Can have a method for storing the advertisement to be displayed
+	public function exeuteQueryToInsertAdvertisingDetails($connectionToDatabase, $sqlQueryToExecute) {
+		if ($connectionToDatabase->query($sqlQueryToExecute)) {
+			$connectionToDatabase->close();
+			$this->didQuerySucceed = true;
+		} else {
+			$connectionToDatabase->close();
+			throw new Exception("Query Failed to Execute.");
+		} 
+	}
 }
 ?>
 <!--Links Used-->
@@ -104,9 +131,13 @@ https://www.w3schools.com/php/php_mysql_select.asp
 https://www.php.net/manual/en/function.mysql-connect.php
 https://www.php.net/manual/en/mysqli.connect-errno.php
 
-// Try Catch blocks
+Try Catch blocks
 https://www.w3schools.com/php/php_exception.asp
 https://www.w3schools.com/php/php_exceptions.asp
 
+Convert DATETIME to string
+https://stackoverflow.com/questions/10569053/convert-datetime-to-string-php
+https://www.php.net/manual/en/datetime.format.php
+https://www.mysqltutorial.org/mysql-datetime/
 
 -->
