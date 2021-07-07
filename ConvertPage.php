@@ -374,7 +374,7 @@ $("#rightbox").css('width', '20%');
 	<div class="TopUpGUI">	
 	<form method="post" id="formTopUp" >
 	  <?php echo '<b>Top Up Store Credits</b></br>';?>
-	  <label for="Convert_amount">Amount:</label><br/>
+  <label for="Convert2_amount">Amount(<?php echo $_SESSION['Object']->getCurrency()?>):</label><br/>
 	  <input type="Number" step="any" id="Convert_amount" name="Convert_amount"value=<?php echo $_POST["Convert_amount"];?>><br><br>
 	  <span class="error"><?php echo $Convert_amountError;?></span><br /><br />
 	  <input type="submit"  name="TopUpBtn" value="Top Up Now!">
@@ -384,7 +384,7 @@ $("#rightbox").css('width', '20%');
 	<div class="RedeemGUI">	
 	<form method="post" id="formRedeem">
 	  <?php echo '<b>Redeem Money</b></br>';?>
-	  <label for="Convert2_amount">Amount:</label><br/>
+	  <label for="Convert2_amount">Amount(<?php echo $_SESSION['Object']->getCurrency()?>):</label><br/>
 	  <input type="Number" step="any" id="Convert2_amount" name="Convert2_amount"value=<?php echo $_POST["Convert2_amount"];?>><br><br>
 	  <span class="error"><?php echo $Convert2_amountError;?></span><br /><br />
 	  <input type="submit"  name="RedeemBtn" value="Redeem Now!">

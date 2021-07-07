@@ -191,20 +191,33 @@ text-decoration:none;
 
 }
 #notificationmsg{
-	
+ box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
 	word-wrap: break-word;
-	max-height:100px;
-	width:200px;
+	max-height:200px;
+	width:300px;
 	background-color:purple;
-	border:2px solid black;
+	border:1px solid black;
 	margin-left:100px;
+	height:100px;
   transition: width 0.5s;
 }
-#notificationmsg:hover{
-	width: 350px;
+#notificationmsg a:hover{
+		opacity:1;
+		webkit-transform: rotate(360deg);
+  -webkit-animation: neon3 1s ease-in-out infinite alternate;
+  -moz-animation: neon3 1s ease-in-out infinite alternate;
+  animation: neon3 1s ease-in-out infinite alternate;	
+	 
 
 }
-  
+  #notificationmsg:hover{
+		opacity:1;
+	 box-shadow:
+    0 0 0 20px #fff,  /* inner white */
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+
+}
 .badge {
  font-family: 'Roboto';
   width:20px;
@@ -325,7 +338,16 @@ h1,h2,h3,h4,h5{
       0 0 70px #fff, 0 0 10px #fff, 0 0 10px violet, 0 0 20px #fff;
   }
 }
-
+@keyframes neon3 {
+ from {
+    text-shadow: 0 0 10px violet, 0 0 10px violet, 0 0 5px violet, 0 0 10px violet,
+      0 0 70px violet, 0 0 10px violet, 0 0 10px violet, 0 0 10px violet;
+  }
+  to {
+    text-shadow: 0 0 5px #fff, 0 0 10px violet, 0 0 15px #fff, 0 0 20px #fff,
+      0 0 70px #fff, 0 0 10px #fff, 0 0 10px violet, 0 0 20px #fff;
+  }
+}
 
 
 </style>
