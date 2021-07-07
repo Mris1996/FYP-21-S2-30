@@ -1,5 +1,10 @@
 <?php
-require_once("NavBar.php");
+date_default_timezone_set("Singapore");
+require_once("Users.php");
+require_once("Products.php");
+require_once("Contracts.php");
+
+session_start();
 if(!isset($_SESSION['ID'])){
 	echo '<script> location.replace("index.php")</script> ';
 }
@@ -20,14 +25,50 @@ if($ContractObj->DeliveryMode == "Courier Delivery"  && $_SESSION['Object']->get
 
 }
 }
-$_SESSION['Object']->RemoveNotificationInPage('ContractPage.php');
+$_SESSION['Object']->RemoveNotificationInPage('MyContractPage.php');
 
 ?>
-
-
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
 <style type="text/css">
+body{
+	font-family: 'Roboto';
+	color:purple;
+	font-size:10px;
+}
+ button,input[type=submit],input[type=button] {
+	border:none;
+	background-color:purple;
+	color:white;
+	font-size:20px;
+	border-radius:10px;
+	margin-right:10px;
+
+	float:left;
+
+}
+input[type=submit]:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+input[type=button]:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+button:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
 ol.progtrckr {
-  margin-top:100px;
+
     list-style-type none;
 }
 
@@ -68,7 +109,7 @@ ol.progtrckr li:before {
 ol.progtrckr li.progtrckr-done:before {
     content: "\2713";
     color: white;
-    background-color: yellowgreen;
+    background-color: purple;
     height: 2.2em;
     width: 2.2em;
     line-height: 2.2em;
@@ -93,10 +134,11 @@ ol.progtrckr li.progtrckr-todo:before {
 #sharedform{
 	font-size:15px;
 	width:45%;
+	height:500px;
 	float:left;
 	display:block;
-	margin-bottom:10px;
 	opacity:1;
+
 
 }
 #sharedform input{
@@ -105,38 +147,103 @@ ol.progtrckr li.progtrckr-todo:before {
 	#chatbox {
 		float:right;
 		width:50%;
+	
 		max-width:100%;
 		margin:30px auto;
 		display:none;
-		background-color:#fafafa;
+		  background: rgba(255, 255, 255, 0.05);
+
+  height: 70%;
+  border-radius: 0.2em;
+  position: relative;
+ 	 box-shadow: 0 0 3px grey;
+		font-size:15px;
+			margin-top:1px;
 	
 	}
-	#message-box {
-		min-height:400px;
-		overflow:auto;
+	#message-box{
+		
 		padding:30px;
 		height: 110px;
+			height: 85%;
 		overflow: auto;
-	  
+	}
+	body:-webkit-scrollbar-track {
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	}
+
+#message-box:-webkit-scrollbar-thumb {
+	display:none;
+
+	}
+	#message-input{
+	width:90%;
+	border-radius:5px;
+	height:50px;
+	margin-top:20px;
+	padding: 0  0 0 0 ;
+	border:1px solid grey;
+	 box-shadow: 0 0 2px grey;
+	 margin-left:5%;;
 	}
 	.author {
 		margin-right:5px;
+		margin-left:20px;
 		font-weight:600;
+		float:left;
+	
+	}
+	.messsage-text{
+	
+ display: inline-block;
+  width: 90%;
+  margin-right:5%;
+	margin-left:5%;
 	}
 	.text-box {
-		width:100%;
-		border:1px solid #eee;
-		padding:10px;
-		margin-bottom:10px;
+	margin:auto;
+	
 	}
 #User1{
+	display: inline-block;
+	  box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.3);
 	text-align:right;
+	margin-left:60%;
+	max-width:70%;
+	  overflow: auto;
+		border-radius:5px;
+	background-color:purple;
+	min-height:50px;
+	color:white;
 	word-wrap: break-word;
+	float:right;
+	margin-bottom:2%;
+	
+}
+#User1Outer{
+width:100%;
+	word-wrap: break-word;	
 }
 #User2{
-	text-align:left;
+
+        overflow: auto;
+	@include triangle(rgba(255, 255, 255, 0.2), 10, left);
+	box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.1);
+	display: inline-block;
+	 text-align:right;
+	border-radius:5px;
+	max-width:40%;
+	margin-right:60%;
+	background-color:white;
+	min-height:50px;
 	word-wrap: break-word;
 }
+#User2Outer{
+	width:100%;
+	
+}
+
+
 
 #confirmation{
 
@@ -145,13 +252,15 @@ ol.progtrckr li.progtrckr-todo:before {
     margin:auto;
     top:0;
     left:0;
-
+	z-index:100;
     width: 100%;
     height: 100%;
     background:rgba(255,255,255,0.8);
 }
 #confirmationtext{
-	width:200px;
+	width:105px;
+	font-size:15px;
+	text-align:center;
     margin:auto;
 	margin-top:20%;
    
@@ -164,13 +273,15 @@ ol.progtrckr li.progtrckr-todo:before {
     margin:auto;
     top:0;
     left:0;
-
+	z-index:100;
     width: 100%;
     height: 100%;
     background:rgba(255,255,255,0.8);
 }
 #confirmationtext2{
-	width:200px;
+	width:105px;
+	font-size:15px;
+	text-align:center;
     margin:auto;
 	margin-top:20%;
    
@@ -179,6 +290,7 @@ ol.progtrckr li.progtrckr-todo:before {
 	display:none;
 	position:fixed;
     padding:0;
+		z-index:100;
     margin:auto;
     top:0;
     left:0;
@@ -188,7 +300,9 @@ ol.progtrckr li.progtrckr-todo:before {
     background:rgba(255,255,255,0.8);
 }
 #confirmationtext3{
-	width:200px;
+	width:105px;
+	font-size:15px;
+	text-align:center;
     margin:auto;
 	margin-top:20%;
    
@@ -198,6 +312,7 @@ ol.progtrckr li.progtrckr-todo:before {
 	position:fixed;
     padding:0;
     margin:auto;
+		z-index:100;
     top:0;
     left:0;
 
@@ -206,7 +321,9 @@ ol.progtrckr li.progtrckr-todo:before {
     background:rgba(255,255,255,0.8);
 }
 #confirmationtext4{
-	width:200px;
+		width:105px;
+	font-size:15px;
+	text-align:center;
     margin:auto;
 	margin-top:20%;
    
@@ -218,17 +335,24 @@ ol.progtrckr li.progtrckr-todo:before {
     margin:auto;
     top:0;
     left:0;
-
     width: 100%;
     height: 100%;
+	z-index:100;
     background:rgba(255,255,255,0.8);
 }
 #OTPform{
-	width:200px;
+	width:400px;
+	height:300px;
     margin:auto;
 	margin-top:20%;
+	text-align:center;
    
 }
+#OTP input[type="submit"]{
+		margin-top:40px;
+		margin-left:50px;
+}
+
 #contractdetailsfromcontract{
 	display:none;
 }
@@ -272,9 +396,35 @@ background-size: 270px 270px;
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+#navbar{
+	
+	display:none;
+}
+label {	
+	display: inline-block; /* In order to define widths */
+}
+
+label {
+	width: 40%;
+	text-align: right;    /* Positions the label text beside the input */
+	margin-right:20px;
+	margin-top:5px;
+}
+#reportbtn{
+
+	float:left;
+	
+}
+#namesofusers{
+float:right;
+font-size:30px;
+margin-right:2%;
+
+}
 </style>
 
 </head>
+<body>
 <div id="loadergui">
 <h2>Loading Please Wait</h2>
 <div id="loader"></div>
@@ -307,7 +457,7 @@ background-size: 270px 270px;
 </div>
 <div id="OTP">
 <div id="OTPform">
-<Label>OTP Code:</Label><input type="text"  id="OTPinput">
+<center><b>OTP</b></center><center><input type="text"  id="OTPinput"></center>
 <input type="submit" onclick="VerifyOTP()" value="Submit OTP">
 <input type="submit" id="<?php echo $_SESSION['Object']->getEmail()?>" onclick="ResendOTP(this.id)" value="Resend">
 </form>
@@ -316,19 +466,7 @@ background-size: 270px 270px;
 <?php
 if(isset( $_SESSION['Object'])){
 	
-if($ContractObj->Reported==0&& $_SESSION['Object']->getAccountType()!="Administrator"){
-echo'
-<form method="post">
-<input type="submit" name="Report" value="Report">
-</form>';	
-}
-if($ContractObj->Reported>0 && $_SESSION['Object']->getAccountType()=="Administrator"&&$_SESSION['ID']!=$ContractObj->BuyerUserID&&$_SESSION['ID']!=$ContractObj->SellerUserID){
-	echo'
-<form method="post">
-<input type="submit" name="Unreport" value="Unreport">
-</form>';
-}
-}
+
 
 if(isset($_POST['Report'])){
 	echo'
@@ -408,7 +546,7 @@ $ProductObj->InitialiseProduct($ProductID);
 
 ?>
 
-<ol style="display:block;width:100%;"class="progtrckr" data-progtrckr-steps="5">
+<ol style="width:100%;"class="progtrckr" data-progtrckr-steps="3">
 <li style="margin-left:auto";" class="progtrckr-done">Sent offer to seller</li>
 <li style="margin:auto;" id="trackerdeal" class="progtrckr-todo">Contract Deal</li>
 <li style="margin:auto;"id="trackercomplete" class="progtrckr-todo">Service Complete</li>
@@ -453,7 +591,7 @@ echo'<input type="hidden" class="text-box" id="SellerBalance"  value = "'.$BaseU
 
 
 ?>
-<h1 id="statusmessage" style="text-align:center">Status:<?php 
+<h1 id="statusmessage" style="text-align:center;font-size:40px">Status:<?php 
 if($ContractObj->Status == "Deal"){
 	
 echo 'Contract agreed upon, awaiting for product to be transferred';
@@ -504,16 +642,40 @@ echo 'Terms are being negotiated';
 }
 
 ?></h1>
+<?php if($Type!="Admin"){ 
+if($Type=="Buyer"){
+?>
+<h2 id="namesofusers" >Buying from <a onclick="OpenWindow(this.id)" href="" id="ProfilePage.php?ID=<?php if(isset($_SESSION['OtherUser'])){ echo $_SESSION['OtherUser'];}?>"><?php  if(isset($_SESSION['OtherUser'])){ echo $_SESSION['Object']->getUserDisplayName($_SESSION['OtherUser']); }?></a></h2>
+<?php 
+}
+if($Type=="Seller"){
+?>
+<h2 id="namesofusers" >Selling to <a onclick="OpenWindow(this.id)" href="" id="ProfilePage.php?ID=<?php if(isset($_SESSION['OtherUser'])){ echo $_SESSION['OtherUser'];}?>"><?php  if(isset($_SESSION['OtherUser'])){ echo $_SESSION['Object']->getUserDisplayName($_SESSION['OtherUser']); }?></a></h2>
+<?php 
+}
 
+}
+else{
+?>
+<h2 id="namesofusers" >Buyer:<a onclick="OpenWindow(this.id)" href=""  id="ProfilePage.php?ID=<?php echo $ContractObj->BuyerUserID?>"><?php echo $_SESSION['Object']->getUserDisplayName($ContractObj->BuyerUserID)?></a></h2> 
+<h2 id="namesofusers" >Seller:<a onclick="OpenWindow(this.id)" href="" id="ProfilePage.php?ID=<?php echo $ContractObj->SellerUserID?>"><?php echo $_SESSION['Object']->getUserDisplayName($ContractObj->SellerUserID)?></a></h2> 
+<?php	
+}
+
+?>
 <div id="sharedform">
+
+
+
 <center><h2>Product Details</h2>
-<img src="<?php echo $ProductObj->Image;?>" style="width:50%;"></br></center>
-<label>Product Name:</label><b><?php echo $ProductObj->ProductName;?></b></br>
-<label>Product ID:</label><b><?php echo $ProductObj->ProductID;?></b></br>
-<label>Product Owner:</label><b><?php echo $_SESSION['Object']->getUserDisplayName($ProductObj->SellerUserID)?></b></br>
-<label>Product Caption:</label><b><?php echo $ProductObj->ProductCaption?></b></br>
-<label>Product Description:</label><b><?php echo $ProductObj->ProductDescription?></b></br>
-<label>Product Initial Price:</label><b><?php echo number_format($ProductObj->ProductInitialPrice, 2, '.', '')?></b></br>
+<img src="<?php echo $ProductObj->Image;?>" width="300px" height="300px" style="object-fit: cover;border:1px solid purple;border-radius:5px"></br></center>
+<label>ContractID:</label><b><?php echo $ContractID?></b></br>
+<label>Product Name: </label><b><?php echo $ProductObj->ProductName;?></b></br>
+<label>Product ID: </label><b><?php echo $ProductObj->ProductID;?></b></br>
+<label>Product Owner: </label><b><?php echo $_SESSION['Object']->getUserDisplayName($ProductObj->SellerUserID)?></b></br>
+<label>Product Caption: </label><b><?php echo $ProductObj->ProductCaption?></b></br>
+<label>Product Description: </label><b><?php echo $ProductObj->ProductDescription?></b></br>
+<label>Product Initial Price: </label><b><?php echo $_SESSION['Object']->getCurrency().number_format($ProductObj->ProductInitialPrice, 2, '.', '')?></b></br>
 
 
 <hr><center><h2>Contract Details</h2></center>
@@ -547,14 +709,13 @@ echo 'Terms are being negotiated';
 
 		echo'
 		<br /><br />
-		<label> Payment Mode</label><br>
+		<label><b>Payment Mode</b></label><br>
 		<label for="Half">Half-Amount now:</label>
 		<input type="radio"  id="PaymentMode1" onclick="formsyncfunction()" name="PaymentMode" value="Half-STICoins" ><br>
 		<label for="female">Full-Amount now:</label>
 		<input type="radio"  id="PaymentMode2" onclick="formsyncfunction()" name="PaymentMode" value="Full-STICoins"><br>
-		<label for="FullLater">Full-Amount later :</label>
-		<input type="radio" id="PaymentMode3" onclick="formsyncfunction()" name="PaymentMode" value="Full-STICoins_Later"><br>
-		<br>';
+		<label for="FullLater">Full-Amount later:</label>
+		<input type="radio" id="PaymentMode3" onclick="formsyncfunction()" name="PaymentMode" value="Full-STICoins_Later">';
 		
 		if($Type == "Seller" || $Type == "Admin"){
 					
@@ -576,18 +737,17 @@ echo 'Terms are being negotiated';
 			
 		
 	
-		echo'</br>';
-		
+
 
 		echo'
-		<label>Delivery Mode</label><br>
-		Self:<input type="radio" id="Self Delivery" onclick="formsyncfunction()" name="DeliveryMode" value="Self Delivery"><br></td>
-		Courier:<input type="radio" id="Courier Delivery" onclick="formsyncfunction()" name="DeliveryMode" value="Courier Delivery"><br></td>
+		</br><label><b>Delivery Mode</b></label><br>
+		<label>Self: </label><input type="radio" id="Self Delivery" onclick="formsyncfunction()" name="DeliveryMode" value="Self Delivery"><br></td>
+		<label>Courier: </label><input type="radio" id="Courier Delivery" onclick="formsyncfunction()" name="DeliveryMode" value="Courier Delivery"><br></td>
 		</tr>
 		';
 		echo'
 		</table>
-		</br></br></br></br>';
+		</br>';
 		
 		if($Type == "Admin"|| $Type == "Buyer" ){
 		?>
@@ -626,7 +786,7 @@ echo 'Terms are being negotiated';
 				
 		}
 		
-	
+
 
 ?>
 
@@ -674,34 +834,38 @@ if(isset($_POST['ResumeTranasction'])){
 	$_SESSION['Object']->ResumeTranasction($ContractObj->ContractID,$ContractObj->Transaction);
 	echo'<script>location.replace("ContractManagementPage.php");</script>';
 }
-
+if(isset( $_SESSION['Object'])){
+	
+if($ContractObj->Reported==0&& $_SESSION['Object']->getAccountType()!="Administrator"){
+echo'
+<form method="post">
+<input type="submit" name="Report" id="reportbtn" value="Report">
+</form>';	
+}
+if($ContractObj->Reported>0 && $_SESSION['Object']->getAccountType()=="Administrator"&&$_SESSION['ID']!=$ContractObj->BuyerUserID&&$_SESSION['ID']!=$ContractObj->SellerUserID){
+	echo'
+<form method="post">
+<input type="submit" name="Unreport" id="reportbtn" value="Unreport">
+</form>';
+}
+}
+	echo'<br><br>';
 ?>
 
 </div>
-<div id="chatbox">
-	<h1>Contract ID:<?php echo $ContractID?></h1>
-<?php if($Type!="Admin"){ ?>
-	<h1>Dealing with:<a onclick="OpenWindow(this.id)" href="" id="ProfilePage.php?ID=<?php if(isset($_SESSION['OtherUser'])){ echo $_SESSION['OtherUser'];}?>"><?php  if(isset($_SESSION['OtherUser'])){ echo $_SESSION['Object']->getUserDisplayName($_SESSION['OtherUser']);}?></a></h1>
-	<h1>Your Party Type:<?php echo $Type?></h1>
-<?php }
-	 else{
-?>
-		<h1>Dealing with Buyer:<a onclick="OpenWindow(this.id)" href=""  id="ProfilePage.php?ID=<?php echo $ContractObj->BuyerUserID?>"><?php echo $_SESSION['Object']->getUserDisplayName($ContractObj->BuyerUserID)?></a></h1> 
-		<h1>Dealing with Seller:<a onclick="OpenWindow(this.id)" href="" id="ProfilePage.php?ID=<?php echo $ContractObj->SellerUserID?>"><?php echo $_SESSION['Object']->getUserDisplayName($ContractObj->SellerUserID)?></a></h1> 
-<?php
-	 }
 
-?>	
-	<div id="message-box">
-	<span> Welcome User</span>
-
+<div id="chatbox" style="border-radius:20px">
+	
+	<div id="message-box" >
+	
 		<?php 
 		$_SESSION['Object']->RetrieveChat($ContractObj->ContractID)?>	
+	
 	</div>
 	
 
-	<input type="text" class="text-box" id="message-input" placeholder="Your Message" onkeyup="handleKeyUp(event)">
-	<p>Press enter to send message</p>
+	<input  type="text" id="message-input" placeholder="Type and press enter to send message" onkeyup="handleKeyUp(event)">
+	
 </div>
 <?php
 if($Type=="Admin" ||$ContractObj->Transaction == "On-Going" || $ContractObj->Status == "Admin has halted this transaction"|| $ContractObj->Status == "Buyer has accepted" && $Type == "Buyer" || $ContractObj->Status == "Rejected" ||  $ContractObj->Status == "Order Cancelled" || $ContractObj->Status ==  "Requested Refund" || $ContractObj->Status == "Deal" ||$ContractObj->Status == "Buyer has accepted service" || $ContractObj->Status == "Seller has accepted service"){
@@ -747,7 +911,7 @@ if($ContractObj->DeliveryMode =="Courier Delivery" && $Type == "Seller"){
 <h1  style="margin-top:10%">Courier Link</h1>
 <h2>Please do not give this link to anybody except your courier</h2>
 <h5>TempID:<?php echo $_SESSION['Object']->generateCourierLink($ContractID) ?></h5>
-<b style="color:red"><?php echo "http://localhost/STIC/CourierPage.php?ID=".$_SESSION['Object']->generateCourierLink($ContractID);?></b>
+<b style="color:red"><?php echo "http://abae1b52b3fb.ngrok.io/STIC/CourierPage.php?ID=".$_SESSION['Object']->generateCourierLink($ContractID);?></b>
 <?php
 }
 ?>
@@ -766,11 +930,17 @@ $('input[name="DeliveryMode"]').attr('disabled', 'disabled');
 </div>
  <script src="https://smtpjs.com/v3/smtp.js"></script>  
 <script>
-
+webportconfig = 'ws://localhost:3030';
+window.WebSocket = window.WebSocket || window.MozWebSocket;
 function OpenWindow(ID){
 	window,opener.close();window.open(ID);
 
 }
+var objDiv = document.getElementById("message-box");
+var styleElement = document.createElement("style");
+styleElement.appendChild(document.createTextNode("div ::-webkit-scrollbar {-webkit-appearance: none;width:6px;}div ::-webkit-scrollbar-thumb {border-radius: 50px;background-color:purple;-webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);margin-top:50px;} div::-webkit-scrollbar-track-piece:start {background: transparent;margin-top: 10px;}"));
+objDiv.appendChild(styleElement);
+var ajax = new XMLHttpRequest();
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //initialise all required variables from php -> Js
@@ -1258,13 +1428,14 @@ connection.onmessage = function (message) {
 				// the variable is defined
 
 			var div = document.createElement("div");
+			var divOuter = document.createElement("div");
 			var author = document.createElement("span");
 			author.className = "author";
 			if(data.Type=="Admin"){
 				author.innerHTML = data.User+"(Administrator):";
 			}
 			else{
-				author.innerHTML = data.User+":";
+				author.innerHTML = data.User+"</br>";
 			}
 			
 			var message = document.createElement("span");
@@ -1278,12 +1449,20 @@ connection.onmessage = function (message) {
 				div.setAttribute("id", "User2");
 				
 			}
+			if(data.User == User){
+				divOuter.setAttribute("id", "User1Outer");
+				
+			}	
+			else{
+				divOuter.setAttribute("id", "User2Outer");
+				
+			}
 			div.appendChild(author);
 			div.appendChild(message);
-			
+			divOuter.appendChild(div);
 			var objDiv = document.getElementById("message-box");
 			objDiv.scrollTop = objDiv.scrollHeight;
-			document.getElementById("message-box").appendChild(div);
+			document.getElementById("message-box").appendChild(divOuter);
 			}
 			if (typeof data.offer != 'undefined') {
 				location.reload();
@@ -1449,6 +1628,8 @@ location.reload();
 <?php
 
 }
+
+}
 if(isset($_POST['Confirmationreport'])&& $_POST['Confirmationreport']=="No"){
 exit();
 header("Refresh:0");
@@ -1471,5 +1652,6 @@ $_SESSION['Object']->UnreportContract($_GET['ID']);
 echo '<script> alert("Contract unreported");</script> ';
 echo '<script> location.replace("index.php")</script> ';	
 }
-?>
 
+?>
+</body>

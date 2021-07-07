@@ -7,6 +7,48 @@
 .Buyercontracts_GUI{
 	display:none;
 }
+#AllContracts{
+	
+	background-color:white;
+	width:1700px;
+	
+	color:purple;
+	border:1px solid grey;
+	margin:auto;
+	text-align:center;
+}
+ table,tr,th,td{
+	
+	border:1px solid #e8e6e6; 
+ }
+ tr{
+	 height:50px;
+	 vertical-align: text-bottom;
+ }
+ button,input[type=submit],input[type=button] {
+	margin-top:20px;
+	border:none;
+	background-color:purple;
+	color:white;
+	font-size:20px;
+	border-radius:10px;
+	margin-right:10px;
+}
+input[type=submit]:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+input[type=button]:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+button:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
 </style>
 <script>
 $(document).ready(function(){
@@ -37,6 +79,44 @@ window.open("ContractPage.php?ID="+ID,"winname","width=1500,height=900");
 <button class="Buyer">Contracts as buyer</button>
 
 <?php
+if (isset ($_GET['page3']) ) {  
+
+?>
+<script>
+$(document).ready(function(){
+
+    $(".Allcontracts_GUI").hide();
+	$(".Sellercontracts_GUI").hide();
+	$(".Buyercontracts_GUI").show();
+});
+</script>
+<?php
+} 
+
+if (isset ($_GET['page2']) ) {  
+
+?>
+<script>
+$(document).ready(function(){
+    $(".Allcontracts_GUI").hide();
+	$(".Sellercontracts_GUI").show();
+	$(".Buyercontracts_GUI").hide();
+});
+</script>
+<?php
+} 
+if (isset ($_GET['page']) ) {  
+
+?>
+<script>
+$(document).ready(function(){
+   $(".Allcontracts_GUI").show();
+	$(".Sellercontracts_GUI").hide();
+	$(".Buyercontracts_GUI").hide();
+});
+</script>
+<?php
+} 
 unset($_SESSION['Temp_Product']);
 if(!isset($_SESSION['ID'])){
 	echo '<script> location.replace("index.php")</script> ';
@@ -47,7 +127,7 @@ $ArrayOfContracts = $_SESSION['Object']->ListOfContracts("All");
 echo'<h1>All my Contracts Table</h1>';
 if(!empty($ArrayOfContracts)){ 
 
-echo'<hr><table id="AllContracts" class="table table-borderless table-dark">';
+echo'<hr><table id="AllContracts" >';
 echo'<tr>
 <th>ContractID</th>
 <th>Transaction Open Date</th>
@@ -106,8 +186,8 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 
 echo'</table>';
 
-echo'<div style="margin-top:10px;width:1000px;margin-left:auto;margin-right:auto;text-align:center">';			
-echo'<b style="bottom: 20;">Page</b></BR>';
+echo'<div class = "pagination" >';			
+echo'<center><b style="bottom: 20;">Page</b></center></BR>';
 echo '<a href = "MyContractsPage.php?page=1">First </a>'; 
 for($page = 1; $page<=$number_of_page; $page++) { 
 	if($page==1){
@@ -132,7 +212,7 @@ $ArrayOfContracts2 = $_SESSION['Object']->ListOfContracts("Seller");
 echo'<h1>My Seller Contracts Table</h1>';
 if(!empty($ArrayOfContracts2)){ 
 
-echo'<hr><table id="AllContracts" class="table table-borderless table-dark">';
+echo'<hr><table id="AllContracts">';
 echo'<tr>
 <th>ContractID</th>
 <th>Transaction Open Date</th>
@@ -190,8 +270,8 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 }
 echo'</table>';
 
-echo'<div style="margin-top:10px;width:1000px;margin-left:auto;margin-right:auto;text-align:center">';			
-echo'<b style="bottom: 20;">Page</b></BR>';
+echo'<div class = "pagination" >';			
+echo'<center><b style="bottom: 20;">Page</b></center></BR>';
 echo '<a href = "MyContractsPage.php?page2=1">First </a>'; 
 for($page2 = 1; $page2<=$number_of_page2; $page2++) { 
 	if($page2==1){
@@ -219,7 +299,7 @@ $ArrayOfContracts3 = $_SESSION['Object']->ListOfContracts("Buyer");
 echo'<h1>My Buyer Contracts Table</h1>';
 if(!empty($ArrayOfContracts3)){ 
 
-echo'<hr><table id="AllContracts" class="table table-borderless table-dark">';
+echo'<hr><table id="AllContracts">';
 echo'<tr>
 <th>ContractID</th>
 <th>Transaction Open Date</th>
@@ -278,8 +358,8 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 }
 echo'</table>';
 
-echo'<div style="margin-top:10px;width:1000px;margin-left:auto;margin-right:auto;text-align:center">';			
-echo'<b style="bottom: 20;">Page</b></BR>';
+echo'<div class = "pagination" >';			
+echo'<center><b style="bottom: 20;">Page</b></center></BR>';
 echo '<a href = "MyContractsPage.php?page3=1">First </a>'; 
 for($page3 = 1; $page3<=$number_of_page3; $page3++) { 
 	if($page3==1){

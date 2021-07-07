@@ -24,61 +24,105 @@ echo '<script> location.replace("index.php")</script> ';
 ?> 
 
 <style>
-.container {
-	position: initial;
-	width: 20%;
-	height:500px;
-	float:left;
-	margin-left:200px;
- 
-  
-}
-.image {
-  opacity: 1;
-  display: block;
-  width: 100%;
-  height: auto;
-  transition: .5s ease;
-  backface-visibility: hidden;
-}
 
-.middle {
-  transition: .5s ease;
-  opacity: 0;
-  position: relative;
-  
-  left: 50%;
-  transform: translate(-30%,-100%);
-  -ms-transform: translate(-30%, -30%);
+
+.card {
+	font-family: 'Roboto';font-size: 22px;
+  border: 2px solid purple;
+  border-radius: 25px;
+  font-size:5px;
+  overflow:hidden;
+ background-color:white;
+  margin: auto;
   text-align: center;
+  float:left;
+ display: inline-block;
+ margin-left:50px;
+ margin-top:50px;
+ height:320px;
+ width:300px;
+ margin-bottom:50px;
+
+}
+.card:hover {
+  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 1);
 }
 
-.container:hover .image {
-  opacity: 0.3;
+
+
+.card image{
+position: absolute;
+top:    0;
+bottom:   0;	
+	
+}
+.card:hover {
+  cursor:pointer;
+   transform: scale(1.5); 
+   z-index:1;
 }
 
-.container:hover .middle {
-  opacity: 1;
-}
 .text {
-
-  background-color: black;
-  color: white;
+  
+  background-color: white;
+  color:purple;
   font-size: 16px;
-  padding: 20px 0px;
-  width:200px;
+  width:80%;
   margin:auto;
 }
+.sorter{
+	font-family: 'Roboto';font-size: 22px;
+	 background-color:white ;
+	font-size:20px;
+	margin-top:2%;
+	display:block;
+	width:100%;
+	opacity:0.9;
+	color:white;
+	float:right;
+}
+.sorter input{
+	border: 2px solid white;
+	background-color:purple;
+	color:white;
+	border-radius:5px;
+}
+.sorter input:hover{
+	
+	transform: scale(1.1); 
+   outline:60%;
+    filter: drop-shadow(0 0 6px white);
+}
+#container{
+
+	width:1880px;
+	position:relative;
+	left:1%;
+
+}
+#sortcontent{
+	opacity:1;
+	margin-left:80px;
+	width:400px;
+	height:180px;
+	color:purple;
+	text-align:left;
+	background-color:white;
+	
+}
 </style>
-<h1><?php echo $Category?></h1>
+<center><h1 style="font-size:60px"><?php echo $Category?></h1></center>
 <div class="sorter">
-<form method="post" style="margin-top:20px">
-<Label>Sort By:</Label></br>
-<input type="radio" id="ASC" name="Order" checked="checked" value="ASC"><label for="ASC">Ascending</label><br>
-<input type="radio" id="DESC" name="Order" value="DESC"><label for="DESC">Descending</label><br>
+<div id="sortcontent">
+<form method="post" style="">
+<Label style="margin-right:40px;font-size:30px;"><b>Sort</b></Label></br>
+<input type="radio" id="ASC" name="Order" checked = "true" value="ASC">&nbsp;&nbsp;&nbsp;&nbsp;<label for="ASC">Ascending</label><br>
+<input type="radio" id="DESC" name="Order" value="DESC">&nbsp;&nbsp;&nbsp;&nbsp;<label for="DESC">Descending</label><br>
+<input type="submit" name="SortCat" value="Category">
 <input type="submit" name="SortPrice" value="Price">
 <input type="submit" name="SortDate" value="Date">
 </form>
+</div>
 </div>
 <hr>
 <?php
@@ -119,4 +163,5 @@ if(!isset($_POST['SortPrice'])&&!isset($_POST['SortDate'])){
 $BaseUserOBJ->ViewAllProduct($Sortby,$Order,$Category,$page,"CategoryPage.php");	
 }
 ?>
+
 <?php require_once("Footer.php");?> 

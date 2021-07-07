@@ -25,12 +25,26 @@ if(!isset($_SESSION['ID'])){
 .container {
   padding: 2px 16px;
 }
+button {
+	border:none;
+	background-color:purple;
+	color:white;
+	font-size:30px;
+	border-radius:10px;
+	margin-right:10px;
+}
+button:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
 </style>
-
+<center>
 <button class="Recieved" id="Receiver"   disabled>Recieved Transaction</button>
 <button class="Sent" id="Sender" >Sent Transaction</button>
+</center>
 <div class="Recieved_GUI">
-<h1>Recieved Transactions</h1>
+<center><h1>Recieved Transactions</h1></center>
 <?php
 $array = $_SESSION['Object']->ListOfTransactions('Receiver');
 if(!empty($array)){
@@ -54,7 +68,7 @@ else{
 </div>
 
 <div class="Sent_GUI">
-<h1>Sent Transactions</h1>
+<center><h1>Sent Transactions</h1></center>
 <?php
 $array = $_SESSION['Object']->ListOfTransactions('Sender');
 if(!empty($array)){

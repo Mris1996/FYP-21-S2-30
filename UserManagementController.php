@@ -3,10 +3,43 @@
 span{
 	color:red;
 		width:200px;
+		
 }
-
+#confirmationcontainer{
+width:700px;
+	height:250px;
+	text-align:center;
+	margin:auto;
+	border:1px solid black;
+	border-radius:20px;
+	box-shadow:5px 5px gray;	
+}
+ button,input[type=submit],input[type=button] {
+	margin-top:20px;
+	border:none;
+	background-color:purple;
+	color:white;
+	font-size:30px;
+	border-radius:10px;
+	margin-right:10px;
+}
+input[type=submit]:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+input[type=button]:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+button:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
 </style>
-
+<div id="confirmationcontainer">
 <?php 
 if(!isset($_SESSION['ID'])){
 	echo '<script> location.replace("index.php")</script> ';
@@ -102,7 +135,9 @@ if(isset($_POST['Suspend2'])){
 		else{
 			echo'<style> .suspension_gui{display:none;}</style>';
 			echo'<form method="post">
-					<h1>Are you sure you want to suspend user '.$_SESSION['Temp'].' from '.date("d/m/Y").' to '.date("d/m/Y",strtotime($_POST['SuspendDate'])).'</h1>
+					<h2>Are you sure you want to suspend</h2>
+					<h2><b style="color:red">'.$_SESSION['Temp'].'</b></h2>
+					<h2 > from <b style="color:red">'.date("d/m/Y").'</b> to <b style="color:red">'.date("d/m/Y",strtotime($_POST['SuspendDate'])).'</b></h2>
 					</br><input type="submit" name="Yes_Suspension" value="Yes">
 					<input type="submit" name="No_Suspension" value="No">
 					</form>';
@@ -138,6 +173,4 @@ echo'
 }
 
 ?>
-<div class="Confirmation">
-
 </div>

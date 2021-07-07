@@ -1,10 +1,12 @@
 <?php
+header('Access-Control-Allow-Origin: *');
+
 require_once("Users.php");
 require_once("Products.php");
 session_start();
 $ch = curl_init('http://localhost:3030');
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-
+echo $_SESSION['ID'];
 
 //#############################################################
 if(isset($_POST['OTP'])){
@@ -12,6 +14,7 @@ if(isset($_POST['OTP'])){
 $msg = $_SESSION['Object']->VerifyOTP($_POST['OTP']);
 
 if($msg=="Success"){
+
 $_SESSION['VerifiedUser'] = true;
 $jsonData = json_encode([
 'REPLY'=>'OTPResult',
@@ -57,7 +60,6 @@ if(isset($_POST['Email'])){
 	$_SESSION['Object']->SendVerfication($_POST['Email']);
 		
 }
-
 if(isset($_POST['Logout'])){
 	$_SESSION['Object']->LogOut();
 }

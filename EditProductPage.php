@@ -11,7 +11,9 @@ $ProductObj->InitialiseProduct($_GET['ID']);
 
 }
 else{
+	if(!$_SESSION['Object']->getAccountType()=="Administrator"){
 	echo '<script> location.replace("index.php")</script> ';
+	}
 }
 
 
@@ -112,18 +114,20 @@ function test_input($data) {
 }
 ?>
 <style>
-.Insert_GUI{
+.List_GUI{
 	clear: both;
 	margin-left:auto;
 	margin-right:auto;
 	margin-bottom:20px;
 	width:1000px;
 	height:1000px;
-	
+
 	text-align:left;
-	opacity:0.8;
-	font-size:20px;
 	
+	font-size:20px;
+		border:1px solid black;
+	border-radius:20px;
+	box-shadow:5px 5px gray;
 
 }
 label,span{
@@ -132,11 +136,7 @@ label,span{
 	margin-right:5px;
 	text-align:center;
 }
-.Insert_GUI input[type="submit"]{
-	font-size:30px;
-	color:white;
-	background-color:black;
-}
+
 span{
 	color:red;
 		width:200px;
@@ -149,34 +149,72 @@ input[type="text"]{
 	width:200px;
 }
 .Post_Insert_GUI{
-	margin-left:auto;
-	margin-right:auto;
-	margin-bottom:20px;
-	width:500px;
-	height:300px;
-	text-align:center;
-	opacity:0.8;
-	font-size:30px;
+font-family: 'Roboto';font-size: 22px;
+border: 2px solid purple;
+border-radius: 25px;
+background-color:white;
+text-align: center;
+display: inline-block;
 
+height:700px;
+width:700px;
+cursor:pointer;
+margin-left:auto;
+margin-right:auto;
 }
-.ConfirmList_GUI{
-	margin-left:auto;
-	margin-right:auto;
-	margin-bottom:20px;
-	width:500px;
-	height:300px;
-	text-align:left;
-	opacity:0.8;
-	font-size:30px;
+
+#output{
+	margin-top:5%;
+	margin:auto;
+width:300px;
+height:300px;
+border:none;
+object-fit: cover;
+}
+.Post_Insert_GUI #output{
+	margin-top:5%;
+	margin:auto;
+width:60%;
+height:60%;
+border:none;
+object-fit: cover;
+}
+ button,input[type=submit],input[type=button] {
+	border:none;
+	background-color:purple;
+	color:white;
+	font-size:20px;
+	border-radius:10px;
+	margin-right:10px;
+	float:right;
+}
+input[type=submit]:hover {
 	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+input[type=button]:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+button:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+h2{
+	
+	margin-left:2%;
 }
 </style>
-<h1 style="font-size:70px"><center>Edit Product</center></h1>	
+	
  <div class="List_GUI">
+ <h1 style="font-size:40px"><center>Edit Product</center></h1>
     <form method="post" enctype="multipart/form-data">  
 	
 	<h2>Basic Product Information</h2>
-		<image src="<?php echo $ProductObj->Image;?>" width="300" height="300">
+		<center><image id="output" src="<?php echo $ProductObj->Image;?>" width="300" height="300"></center>
 		<label>Upload File:</label>
 		<input type="file" name="file" value="<?php echo $ProductObj->Image;?>"/>
 		<span class="error"><?php echo $FileErr;?></span><br />
@@ -213,10 +251,9 @@ input[type="text"]{
 		<textarea style=" vertical-align: middle;" id="Description" name="Description" rows="4" cols="50" value=""><?php echo $ProductObj->ProductDescription?></textarea>
 		<span class="error"><?php echo $DescriptionErr;?></span><br /><br />
 		
-		<label>Initial Cost(STICoins):</label>
+		<label>Initial Cost <?php echo $_SESSION['Object']->getCurrency() ?>:</label>
 
 		<input type="number" id="Cost" name="Cost" min="0.00" step="any" value="<?php echo $ProductObj->ProductInitialPrice;?>">
-				<br /><label>Cost will be rounded up to whole number</label>
 		<span class="error"><?php echo $CostErr;?></span><br />
 		<br />
 		
@@ -224,7 +261,11 @@ input[type="text"]{
 		<input type="submit" name="submit" value="Done">
     </form>
 </div>
-
+<script>
+		function clickproduct(ID){
+			location.replace("ProductPage.php?ID="+ID);
+		}
+</script>
 <?php
 
 if(isset($_POST['submit'])&& $submit){
@@ -237,24 +278,26 @@ if(isset($_POST['submit'])&& $submit){
 	
 	echo'<style> .List_GUI{display:none;}</style>';
 	if($Name==$ProductObj->ProductName && $Category==$ProductObj->ProductCategory && $Description==$ProductObj->ProductDescription && $Cost==$ProductObj->ProductInitialPrice&& $Caption==$ProductObj->ProductCaption&& $File==$ProductObj->Image){
-	echo'<script>history.pushState({}, "", "")</script>';
-	echo'<div class="Post_Insert_GUI">
-	</br>
-	<center>No changes were made</center>
-	<center style="color:red">Click the link below to return to product page</center>
-	<a href="ProductPage.php?ID='.$_GET['ID'].'">Product.php?ID='.$_GET['ID'].'</a>
-	</div>';
+		
+		echo'<script>alert("No changes were made")</script>';
+		echo'<script>location.replace("ProductPage.php?ID='.$ProductObj->ProductID.'");</script>';
 	echo'<script>history.pushState({}, "", "")</script>';
 	exit();
 	}
 	if($_SESSION['Object']->UpdateProduct($_GET['ID'],$Name,$Category,$Description,round($Cost, 0),$Caption,$File)){
 	echo'<script>history.pushState({}, "", "")</script>';
-	echo'<div class="Post_Insert_GUI">
+echo'<center>
+		<div class="Post_Insert_GUI" onclick="clickproduct(this.id)" id = "'.$ProductObj->ProductID.'">
+		<a href="#" class="fill-div"></a>
 			</br>
-			<center>Successfully Updated product!</center>
-			<center style="color:red">Head over to it\'s page now!</center>
-			<a href="ProductPage.php?ID='.$_GET['ID'].'">Product.php?ID='.$_GET['ID'].'</a>
-		</div>';
+			<center>Successfully Listed product!</center>
+			<center>Product Confirmation</center>
+			<img id="output"  src="'.$File.'" ></br>
+			 <h2>Product ID:'.$ProductObj->ProductID.'</h2>
+			<h2>'.$Name.'</h2>
+			<center><h1>Head over to it\'s page now!</h1></center>
+			
+		</div></center>';
 	echo'<script>history.pushState({}, "", "")</script>';
 	exit();
 	}

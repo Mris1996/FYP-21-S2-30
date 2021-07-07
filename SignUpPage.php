@@ -1,21 +1,22 @@
 <html>
+<?php require_once("NavBar.php");?>
 <style>
 span{
 	width:300px;
-	color:red;
+	color:purple;
 }
 .SignUpForm * {
   vertical-align: middle;
 }
 
 .centerBox {
-	margin: auto;
+
 	width: 50%;
 	/* border: 3px solid #73AD21; */
 	padding: 10px;
 }
 
-label, input, textarea {	
+label {	
 	display: inline-block; /* In order to define widths */
 }
 
@@ -33,18 +34,92 @@ label+input+textarea {
 	/* Margin: 0% for top, 30% for right, 0% for bottom, 4% for left */
 	margin: 0 30% 0 4%;
 }
+#container{
+	margin-top:5%;
+	width:1400px;
+	height:1400px;
+	border-radius:20px;
+	border:2px solid #000099;
+		margin-left:15%;
+	overflow: hidden;
+ box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	
+}
+#innercontainer{
+	  background-size: cover;
+	  background-size: 700px;
+	background-repeat: no-repeat; /* Do not repeat the image */
+	background-position: center;
+	background-image: url('ads/SignUpAds.jpg');
+	width:50%;
+	height:100%;
+	background-color:#141240;
+	   float: right;
+}
+#SignUp_GUI{
+color:#000099;
+width:50%;
+height:700px;
+float: left;
+font-size:15px;
+	
+}
+#SignUp_GUI input{
 
+	height:40px;
+
+
+}
+#SignUp_GUI input[type=submit]{
+	
+	display:inline-block;
+	border:none;
+	font-family: 'Roboto';
+	background-color:#000099;
+	color:white;
+	height:50px;
+	font-size:30px;
+	border-radius:40px;
+	margin-right:10px;
+width:500px;
+}
+
+#SignUp_GUI input[type=submit]:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px blue);
+}
+#profilepicGUI{
+display:none;
+color:#000099;
+width:50%;
+height:700px;
+float: left;
+font-size:15px;
+}
+#output{
+	margin-left:30%;
+	margin-top:5%;
+	width:200px;
+	height:200px;
+	background-repeat: no-repeat; /* Do not repeat the image */
+	background-size: cover; /* Resize the background image to cover the entire container */
+	background-image: url('profilepictures/default.jpg');
+	border-radius:50%;
+	border:2px solid #000099;
+}
 </style>
 <?php 
-include("NavBar.php");
+
 $SignUpFirstNameError = $SignUpContactError = $SignUpFileErr = $SignUpLastNameError = $SignUpIDError =  $SignUpEmailError =  $SignUpPasswordError =  $SignUpConfirmPasswordError = $SignUpAddressError = $SignUpDisplayNameError = $SignUpDOBError = ""; 
-if(isset($_SESSION['ID'])){
-	echo '<script> location.replace("index.php")</script> ';
-}
+
 
 $submit = true;
 
-
+if(isset($_POST['LoginButton'])){
+echo '<script> location.replace("SignUpPage.php")</script> ';	
+	
+}
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SignUpButton'])){
 
 	if(empty($_POST["SignUpFirstName"]))
@@ -180,7 +255,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SignUpButton'])){
 		$File = $_FILES['file']['name'];
 		$fileTmpName = $_FILES['file']['tmp_name'];
 		$fileSize = $_FILES['file']['size'];
-		$SignUpFileError = $_FILES['file']['error'];
+		$FileError = $_FILES['file']['error'];
 		$fileType = $_FILES['file']['type'];
 		
 		$fileExt = explode('.',$File);
@@ -189,7 +264,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SignUpButton'])){
 		
 		if(in_array($fileActualExt, $allowed)){
 		
-			if($SignUpFileError == 0){
+			if($FileError == 0){
 					
 				if($fileSize < 5000000){	//if file size less then 50mb
 					$FileNew = uniqid('', true).".".$fileActualExt;
@@ -209,8 +284,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SignUpButton'])){
 		} else {
 			if($fileSize==0){
 				
-				$SignUpFileErr= "Upload a file";
-				$submit = false;
 			}
 			else{	
 				$SignUpFileErr= "You cannot upload files of this type!";
@@ -224,7 +297,13 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SignUpButton'])){
 	if($submit){
 		require_once("Users.php");
 		$BaseUserOBJ = new BaseUser("SignUp");
+		if(isset($FileNew)){
 		$fileDestination = 'profilepictures/'.$FileNew;
+		}
+		else{
+			$fileDestination= '';
+			$fileTmpName= '';
+		}
 		if($BaseUserOBJ->SignUpValidate($_POST["SignUpID"],$_POST["SignUpEmail"],$_POST["SignUpPassword"],$_POST["SignUpFirstName"],$_POST["SignUpLastName"],$_POST["SignUpContact"],$_POST["SignUpDisplayName"],$_POST["SignUpDOB"],$_POST["SignUpAddress"],$fileTmpName,$fileDestination)=="validated"){
 			echo '<script> alert("Successfully Signed Up! Please login now")</script> ';
 			echo '<script> location.replace("LoginPage.php")</script> ';
@@ -254,11 +333,12 @@ $_POST["SignUpConfirmPassword"]  = "";
 
 
 ?>
-<div class="SignUp_GUI">
+<div id="container">
+<div id="SignUp_GUI">
+<center><a href="index.php"><img src="systemimages/STIClogo.jpg" class="image" style="object-fit:cover;width:200px;height:100px;border-radius:10px;margin-top:5%"></a></center>
 <form class ="SignUpForm" method="post" enctype="multipart/form-data">
 <span class="error"></span><br /><br />
 
-<div class="centerBox">
 	<label>User ID:</label>
 	<input type="text" name="SignUpID" value = <?php echo $_POST["SignUpID"] ; ?>>
 	<span class="error">&nbsp;&nbsp;<?php echo $SignUpIDError;?></span><br /><br />
@@ -266,9 +346,21 @@ $_POST["SignUpConfirmPassword"]  = "";
 	<label>Display Name:</label>
 	<input type="text" name="SignUpDisplayName" value = <?php echo $_POST["SignUpDisplayName"] ; ?>>
 	<span class="error">&nbsp;&nbsp;<?php echo $SignUpDisplayNameError;?></span><br /><br />
-	
+
+	<img id="output" /></br>
 	<label>Upload Profile Picture:</label>
-	<input type="file" name="file"/>
+
+	<input type="file" name="file" accept="image/*" value="default" onchange="loadFile(event)">
+
+	<script>
+	var loadFile = function(event) {
+	var output = document.getElementById('output');
+	output.src = URL.createObjectURL(event.target.files[0]);
+	output.onload = function() {
+	  URL.revokeObjectURL(output.src) // free memory
+	}
+	};
+	</script>
 	<span class="error"><?php echo $SignUpFileErr;?></span><br /><br />
 	
 	
@@ -290,7 +382,7 @@ $_POST["SignUpConfirmPassword"]  = "";
 
 	<label>Address:</label>
 	<textarea rows="4" cols="50" name="SignUpAddress"><?php echo $_POST["SignUpAddress"] ; ?></textarea>
-	<span class="error">&nbsp;&nbsp;<?php echo $SignUpAddressError;?></span><br /><br />
+	<br /><center><span class="error">&nbsp;&nbsp;<?php echo $SignUpAddressError;?></span></center><br />
 
 	<label>Date Of Birth:</label>
 	<input type="date" name="SignUpDOB" value = <?php echo $_POST["SignUpDOB"] ; ?>>
@@ -298,16 +390,27 @@ $_POST["SignUpConfirmPassword"]  = "";
 
 	<label>Password:</label>
 	<input type="password" name="SignUpPassword" value = <?php echo $_POST["SignUpPassword"] ; ?>>
-	<span class="error">&nbsp;&nbsp;<?php echo $SignUpPasswordError;?></span><br /><br />
+	<br /><center><span class="error">&nbsp;&nbsp;<?php echo $SignUpPasswordError;?></span><br /></center><br />
 
 	<label>Confirm Password:</label>
 	<input type="password" name="SignUpConfirmPassword"  value = <?php echo $_POST["SignUpConfirmPassword"] ; ?>>
 	<span class="error">&nbsp;&nbsp;<?php echo $SignUpConfirmPasswordError;?></span><br /><br />
+	
+	<center><input type="Submit" name="SignUpButton" value="Sign Up" /></br> </center>
 
-	<input type="Submit" name="SignUpButton" value="Sign Up" style="float:right;"/></br> 
-</div>
 
 </form>
+<center>Already have an account?</br><form action="LoginPage.php" method="post"><input type="Submit" name="LoginButton" value="Login" /></form></br> </center>
+
+</div>
+
+<div id="profilepicGUI">
+<center><a href="index.php"><img src="systemimages/STIClogo.jpg" class="image" style="object-fit:cover;width:200px;height:100px;border-radius:10px;margin-top:5%"></a></center>
+
+</div>
+<div id="innercontainer">
+
+</div>
 </div>
 </html>
-<?php require_once("Footer.php");?>
+<?php require_once("Footer.php");?> 

@@ -1,14 +1,6 @@
 <html>
 <style>
-.Login_GUI{
-	margin-left:auto;
-	margin-right:auto;
-	width:500px;
-	height:400px;
-	
-	font-size:20px;
-	
-}
+
 label{
 	display:inline-block;
 	width:200px;
@@ -31,11 +23,65 @@ width:500px;
 margin:0px auto;
 }
 span{
-	color:red;
+	color:blue;
+
 }
-input[type="text"]{
+input[type="text"],[type="password"]{
 	width:200px;
-	font-family: arial;
+}
+#container{
+	margin-top:5%;
+	width:1000px;
+	height:700px;
+	border-radius:20px;
+	border:2px solid purple;
+		margin-left:25%;
+	overflow: hidden;
+ box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	
+}
+#innercontainer{
+	background-repeat: no-repeat; /* Do not repeat the image */
+	background-size: cover; /* Resize the background image to cover the entire container */
+	background-image: url('ads/LoginAds.jpg');
+	width:498px;
+	height:100%;
+	background-color:#4b0082;
+	   float: right;
+}
+#Login_GUI{
+		
+		margin-top:15%;
+	width:498px;
+	height:400px;
+	 float: left;
+	font-size:20px;
+	
+}
+#Login_GUI input{
+
+	height:40px;
+
+
+}
+#Login_GUI input[type=submit]{
+	display:inline-block;
+	border:none;
+	font-family: 'Roboto';
+	background-color:purple;
+	color:white;
+	height:50px;
+	font-size:30px;
+	width:400px;
+	margin-top:5px;
+		border-radius:40px;
+	margin-right:10px;
+
+}
+#Login_GUI input[type=submit]:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
 }
 </style>
 
@@ -48,6 +94,11 @@ if(isset($_SESSION['ID'])){
 }
 
 $submit = true;
+
+if(isset($_POST['SignupButton'])){
+echo '<script> location.replace("SignUpPage.php")</script> ';	
+	
+}
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['LoginButton'])){
 	if(empty($_POST["Login_LoginID"]))
 	{
@@ -124,18 +175,29 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['LoginButton'])){
 	
 }
 ?>
-<div class="Login_GUI">
+<div id="container">
+<div id="Login_GUI">
+
 <form method="post">
-<span class="error"><?php echo $MainError;?></span><br /><br />
-<label>User ID:</label><input type="text" name="Login_LoginID">
-<span class="error"><?php echo $LoginLoginIDerror;?></span><br /><br />
+<center><a href="index.php"><img src="systemimages/STIClogo.jpg" class="image" style="object-fit:cover;width:200px;height:100px;border-radius:10px"></a></center>
+<center><span class="error"><?php echo $MainError;?></span><br /><br /></center>
+<label>User ID:</label><input type="text" name="Login_LoginID"><br />
+<center><span class="error"><?php echo $LoginLoginIDerror;?></span><br /><br /></center>
 <label>Password:</label><input type="password" name="Login_Password">
-<span class="error"><?php echo $PasswordPassworderror;?></span><br /><br />
-<input type="Submit" name="LoginButton" value="Login"/><br />
+<center><span class="error"><?php echo $PasswordPassworderror;?></span><br /><br /></center>
+<center>
+<input type="Submit" name="LoginButton" value="Login"/>
+<input type = "Submit" name="SignupButton" value ="Sign Up"/><br />
+</form>
+
+
+
 <a href="ForgetPasswordPage.php">Forgot password?</a>
-</form>
-<form action="SignUpPage.php" method="post">
-<input type = "Submit" name="SignupButotn" value ="Sign Up"/>
-</form>
+</center>
 </div>
-<?php require_once("Footer.php");?>
+<div id="innercontainer">
+
+</div>
+</div>
+
+<?php require_once("Footer.php");?> 

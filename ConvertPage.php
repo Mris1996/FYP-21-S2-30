@@ -45,8 +45,9 @@ span{
 }
 #loadergui {
 width:300px;
-margin:auto;
-margin-top:5%;
+margin-left:auto;
+margin-right:auto;
+margin-top:200px;
 display:none;
 }
 #loader {
@@ -83,6 +84,144 @@ background-size: 270px 270px;
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+#convertGUI{
+	width:1000px;
+	height:700px;
+	margin:auto;
+	margin-top:2%;
+	
+
+}
+.TopUpGUI{
+
+	width:600px;
+	margin-bottom:100px;
+	text-align:center;
+	margin:auto;
+	border:1px solid black;
+		border-radius:20px;
+	box-shadow:5px 5px gray;
+
+}
+.RedeemGUI{
+		width:600px;
+	text-align:center;
+	margin:auto;
+	border:1px solid black;
+	border-radius:20px;
+	box-shadow:5px 5px gray;
+}
+button,input[type=submit] {
+	margin-top:20px;
+	border:none;
+	background-color:purple;
+	color:white;
+	font-size:30px;
+	border-radius:10px;
+	margin-right:10px;
+}
+input[type=submit]:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+#Convert2Ethbtn{
+float:right;
+height:400px;
+width:300px;
+background-repeat: no-repeat; /* Do not repeat the image */
+background-size: full; /* Resize the background image to cover the entire container */
+background-image: url('systemimages/TopUpImage.png');
+background-attachment: scroll;
+background-position: center;
+background-repeat: no-repeat;
+background-size: 300px 500px;
+cursor:pointer;
+  transition:all 0.5s ease-in-out;
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+}
+#Convert2Fbtn{
+	float:left;
+height:400px;
+width:300px;
+background-repeat: no-repeat; /* Do not repeat the image */
+background-size: full; /* Resize the background image to cover the entire container */
+background-image: url('systemimages/RedeemImage.png');
+background-attachment: scroll;
+background-position: center;
+background-repeat: no-repeat;
+background-size: 300px 500px;
+cursor:pointer;
+  transition:all 0.5s ease-in-out;
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+}
+#Convert2Fbtn:hover{
+	 outline:60%;
+    filter: drop-shadow(0 0 7px indigo);	
+}
+#Convert2Ethbtn:hover{
+	
+		 outline:60%;
+    filter: drop-shadow(0 0 7px indigo);
+}
+#transactionscontainer{
+		width:50%;
+	text-align:center;
+	margin:auto;
+	border:3px solid purple;
+	box-shadow:5px 5px gray;
+	height:400px;
+	overflow:scroll;
+	overflow-x: hidden;
+ overflow-y: auto;
+
+}
+
+.card{
+		width:80%;
+		text-align:left;
+	margin:auto;
+	border:1px solid black;
+
+}
+#transactionscontainer::-webkit-scrollbar {
+    width:3px;
+background-color:white;
+}
+ 
+#transactionscontainer:-webkit-scrollbar-track {
+    
+	  width:1px;
+}
+ 
+#transactionscontainer::-webkit-scrollbar-thumb {
+	background-color:purple;
+  outline: 2px solid purple;
+
+
+}
+#transactionscontainer::-webkit-scrollbar-track-piece:start {background: purple;margin-top: 20px;}
+#leftbox {
+float:left; 
+
+width:50%;
+
+}
+#middlebox{
+float:left; 
+display:none;
+margin-auto;
+}
+#rightbox{
+float:right;
+
+width:50%;
+
+}
 </style>
 <?php
 
@@ -90,298 +229,173 @@ if(!isset($_SESSION['ID'])){
 	echo '<script> location.replace("index.php")</script> ';
 }
 
-
-$Convert_publickeyError = $Convert_privatekeyError = $Convert_amountError= "";
-$Convert2_publickeyError = $Convert2_privatekeyError = $Convert2_amountError= "";
-$validated = true;
-$FIAT = false;
-$ETH = false;
-
-echo'<input type="hidden" id="convertrate" value="'.$_SESSION['Object']->getCurrencyValue('SGD').'">';
-
-if(isset($_POST['FIAT2ETH'])){
-
-$FIAT = true;
-	
-if(empty($_POST["Convert2_publickey"]))
-{
-$Convert2_publickeyError = "Public key is required";
-	$validated = false;
-
+if(isset($_SESSION['ConvertComplete'])){
+	unset($_SESSION['ConvertComplete']);
+	echo '<script> location.replace("ConvertPage.php")</script> ';
 }
-else{
-	if($_SESSION['Object'] -> checkAccountInNetwork($_POST['Convert2_publickey'])){
-	
+$Convert_amountError= "";
+$Convert2_amountError= "";
+
+$TU = false;
+$RE = false;
+
+
+
+if(isset($_POST['TopUpBtn'])){
+
+	$TU = true;
+	if(empty($_POST["Convert_amount"]))
+	{
+		$Convert_amountError = "Amount is required";
+		
 	}
 	else{
-		$Convert2_publickeyError= "Public key is invalid";
-		$validated = false;		
+			echo'<style> .TopUpGUI{display:none;}</style>';
+			echo'<style> #confirmation{display:block;}</style>';
+			$_SESSION['AmountTU'] = $_POST["Convert_amount"] ;
+			
 	}
-	
-}
-
-if(empty($_POST["Convert2_amount"]))
-{
-$Convert2_amountError = "Amount is required";
-$validated = false;
 }
 else{
-	
-if($_POST["Convert2_amount"]>$_SESSION['Object']->getAccountBalance()){
-$Convert2_amountError = "";	
-echo'<script>alert("You have insufficient amount of money,please top up");</script>';
-$validated = false;
-}
-}
-	
-if($validated){
-	echo'<style> .ETHGUI{display:none;}</style>';
-	echo'<style> #confirmation{display:block;}</style>';
-	$_SESSION['PubKeyC2'] = $_POST["Convert2_publickey"];
-	$_SESSION['AmountC2'] = $_POST["Convert2_amount"] ;
-}
-
-}
-else{
-$_POST["Convert2_publickey"] = '';
-$_POST["Convert2_amount"] = '';
+	$_POST["Convert_amount"] = '';
 }
 
 
-if(isset($_SESSION['VerifiedUser'])&&isset($_SESSION['PubKeyC2'])){
-unset($_SESSION['VerifiedUser']);
-$Convert2edAmount = $_SESSION['AmountC2']/$_SESSION['Object'] ->getCurrencyValue('SGD');
-$message = $_SESSION['Object'] -> ConvertToETH($_SESSION['AmountC2'],$_SESSION['PubKeyC2']);
-echo'<style> .ETHGUI{display:none;}</style>';	
-sleep(2);
-
-if($message!="Success"){
-	echo'
-	<form method="post" action="ConvertPage.php">
-	<h1>Transaction Summary</h1>
-	<b>Operation:Convert to Ethereum</b></br>
-	<b>Initial Amount :'.$_SESSION['AmountC2'].'</b></br>
-	<b>Converted Amount:'.$Convert2edAmount.'</b></br>
-	<b>Transaction: Failed </b></br>
-	<b>Reason:'.$message.'</b></br>
-	<input type="submit" value="Try again">
-	</form>';	
-	unset($_SESSION['PubKeyC2']);
-	unset($_SESSION['AmountC2']);
-	echo'<script>history.pushState({}, "", "")</script>';
-	exit();
-}
-else{
-	echo'
-	<form method="post" action="index.php">
-	<h1>Transaction Summary</h1>
-	<b>Operation:Convert to Ethereum</b></br>
-	<b>Initial Amount :'.$_SESSION["AmountC2"].'</b></br>
-	<b>Converted Amount:'.$Convert2edAmount.'</b></br>
-	<b>Transaction: Success </br>
-	<input type="submit" value="Return to main menu!">
-	</form>';	
-	unset($_SESSION['PubKeyC2']);
-	unset($_SESSION['AmountC2']);
-	echo'<script>history.pushState({}, "", "")</script>';
-	exit();
-}	
-
-}
-
-
-
-
-if(!$FIAT){
-echo'<style> .ETHGUI{display:none;}</style>';	
-}
-if(isset($_POST['ETH2FIAT'])){
-$ETH = true;
-
-if(empty($_POST["Convert_publickey"]))
-{
-$Convert_publickeyError = "Public key is required";
-	$validated = false;
-
-}
-else{
-	if($_SESSION['Object'] -> checkAccountInNetwork($_POST['Convert_publickey'])){
-	
-	}
-	else{
-		$Convert_publickeyError= "Public key is invalid";
-		$validated = false;		
-	}
-	
-}
-
-if(empty($_POST["Convert_privatekey"]))
-{
-$Convert_privatekeyError = "Private key is required";
-	$validated = false;
-}
-else{
-	if(strlen($_POST["Convert_privatekey"])<64){
-		$Convert_privatekeyError = "Private key is invalid";
+if(isset($_POST['RedeemBtn'])){
+	$TU = true;
+	if(empty($_POST["Convert2_amount"]))
+	{
+		$Convert2_amountError = "Amount is required";
 		$validated = false;
 	}
-	
-}
-
-
-if(empty($_POST["Convert_amount"]))
-{
-$Convert_amountError = "Amount is required";
-$validated = false;
-}
-
-if($validated){
-	$_SESSION['PubKeyC1'] = $_POST["Convert_publickey"];
-	$_SESSION['AmountC1'] = $_POST["Convert_amount"] ;
-	$_SESSION['PrivKeyC1'] =$_POST['Convert_privatekey'] ;
-	echo'<style> .FIATGUI{display:none;}</style>';
-	echo'<style> #confirmation{display:block;}</style>';
-}
-
+	else{
+		if($_POST["Convert2_amount"]>$_SESSION['Object']->getAccountBalance()){
+			$Convert_amountError = "";	
+			echo'<script>alert("You have insufficient amount of money,please top up");</script>';
+		}
+		else{
+			echo'<style> .RedeemGUI{display:none;}</style>';
+			echo'<style> #confirmation{display:block;}</style>';
+			$_SESSION['AmountRE'] = $_POST["Convert2_amount"] ;
+		}
+	}
 }
 else{
-$_POST["Convert_publickey"] = '';
-$_POST["Convert_privatekey"] = '';
-$_POST["Convert_amount"] = '';
-}
-if(!$ETH){
-echo'<style> .FIATGUI{display:none;}</style>';	
+	$_POST["Convert2_amount"] = '';
 }
 
-if(isset($_SESSION['VerifiedUser'])&&isset($_SESSION['PubKeyC1'])){
+
+
+
+if(isset($_SESSION['VerifiedUser'])&&isset($_SESSION['AmountTU'])){
 unset($_SESSION['VerifiedUser']);
-$Convert2edAmount =$_SESSION['AmountC1']*$_SESSION['Object'] ->getCurrencyValue('SGD');
-$message = $_SESSION['Object'] -> ConvertToFIATCurrency($_SESSION['AmountC1'] ,$_SESSION['PubKeyC1'],$_SESSION['PrivKeyC1']);
-echo'<style> .ETHGUI{display:none;}</style>';	
-sleep(2);
+$_SESSION['Object'] -> creditCardIn($_SESSION['AmountTU']);
+unset($_SESSION['AmountTU']);
+$_SESSION['ConvertComplete'] = true;
+echo '<script> location.replace("http://localhost:4242/checkout.html")</script> ';
 
-if($message!="Success"){
-	echo'
-	<form method="post" action="ConvertPage.php">
-	<h1>Transaction Summary</h1>
-	<b>Operation:Convert to SGD</b></br>
-	<b>Initial Amount :'.$_SESSION['AmountC1'].'</b></br>
-	<b>Converted Amount:'.$Convert2edAmount.'</b></br>
-	<b>Transaction: Failed </b></br>
-	<b>Reason:'.$message.'</b></br>
-	<input type="submit" value="Try again">
-	</form>';	
-	unset($_SESSION['PubKeyC1']);
-	unset($_SESSION['AmountC2']);
-	unset($_SESSION['Convert_privatekey']);
-	echo'<script>history.pushState({}, "", "")</script>';
-	exit();
-}
-else{
-	echo'
-	<form method="post" action="index.php">
-	<h1>Transaction Summary</h1>
-	<b>Operation:Convert to SGD</b></br>
-	<b>Initial Amount :'.$_SESSION["AmountC1"].'</b></br>
-	<b>Converted Amount:'.$Convert2edAmount.'</b></br>
-	<b>Transaction: Success </br>
-	<input type="submit" value="Return to main menu!">
-	</form>';	
-	unset($_SESSION['PubKeyC1']);
-	unset($_SESSION['AmountC2']);
-	unset($_SESSION['Convert_privatekey']);
-	echo'<script>history.pushState({}, "", "")</script>';
-	exit();
-}	
 }
 
-?> 
+if(isset($_SESSION['VerifiedUser'])&&isset($_SESSION['AmountRE'])){
+unset($_SESSION['VerifiedUser']);
+$link = $_SESSION['Object'] -> creditCardOut($_SESSION['AmountRE']);
+unset($_SESSION['AmountRE']);
+$_SESSION['ConvertComplete'] = true;
+echo'<style> .loadergui{display:block;}</style>';	
+echo '<script> location.replace("'.$link .'")</script> ';
+
+}
+
+
+
+if(!$RE){
+echo'<style> .RedeemGUI{display:none;}</style>';	
+}
+if(!$TU){
+echo'<style> .TopUpGUI{display:none;}</style>';	
+}
+
+
+
+
+?>
 <div id="loadergui">
 <h2>Loading Please Wait</h2>
 <div id="loader"></div>
 <div id="loaderimage"></div>
 </div>
+
+
 <div id="convertGUI">
-<button id="Convert2Ethbtn" class="FIAT">Convert back to Ethereum</button>
-<button id="Convert2Fbtn" class="ETH">Top Up Account Balance</button>
+
+<div id="leftbox">
+<button id="Convert2Ethbtn" class="TopUp"></button>
+</div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
 $(document).ready(function(){
-  $(".FIAT").click(function(){
-    $(".ETHGUI").show();
-	$(".FIATGUI").hide();
+  $(".TopUp").click(function(){
+$(".TopUp").css('margin-right', '40%');
+$(".Transfer").css('margin-left', '40%');
+
+setTimeout(
+  function() 
+  {
+	  $("#leftbox").css('width', '20%');
+$("#rightbox").css('width', '20%');
+ $("#middlebox").show();
+  }, 800);
+    $(".TopUpGUI").show();
+	
+	$(".RedeemGUI").hide();
   });
-  $(".ETH").click(function(){
-    $(".FIATGUI").show();
-	$(".ETHGUI").hide();
+  
+  
+  
+  $(".Transfer").click(function(){
+	  $(".TopUp").css('margin-right', '40%');
+$(".Transfer").css('margin-left', '40%');
+
+setTimeout(
+  function() 
+  {
+	  $("#leftbox").css('width', '20%');
+$("#rightbox").css('width', '20%');
+ $("#middlebox").show();
+  }, 800);
+    $(".RedeemGUI").show();
+	$(".TopUpGUI").hide();
   });
 });
- function checkForm(form) // Submit button clicked
-  {
-    //
-    // check form input values
-    //
 
-    form.FIAT2ETH.style.display = "none";
-    form.FIAT2ETH.value = "Please wait...";
-    return true;
-  }
- function check2Form(form) // Submit button clicked
-  {
-    //
-    // check form input values
-    //
-
-    form.ETH2FIAT.style.display = "none";
-    form.ETH2FIAT.value = "Please wait...";
-    return true;
-  }
-var convertrate = document.getElementById("convertrate").value;
-function ConvertSGD(){
-	var amount = document.getElementById("Convert_amount").value;
-	document.getElementById("amountconverted").innerHTML = "Conversion Rate SGD/ETH: SGD$"+convertrate+"</br>"+ "Conversion Amount : SGD$"+(amount*convertrate).toFixed(2);
-}
-function ConvertETH(){
-	var amount = document.getElementById("Convert2_amount").value;
-	document.getElementById("amountconverted2").innerHTML = "Conversion Rate ETH/SGD: ETH "+(1/convertrate)+"</br>"+ "Conversion Amount : ETH "+(amount/convertrate).toFixed(5);
-}
 </script>
-<hr>
+<div id="middlebox">
+	<div class="TopUpGUI">	
+	<form method="post" id="formTopUp" >
+	  <?php echo '<b>Top Up Store Credits</b></br>';?>
+	  <label for="Convert_amount">Amount:</label><br/>
+	  <input type="Number" step="any" id="Convert_amount" name="Convert_amount"value=<?php echo $_POST["Convert_amount"];?>><br><br>
+	  <span class="error"><?php echo $Convert_amountError;?></span><br /><br />
+	  <input type="submit"  name="TopUpBtn" value="Top Up Now!">
+	</form> 
+	</div>
 
-<div class="ETHGUI">
-	
-<form method="post" id="formFIAT" onsubmit="return checkForm(this);">
-  <?php echo '<b>Convert to Ethereum</b></br>';?>
-  <label for="Convert2_publickey">Public Key:</label><br>
-  <input type="text" id="Convert2_publickey" name="Convert2_publickey" value=<?php echo $_POST["Convert2_publickey"];?>><br>
-  <span class="error"><?php echo $Convert2_publickeyError;?></span><br /><br />
-  <label for="Convert2_amount">Amount:</label><br>
-  <input type="Number"  onchange="ConvertETH()"step="any" id="Convert2_amount" name="Convert2_amount"value=<?php echo $_POST["Convert2_amount"];?>><br><br>
-  <span class="error"><?php echo $Convert2_amountError;?></span><br /><br />
-  <p id="amountconverted2"></p>
-  <input type="submit" name="FIAT2ETH" value="Convert">
-
-</form> 
+	<div class="RedeemGUI">	
+	<form method="post" id="formRedeem">
+	  <?php echo '<b>Redeem Money</b></br>';?>
+	  <label for="Convert2_amount">Amount:</label><br/>
+	  <input type="Number" step="any" id="Convert2_amount" name="Convert2_amount"value=<?php echo $_POST["Convert2_amount"];?>><br><br>
+	  <span class="error"><?php echo $Convert2_amountError;?></span><br /><br />
+	  <input type="submit"  name="RedeemBtn" value="Redeem Now!">
+	</form> 
+	</div>
+	</div>
+<div id="rightbox">
+<button id="Convert2Fbtn" class="Transfer"></button>
 </div>
-<div class="FIATGUI">	
-<form method="post" id="formETH" onsubmit="return check2Form(this);">
-  <?php echo '<b>Convert to SGD</b></br>';?>
-  <label for="Convert_publickey">Public Key:</label><br>
-  <input type="text" id="Convert_publickey" name="Convert_publickey" value=<?php echo $_POST["Convert_publickey"];?>><br/>
-  <span class="error"><?php echo $Convert_publickeyError;?></span><br /><br />
-  <label for="Convert_privatekey">Private Key:</label><br/>
-  <input type="text" id="Convert_privatekey" name="Convert_privatekey"value=<?php echo $_POST["Convert_privatekey"];?>><br><br>
-  <span class="error"><?php echo $Convert_privatekeyError;?></span><br /><br />
-  <label for="Convert_amount">Amount:</label><br/>
-  <input type="Number" step="any" onchange="ConvertSGD()" id="Convert_amount" name="Convert_amount"value=<?php echo $_POST["Convert_amount"];?>><br><br>
-  <span class="error"><?php echo $Convert_amountError;?></span><br /><br />
-  <p id="amountconverted"></p>
-  <input type="submit"  name="ETH2FIAT" value="Convert">
-</form> 
-
-
 </div>
+
 <div id="confirmation">
 <div id="confirmationtext">
 <b>Are you sure you?</b></br>
@@ -390,7 +404,7 @@ function ConvertETH(){
 
 </div>
 </div>
-<div id="OTP">
+<div id="OTP" >
 <div id="OTPform">
 <Label>OTP Code:</Label><input type="text"  id="OTPinput">
 <input type="submit" onclick="VerifyOTP()" value="Submit OTP">
@@ -399,8 +413,46 @@ function ConvertETH(){
 </div>
 
 <input type="hidden" class="text-box" id="User"  value = "<?php echo $_SESSION['Object']->getUID()?>">
-</div>
 
+</div>
+<i class="fab fa-cc-stripe"></i>
+<i class="fa-brands fa-cc-mastercard"></i>
+<hr style="purple">
+<center><h1>Recent Transactions</h1></center>
+<div id="transactionscontainer">
+</br></br></br>
+<?php
+$array = $_SESSION['Object']->ListOfRecentTransactions();
+if(!empty($array)){
+foreach ($array as &$ID) {
+?>
+<a href="MyTransactionsPage.php" style="text-decoration:none;color:purple">
+<div id="card" class="card">
+
+<b style=" <?php if($_SESSION['Object']->getTransactionSender($ID)== $_SESSION['ID']){
+echo "color:red";
+}
+else{
+echo "color:green";
+}
+
+?>
+">Amount:<?php echo   " SGD$".number_format($_SESSION['Object']->getTransactionAmount($ID)/100, 2, '.', '')?></b>
+<b>Sender:<?php echo  $_SESSION['Object']->getTransactionSender($ID) ?></b>
+<b>Reciever:<?php echo $_SESSION['Object']->getTransactionReceiver($ID) ?></b>
+<b>Transaction Date:<?php  echo $_SESSION['Object']->getTransactionDate($ID) ?></b>	
+<b>Transaction Title:<?php  echo$_SESSION['Object']->getTransactionTitle($ID) ?></b>	
+</div></a></br>
+<?php
+}
+}
+else{
+	echo'<h2>You currently have no transactions</h2>';
+}
+?>
+
+</center>
+</div>
 <script>
 
 
@@ -434,6 +486,7 @@ function VerifyOTP(){
 	document.getElementById('convertGUI').style.display = "none";
 	document.getElementById('loadergui').style.display = "block";
 	OTPEntry = document.getElementById('OTPinput').value;
+	document.getElementById('OTP').style.display = "none";
 	ajax.open("POST", "ConvertPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("OTP=" + OTPEntry );
@@ -473,5 +526,4 @@ connection.onmessage = function (message) {
 	
 }
 </script>
-
 <?php require_once("Footer.php");?>

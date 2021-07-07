@@ -111,18 +111,20 @@ function test_input($data) {
 }
 ?>
 <style>
-.Insert_GUI{
+.List_GUI{
 	clear: both;
 	margin-left:auto;
 	margin-right:auto;
 	margin-bottom:20px;
 	width:1000px;
 	height:1000px;
-	
+
 	text-align:left;
-	opacity:0.8;
-	font-size:20px;
 	
+	font-size:20px;
+		border:1px solid black;
+	border-radius:20px;
+	box-shadow:5px 5px gray;
 
 }
 label,span{
@@ -131,11 +133,7 @@ label,span{
 	margin-right:5px;
 	text-align:center;
 }
-.Insert_GUI input[type="submit"]{
-	font-size:30px;
-	color:white;
-	background-color:black;
-}
+
 span{
 	color:red;
 		width:200px;
@@ -148,36 +146,84 @@ input[type="text"]{
 	width:200px;
 }
 .Post_Insert_GUI{
-	margin-left:auto;
-	margin-right:auto;
-	margin-bottom:20px;
-	width:500px;
-	height:300px;
-	text-align:center;
-	opacity:0.8;
-	font-size:30px;
+font-family: 'Roboto';font-size: 22px;
+border: 2px solid purple;
+border-radius: 25px;
+background-color:white;
+text-align: center;
+display: inline-block;
 
+height:700px;
+width:700px;
+cursor:pointer;
+margin-left:auto;
+margin-right:auto;
 }
-.ConfirmList_GUI{
-	margin-left:auto;
-	margin-right:auto;
-	margin-bottom:20px;
-	width:500px;
-	height:300px;
-	text-align:left;
-	opacity:0.8;
-	font-size:30px;
+
+#output{
+	margin-top:5%;
+	margin:auto;
+width:300px;
+height:300px;
+border:none;
+object-fit: cover;
+}
+.Post_Insert_GUI #output{
+	margin-top:5%;
+	margin:auto;
+width:60%;
+height:60%;
+border:none;
+object-fit: cover;
+}
+ button,input[type=submit],input[type=button] {
+	border:none;
+	background-color:purple;
+	color:white;
+	font-size:20px;
+	border-radius:10px;
+	margin-right:10px;
+	float:right;
+}
+input[type=submit]:hover {
 	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+input[type=button]:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+button:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+h2{
+	
+	margin-left:2%;
 }
 </style>
-<h1 style="font-size:70px"><center>Insert New Product Details</center></h1>	
+
  <div class="List_GUI">
+ <h1 style="font-size:40px"><center>Insert New Product Details</center></h1>	
     <form method="post" enctype="multipart/form-data">  
 	
 	<h2>Basic Product Information</h2>
-	
+		<center><img id="output" /></center></br>
+
 		<label>Upload File</label>
-		<input type="file" name="file"/>
+		<input type="file" name="file" accept="image/*" value="default" onchange="loadFile(event)">
+		<script>
+		var loadFile = function(event) {
+		var output = document.getElementById('output');
+		output.src = URL.createObjectURL(event.target.files[0]);
+		output.onload = function() {
+		URL.revokeObjectURL(output.src) // free memory
+		}
+		};
+		</script>
 		<span class="error"><?php echo $FileErr;?></span><br />
 	
 		<label>Name:</label>
@@ -214,7 +260,12 @@ input[type="text"]{
 		<input type="submit" name="submit" value="Submit">
     </form>
 </div>
-
+<script>
+		function clickproduct(ID){
+			location.replace("ProductPage.php?ID="+ID);
+		}
+</script>
+		
 <?php
 
 if(isset($_POST['submit'])&& $submit){
@@ -224,17 +275,18 @@ if(isset($_POST['submit'])&& $submit){
 	$File = $fileDestination;
 	echo'<style> .List_GUI{display:none;}</style>';
 	$ProductID = $_SESSION['Object']->ListProduct($Name,$Category,$Description,round($Cost, 0),$Caption,$File);
-	echo'<script>history.pushState({}, "", "")</script>';
-	echo'<div class="Post_Insert_GUI">
+	echo'<center>
+		<div class="Post_Insert_GUI" onclick="clickproduct(this.id)" id = "'.$ProductID.'">
+		<a href="#" class="fill-div"></a>
 			</br>
 			<center>Successfully Listed product!</center>
 			<center>Product Confirmation</center>
-			<img src="'.$File.'" width="500" height="600">
-			<label>Product ID:</label>'.$ProductID.'</br>
-			<label>Name:</label>'.$Name.'</br>
-			<center style="color:red">Head over to it\'s page now!</center>
-			<a href="ProductPage.php?ID='.$ProductID.'">Product.php?ID='.$ProductID.'</a>
-		</div>';
+			<img id="output"  src="'.$File.'" ></br>
+			 <h2>Product ID:'.$ProductID.'</h2>
+			<h2>'.$Name.'</h2>
+			<center><h1>Head over to it\'s page now!</h1></center>
+			
+		</div></center>';
 	echo'<script>history.pushState({}, "", "")</script>';
 	exit();
 	
@@ -243,5 +295,5 @@ if(isset($_POST['submit'])&& $submit){
 }
 
 
-
 ?>
+<?php require_once("Footer.php");?>

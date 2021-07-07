@@ -1,15 +1,66 @@
 <?php require_once("NavBar.php");?>
 <style>
-table, th, td {
-  border: 1px solid black;
-}
+
 .formcontainer{
-	width:300px;
+	width:700px;
+	height:150px;
+	text-align:left;
+	margin:auto;
+	border:1px solid black;
+	border-radius:20px;
+	box-shadow:5px 5px gray;
+}
+.formcontainer input[type="submit"]{
+	margin-left:1%;
+	float:left;
+	
+}
+.formcontainer input[type="text"]{
+
+	text-align:center;
+	
+}
+#AllUsers{
+	
+	background-color:white;
+	width:1700px;
+	
+	color:purple;
+	border:1px solid grey;
 	margin:auto;
 	text-align:center;
 }
-.formcontainer input{
-	margin-top:5px;
+ table,tr,th,td{
+	
+	border:1px solid #e8e6e6; 
+ }
+ tr{
+	 height:50px;
+	 vertical-align: text-bottom;
+ }
+ button,input[type=submit],input[type=button] {
+	margin-top:20px;
+	border:none;
+	background-color:purple;
+	color:white;
+	font-size:20px;
+	border-radius:10px;
+	margin-right:10px;
+}
+input[type=submit]:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+input[type=button]:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+button:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
 }
 </style>
 
@@ -26,14 +77,14 @@ if(!isset($_GET['ID'])){
 }
 $ArrayOfUsers = $_SESSION['Object']->ListOFUsers();
 echo'<div class="formcontainer"><form method="post" action="UserManagementController.php"></br>
-<Label>UserID : </Label><input type ="text" name="hiddenval" value="'.$_GET['ID'].'"></br>
-<input type="submit" name="Ban" value="Ban user"></br>
-<input type="submit" name="Suspend" value="Suspend user"></br>
-<input type="submit" name="Remove" value="Unban/Unsuspend user"></br>
-<input type="submit" name="MakeAdmin" value="Make User Admin"></br>
+<center><Label>UserID : </Label><input type ="text" name="hiddenval" value="'.$_GET['ID'].'"></center></br>
+<input type="submit" name="Ban" value="Ban user">
+<input type="submit" name="Suspend" value="Suspend user">
+<input type="submit" name="Remove" value="Unban/Unsuspend user">
+<input type="submit" name="MakeAdmin" value="Make User Admin">
 </form></div>
 ';
-echo'<hr><table class="table table-borderless table-dark">';
+echo'<hr><table  id="AllUsers"  class="table table-borderless table-dark">';
 echo'<tr><th>UserID</th>
 <th>DisplayName</th>
 <th>FirstName</th>
@@ -84,8 +135,8 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 }
 echo'</table>';
 
-echo'<div style="margin-top:10px;width:1000px;margin-left:auto;margin-right:auto;text-align:center">';			
-echo'<b style="bottom: 20;">Page</b></BR>';
+echo'<div class = "pagination" >';			
+echo'<center><b style="bottom: 20;">Page</b></center></BR>';
 echo '<a href = "UserManagementPage.php?page=1">First </a>'; 
 for($page = 1; $page<=$number_of_page; $page++) { 
 	if($page==1){

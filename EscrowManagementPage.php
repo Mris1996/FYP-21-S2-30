@@ -3,12 +3,77 @@
 table, th, td {
   border: 1px solid black;
 }
-.AddGUI{
-  display:none;
-}
+
 span{
 	
 	color:red;
+}
+.ReportedProduct_GUI{
+	display:none;
+}
+.ReportedContract_GUI{
+	display:none;
+}
+.AddGUI{
+	 display:none;
+	width:700px;
+	height:250px;
+	text-align:center;
+	margin:auto;
+	border:1px solid black;
+	border-radius:20px;
+	box-shadow:5px 5px gray;
+}
+.AddGUI input[type="submit"]{
+	margin-right:5%;
+	float:right;
+	
+}
+.AddGUI input[type="text"]{
+	margin-top:3%;
+	text-align:center;
+	
+}
+#AllReports{
+	
+	background-color:white;
+	width:1700px;
+	
+	color:purple;
+	border:1px solid grey;
+	margin:auto;
+	text-align:center;
+}
+ table,tr,th,td{
+	
+	border:1px solid #e8e6e6; 
+ }
+ tr{
+	 height:50px;
+	 vertical-align: text-bottom;
+ }
+ button,input[type=submit],input[type=button] {
+	border:none;
+	background-color:purple;
+	color:white;
+	font-size:20px;
+	border-radius:10px;
+	margin-right:10px;
+}
+input[type=submit]:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+input[type=button]:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+button:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
 }
 </style>
 
@@ -108,7 +173,7 @@ $(document).ready(function(){
   <span class="error"><?php echo $PubKeyErr ?></span><br /><br />
   <label>Private Key:</label>
   <input type="text" name="PrivateKeyInput"><br><br>
-  <span class="error"><?php echo $PrivateKeyErr?></span><br /><br />
+  <span class="error"><?php echo $PrivateKeyErr?></span><br />
   <input type="submit" name="AddSubmit" value="Add">
 
 </form> 

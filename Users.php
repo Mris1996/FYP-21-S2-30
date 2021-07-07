@@ -161,6 +161,20 @@ class BaseUser
 			
 			else { return "Wrong OTP"; } // When Temporary password do not match		
 	}
+	public function ListOfAds(){
+		
+		$sql = "SELECT * FROM `advertisements` ";
+		$adsarray = array();
+	
+		$result = $this->connect()->query($sql) or die($this->connect()->error);    
+		while($row = $result->fetch_assoc())
+		{ 	
+			$temparray= array($row['AdsImage'],$row['UserID'],$row['Date']);
+			array_push($adsarray,$temparray);
+		}
+			
+		return $adsarray;
+	}
 	public function ForgetPassword ($userid, $email)
 	{	
 		$data            = "";
@@ -352,6 +366,7 @@ class BaseUser
 		
 	}
 	public function SignUpValidate($ID,$Email,$Pass,$FName,$LName,$ContactNumber,$DispName,$DOB,$Address,$ProfilePicCurrent,$ProfilePicDest){
+		
 		$ID = preg_replace('/(\'|&#0*39;)/', '', $ID);
 		$Pass = preg_replace('/(\'|&#0*39;)/', '', $Pass);
 		$Email = preg_replace('/(\'|&#0*39;)/', '', $Email);
@@ -376,7 +391,12 @@ class BaseUser
 		}
 		$HPass = password_hash($Pass, PASSWORD_DEFAULT);
 		$Type = "Standard";
+		if(isset($ProfilePicCurrent)){
 		$sql = "INSERT INTO users (UserID,FirstName,LastName,Email,ContactNumber,Password,AccountType,DisplayName,Address,DateOfBirth,PublicKey,PrivateKey,ProfilePicture)VALUES('".$ID."','".$FName."','".$LName."','".$Email."' ,'".$ContactNumber."','".$HPass."','".$Type."','".$DispName."','".$Address."','".date('d/m/Y', strtotime($DOB))."','".$this->PubKey."','".$this->PrivateKey."','".$ProfilePicDest."' )";
+		}
+		else{
+		$sql = "INSERT INTO users (UserID,FirstName,LastName,Email,ContactNumber,Password,AccountType,DisplayName,Address,DateOfBirth,PublicKey,PrivateKey)VALUES('".$ID."','".$FName."','".$LName."','".$Email."' ,'".$ContactNumber."','".$HPass."','".$Type."','".$DispName."','".$Address."','".date('d/m/Y', strtotime($DOB))."','".$this->PubKey."','".$this->PrivateKey."')";
+		}
 		$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
 		move_uploaded_file($ProfilePicCurrent, $ProfilePicDest);
 		return "validated";
@@ -512,6 +532,38 @@ class BaseUser
 				return $row["SellerUserID"];
 			}
 	}
+	public function deleteComment($ID,$ReviewID,$Type){
+		if($Type=="User"){
+			$ID = trim($ID);
+			$sql = "SELECT * FROM users WHERE UserID='".$ID."'" ;
+			
+		}
+		if($Type=="Product"){
+			$ID = trim($ID);
+			$sql = "SELECT * FROM product WHERE ProductID='".$ID."'" ;
+			
+		}
+
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+			while($row = $result->fetch_assoc())
+			{ 
+				$Data = $row['Review'];
+			}
+			
+			if($Data!=null&&sizeof(json_decode($Data))!=0){
+				$Data = json_decode($Data, true);
+				$Data[$ReviewID]=[''];
+				$Data = json_encode($Data);
+				if($Type=="Product"){
+				$sql="UPDATE `product` SET `Review`='".$Data."' WHERE `ProductID`='".$ID."'";
+				$result = $this->connect()->query($sql) or die($this->connect()->error);    
+				}
+				if($Type=="User"){
+				$sql="UPDATE `users` SET `Review`='".$Data."' WHERE `UserID`='".$ID."'";
+				$result = $this->connect()->query($sql) or die($this->connect()->error);    
+				}
+			}
+	}
 	public function viewReview($ID,$Type){
 		if($Type=="User"){
 			$ID = trim($ID);
@@ -529,31 +581,59 @@ class BaseUser
 			{ 
 				$Data = $row['Review'];
 			}
-
-			if($Data!=null&&sizeof(json_decode($Data))!=0){
-			$Data = json_decode($Data, true);
-			for($i =0;$i<sizeof($Data);$i++){
-			
-			echo'
 	
-			<div class="media border p-3" style="width:40%;margin:auto;margin-top:5px;">
-			<div class="media-body">
-			<h4>'.$Data[$i]["User"].'<small>   <i>Posted on '.$Data[$i]["Date"].'</i></small></h4>
-			<p>'.$Data[$i]["Review"].'</p>
-			</div>
-			</div></br>';
+			if($Data!=null&&sizeof(json_decode($Data))!=0){
+				$Data = json_decode($Data, true);
+				$DuplicateData = $Data;
+				if (in_array([''], $DuplicateData)) 
+				{
+					unset($DuplicateData[array_search([''],$DuplicateData)]);
+				}
+				for($i =0;$i<sizeof($Data);$i++){
+				if($Data[$i] != ['']){
+				echo'
+		
+				<div class="media border p-3" style="width:40%;margin:auto;margin-top:5px;">
+				<div class="media-body">
+				<h4>'.$Data[$i]["User"].'<small>   <i>Posted on '.$Data[$i]["Date"].'</i></small></h4>
+				<p>'.$Data[$i]["Review"].'</p>';
+				echo $this->UID;
+				if(isset($_SESSION['ID'])){
+				if(trim($Data[$i]["User"])== $_SESSION['ID']){
+						
+					echo'
+					<form method="post">
+					<input type="submit" name="deletecomment" id="deletebtn" style="float:right;" value="delete">
+					<input type="hidden" name="reviewid" value="'.$i.'">
+					</form>';
+						}
+				}
+				echo'
+				</div>
+				</div></br>';
+				}
+			}
+			if(sizeof($DuplicateData)==0){
+				echo '
+				<div class="media border p-3" style="margin-top:5px;width:40%;margin:auto;">
+				<div class="media-body">
+				<b style="margin:auto;"> No Reviews Yet</b></div>
+				</div></br>';	
 			}
 			}
 			else{
-			echo '
-			<div class="media border p-3" style="margin-top:5px;width:40%;margin:auto;">
-			<div class="media-body">
-			<b style="margin:auto;"> No Reviews Yet</b></div>
-			</div></br>';	
+				echo '
+				<div class="media border p-3" style="margin-top:5px;width:40%;margin:auto;">
+				<div class="media-body">
+				<b style="margin:auto;"> No Reviews Yet</b></div>
+				</div></br>';	
+				
 			}
+			
+			
 	}
 	public function ViewAllProduct($sortby,$Order,$Category,$page,$pagename){
-	
+
 			if($Category=="All"){
 
 					$sql = "SELECT * FROM product WHERE Status = 'Available' ORDER BY $sortby $Order" ;
@@ -572,7 +652,7 @@ class BaseUser
 			if ($number_of_result == 0) 
 			{
 				echo'
-					<b>No products in this category</b>';
+					<center><b style="margin-top:5%;font-size:50px">No products in this category</b></center>';
 				return;
 			}
 			
@@ -583,29 +663,32 @@ class BaseUser
 					$sql = "SELECT * FROM product WHERE Status = 'Available' AND ProductCategory = '".$Category."' ORDER BY $sortby $Order LIMIT " . $page_first_result . ',' . $this->results_per_page; 
 			}
 			$result = mysqli_query($this->connect(), $sql);  
-			
+			echo'<div id="container">';
 			while($row = $result->fetch_assoc())
 			{ 
-			
+			?>
+			<script>
+					function clickproduct(ID){
+						location.replace("ProductPage.php?ID="+ID);
+					}
+			</script>
+			<?php
 			echo'
-			<div class="container">
-			<img src="'.$row["Image"].'" class="image" style="width:500px;height:400px">
-			<div class="middle">
-			<div class="text">Seller:<a href="ProfilePage.php?ID='.$row["SellerUserID"].'">'.$row["SellerUserID"].'</a></div>
-			<div class="text">Product Name:'.$row["ProductName"].'</div>
-			<div class="text">Category:'.$row["ProductCategory"].'</div>
+			
+			<div class="card" onclick="clickproduct(this.id)" id = "'.$row["ProductID"].'">
+			<a href="#" class="fill-div"></a>
+			<img src="'.$row["Image"].'" class="image" style="object-fit: cover;width:200px;height:200px;border-radius:20px;margin-top:20px">
+			<div class="text" style="font-size:10px"><b>'.$row["ProductCategory"].'</b></div>
+			<div class="text" style="font-size:15px"><b>'.$row["ProductName"].'</b></div>
 			<div class="text">Date Listed:<i>'.date('d-m-Y',$row["DateOfListing"]).'</i></div>
-			<div class="text">Initial Price:'.number_format($row["ProductInitialPrice"], 2, '.', '').'</div>
-			<form action="ProductPage.php?ID='.$row["ProductID"].'" method="post"></br>
-			<input type="submit" value="Product Page"/>
-			</form>
-			</div>
-			</div></div>';
-		
+			<div class="text" style="font-size:16px"><b>'.$this->getCurrency().number_format($row["ProductInitialPrice"], 2, '.', '').'</b></div>
+			</div>';
+			
 			}
+			echo'</div>';
 			if($number_of_page>1){
-			echo'<div class = "pagination" >';			
-			echo'<b style="bottom: 20;">Page</b></BR></BR>';
+			echo'<div class = "pagination" >';	
+			echo'<center><b style="bottom: 20;">Page</b></center></BR></BR>';
 			echo '<a href = "'.$pagename.'?Ord='.$Order.'&Sb='.$sortby.'&page=1">First </a>'; 
 			for($page = 1; $page<= $number_of_page; $page++) { 
 				if($page==1){
@@ -641,24 +724,27 @@ class BaseUser
 
 			$sql = "SELECT * FROM product WHERE ProductName LIKE '%$Query%' or ProductCategory LIKE '%$Query' or SellerUserID LIKE '%$Query%' ORDER BY $sortby $Order LIMIT " . $page_first_result . ',' . $this->results_per_page; 
 			$result = mysqli_query($this->connect(), $sql);  
+			echo'<div id="container">';
 			while($row = $result->fetch_assoc())
 			{ 
 
 			echo'
-			<div class="container">
-			<img src="'.$row["Image"].'" class="image" style="width:500px;height:400px">
-			<div class="middle">
-			<div class="text">Seller:<a href="ProfilePage.php?ID='.$row["SellerUserID"].'">'.$row["SellerUserID"].'</a></div>
-			<div class="text">Product Name:'.$row["ProductName"].'</div>
-			<div class="text">Category:'.$row["ProductCategory"].'</div>
+			
+			<div class="card" onclick="clickproduct(this.id)" id = "'.$row["ProductID"].'">
+			<a href="#" class="fill-div"></a>
+			<img src="'.$row["Image"].'" class="image" style="object-fit: cover;width:200px;height:200px;border-radius:20px;margin-top:20px">
+			<div class="text" style="font-size:10px"><b>'.$row["ProductCategory"].'</b></div>
+			<div class="text" style="font-size:15px"><b>'.$row["ProductName"].'</b></div>
 			<div class="text">Date Listed:<i>'.date('d-m-Y',$row["DateOfListing"]).'</i></div>
-			<div class="text">Initial Price:'.number_format($row["ProductInitialPrice"], 2, '.', '').'</div>
-			<form action="ProductPage.php?ID='.$row["ProductID"].'" method="post"></br>
-			<input type="submit" value="Product Page"/>
-			</form>
-			</div>
+			<div class="text" style="font-size:16px"><b>'.$this->getCurrency().number_format($row["ProductInitialPrice"], 2, '.', '').'</b></div>
 			</div>';
-		
+			?>
+			<script>
+					function clickproduct(ID){
+						location.replace("ProductPage.php?ID="+ID);
+					}
+			</script>
+			<?php
 			}
 			if($number_of_page>1){
 			echo'<div class = "pagination" >';			
@@ -667,7 +753,7 @@ class BaseUser
 			for($page = 1; $page<= $number_of_page; $page++) { 
 				if($page==1){
 
-				echo '<a href = "SearchPage.php?query='.$Query.'&Ord='.$Order.'&Sb='.$sortby.'&page=' . $page . '">' . $page . ' </a>';  
+				echo '<a href = "SearchPage.php?query='.$Query.'&Ord='.$Order.'&Sb='.$sortby.'&page=' . $page . '">' . $page . ' </a></br>';  
 				
 				}
 				else{
@@ -694,31 +780,37 @@ class BaseUser
 					<b>This user has not listed any products</b>';
 
 			}	
+				echo'
+			<div id="container">
+			';
+			
+			echo"<h1>User's Products</h1>";
 			while($row = $result->fetch_assoc())
 			{ 
-			
+			?>
+			<script>
+					function clickproduct(ID){
+						location.replace("ProductPage.php?ID="+ID);
+					}
+			</script>
+			<?php
 			echo'
-			<div class="container">
-			';
+			<div class="card" onclick="clickproduct(this.id)" id = "'.$row["ProductID"].'">';
 			if($row["Status"]=='Unlisted'){
-				echo'<center><h1 style="color:red">Unlisted</h1></center>	';
+				echo'<center><h5 style="color:red">Unlisted</h5></center>	';
 			}
 			if($row["Status"]=='Available'){
-				echo'<center><h1 style="color:green">Available</h1></center>	';
+				echo'<center><h5 style="color:green">Available</h5></center>	';
 			}
-			echo'
-			<img src="'.$row["Image"].'" class="image" style="width:100%;height:100%">
-			<div class="middle">
-			<div class="text">Product Name:'.$row["ProductName"].'</div>
-			<div class="text">Category:'.$row["ProductCategory"].'</div>
+				echo'
+			<a href="#" class="fill-div"></a>
+			<img src="'.$row["Image"].'" class="image" style="object-fit: cover;width:200px;height:200px;border-radius:20px;margin-top:20px">
+			<div class="text" style="font-size:10px"><b>'.$row["ProductCategory"].'</b></div>
+			<div class="text" style="font-size:15px"><b>'.$row["ProductName"].'</b></div>
 			<div class="text">Date Listed:<i>'.date('d-m-Y',$row["DateOfListing"]).'</i></div>
-			<div class="text">Initial Price:'.number_format($row["ProductInitialPrice"], 2, '.', '').'</div>
-			<form action="ProductPage.php?ID='.$row["ProductID"].'" method="post"></br>
-			<input type="submit" value="Product Page"/>
-			</form>
-			</div>
+			<div class="text" style="font-size:16px"><b>'.$this->getCurrency().number_format($row["ProductInitialPrice"], 2, '.', '').'</b></div>
 			</div>';
-		
+			
 			}	
 			
 		
@@ -738,6 +830,9 @@ class StandardUser extends BaseUser
 {
 	private $EscrowPrivate;
 	public $notficationsize;
+	private $TempCardAccount;
+	private $TempAmount;
+	
 	public function __construct($Object){
 	
 		$this->UID = $Object->getUID();
@@ -814,6 +909,52 @@ class StandardUser extends BaseUser
 		$sql = "DELETE FROM notification WHERE Hyperlink='".$Link."' AND UserID='".$this->getUID()."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 	}
+	public function RecomendedProduct($Category,$Name,$ProductID){
+			
+		$sql = "SELECT * FROM product WHERE SellerUserID != '".$this->getUID()."' AND ProductID != '".$ProductID."' AND(ProductCategory = '".$Category."' OR ProductName LIKE '%".$Name."%') ORDER BY RAND()";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		$recommendedarray = array();
+		while(sizeof($recommendedarray)!=3){
+		while($row = $result->fetch_assoc())
+		{
+
+			array_push($recommendedarray,$row['ProductID']);
+
+			
+		}	
+
+		if(sizeof($recommendedarray)==0){		
+			$Name = str_split($Name, 1);
+			foreach ($Name as $Val){
+			$sql = "SELECT * FROM product WHERE SellerUserID != '".$this->getUID()."' AND ProductID != '".$ProductID."' AND ProductName LIKE '%".$Val."' ORDER BY RAND()";
+				$result = $this->connect()->query($sql) or die($this->connect()->error); 
+					while($row = $result->fetch_assoc())
+			{
+	
+			array_push($recommendedarray,$row['ProductID']);
+
+			}	
+			}
+		}
+		if(sizeof($recommendedarray)!=3){
+			$sql = "SELECT * FROM product WHERE SellerUserID != '".$this->getUID()."' AND ProductID != '".$ProductID."' ORDER BY RAND() LIMIT 3";
+				$result = $this->connect()->query($sql) or die($this->connect()->error); 
+					while($row = $result->fetch_assoc())
+			{
+	
+				array_push($recommendedarray,$row['ProductID']);
+
+			}
+			
+		}
+		arsort($recommendedarray);
+	    $recommendedarray= 	array_unique($recommendedarray);
+		$recommendedarray = array_slice($recommendedarray, 0, 3, true);
+		
+		}
+		return $recommendedarray;
+		
+	}
 	public function UserProductBehaviourAnalysis(){
 		$sql = "SELECT * FROM users  WHERE  UserID ='".$this->getUID()."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
@@ -840,10 +981,12 @@ class StandardUser extends BaseUser
 		
 			$counter = 0;
 			$TagsArray = json_decode($row['Tags'],true);
+			if(!empty($TagArray)){
 			foreach($TagsArray as $val){
 				if(array_search(strtoupper($val),$top)){
 					$counter++;
 				}
+			}
 			}
 			$recommendedarray[$row['ProductID']]=$counter;
 
@@ -909,6 +1052,18 @@ class StandardUser extends BaseUser
 		$this->addNotification($SellerID,"ContractID:".$ContractID.", new offer has been made","MyContractsPage.php");
 		return $ContractID;
 	}
+	public function ListOfRecentTransactions(){
+		 $sql = "SELECT * FROM transactions WHERE Receiver ='".$this->getPubKey()."' OR Sender ='".$this->getPubKey()."' ORDER BY Date DESC LIMIT 10";
+		 $result = $this->connect()->query($sql) or die($this->connect()->error); 
+		$ArrayOfTransactions = array();
+		 	while($row = $result->fetch_assoc())
+		{
+			array_push($ArrayOfTransactions,$row['TransactionID']);
+			
+				
+		}
+		return $ArrayOfTransactions;
+	}
 	public function ListOfTransactions($Type){
 		
 		if($Type=="Receiver"){
@@ -964,7 +1119,7 @@ class StandardUser extends BaseUser
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		if ($result->num_rows == 0) 
 		{
-			return "Escrow";
+			return $ID;
 
 		}
 		while($row = $result->fetch_assoc())
@@ -987,7 +1142,7 @@ class StandardUser extends BaseUser
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		if ($result->num_rows == 0) 
 		{
-			return "Escrow";
+			return $ID;
 
 		}
 		while($row = $result->fetch_assoc())
@@ -1019,13 +1174,13 @@ class StandardUser extends BaseUser
 	}
 	public function ListOfContracts($ContractType){
 		if($ContractType=="All"){
-		$sql = "SELECT * FROM contracts WHERE SellerUserID ='".$this->getUID()."' OR BuyerUserID ='".$this->getUID()."' ORDER BY TransactionOpenDate" ;
+		$sql = "SELECT * FROM contracts WHERE SellerUserID ='".$this->getUID()."' OR BuyerUserID ='".$this->getUID()."' ORDER BY TransactionOpenDate DESC" ;
 		}
 		if($ContractType=="Seller"){
-		$sql = "SELECT * FROM contracts WHERE SellerUserID ='".$this->getUID()."' ORDER BY TransactionOpenDate" ;
+		$sql = "SELECT * FROM contracts WHERE SellerUserID ='".$this->getUID()."' ORDER BY TransactionOpenDate DESC" ;
 		}
 		if($ContractType=="Buyer"){
-		$sql = "SELECT * FROM contracts WHERE BuyerUserID ='".$this->getUID()."' ORDER BY TransactionOpenDate" ;
+		$sql = "SELECT * FROM contracts WHERE BuyerUserID ='".$this->getUID()."' ORDER BY TransactionOpenDate DESC" ;
 		}
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		if ($result->num_rows == 0) 
@@ -1180,12 +1335,12 @@ class StandardUser extends BaseUser
 					echo'<div id="User2">';
 				}
 				if($Msg [$x]['Type']=="Admin"){
-					echo'<span class="author">'.$Msg [$x]['User'].'(Administrator):</span>
+					echo'<span class="author">'.$Msg [$x]['User'].'(Administrator)</br></span>
 						 <span class="messsage-text">'.$Msg [$x]['Message'].'</span></br>';
 					echo'</div>';
 				}
 				else{
-					echo'<span class="author">'.$Msg [$x]['User'].':</span>
+					echo'<span class="author">'.$Msg [$x]['User'].'</br></span>
 						 <span class="messsage-text">'.$Msg [$x]['Message'].'</span></br>';
 					echo'</div>';
 				}
@@ -1900,25 +2055,49 @@ $Paid = 'half';
 			
 			
 		}
-		
-		public function ConvertToFIATCurrency($amount,$WalletPubkey,$WalletPrivateKey){
-		$amountETH = $amount;
-		$amount = $amount * $this->getCurrencyValue('SGD');
+		public function creditCardOut($amount){
+			$host    = "localhost";
+			$port    = 8080;
+			$arr = array('REQUEST' => "CreditCardPayOut",'AMOUNT'=>$amount,'UserID'=>$_SESSION['ID']);
+			$message = json_encode($arr);
+			$socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
+			$result = socket_connect($socket, $host, $port) or die("Could not connect to server\n");  
+			if($result) { 
+			socket_write($socket, $message, strlen($message)) or die("Could not send data to server\n");
+			$result = socket_read ($socket, 1024) or die("Could not read server response\n");
+			}
+			socket_close($socket);
+			$raw_data = file_get_contents('http://localhost:3020/PayOut');
+			$data = json_decode($raw_data, true);
+			$this->TempCardAccount=$data['ACCOUNT'];
+			$this->TempAmount=$data['AMOUNT'];
+			return $data['RESPONSE'];
+
+		}
+			public function creditCardIn($amount){
+			$host    = "localhost";
+			$port    = 8080;
+			$arr = array('REQUEST' => "CreditCardPayIn",'AMOUNT'=>$amount,'UserID'=>$_SESSION['ID']);
+			$message = json_encode($arr);
+			$socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
+			$result = socket_connect($socket, $host, $port) or die("Could not connect to server\n");  
+			if($result) { 
+			socket_write($socket, $message, strlen($message)) or die("Could not send data to server\n");
+			$result = socket_read ($socket, 1024) or die("Could not read server response\n");
+			}
+			socket_close($socket);
+		}
+		public function TopUpToSTICoin($amount,$TxID){
 		$host    = "localhost";
 		$port    = 8080;
 		date_default_timezone_set('UTC');
-		$textToEncrypt = $WalletPrivateKey;
-		$encryptionMethod = "AES-256-CBC";
-		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
-		$iv = substr($secret, 0, 16);
-		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
-		date_default_timezone_set('UTC');
+		$this->getEscrow();
 		$textToEncrypt = $this->getEscrowPrivate();
 		$encryptionMethod = "AES-256-CBC";
 		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
 		$iv = substr($secret, 0, 16);
 		$encryptedMessage2 = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
-		$arr = array('REQUEST' => "ConvertToSTICoin",'AMOUNT'=>$amount,'AMOUNTETH'=>$amountETH,'WALLETPUBKEY'=>$WalletPubkey,'WALLETPRIVATEKEY'=>$encryptedMessage,'ESCROWACCOUNT'=> $this->getEscrow(),'ESCROWPRIVATE'=>$encryptedMessage2 ,'PUBKEY' =>$this->getPubKey());
+		$arr = array('REQUEST' => "TopUpSTIC",'AMOUNT'=>$amount,'ESCROWPRIVATE'=>$encryptedMessage2 ,'PUBKEY' =>$this->getPubKey(),'TXID'=>$TxID);
 		$message = json_encode($arr);
 		$socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
 		$result = socket_connect($socket, $host, $port) or die("Could not connect to server\n");  
@@ -1927,7 +2106,8 @@ $Paid = 'half';
 		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
 		}
 		socket_close($socket);
-		$raw_data = file_get_contents('http://localhost:3002/ConvertToSTICoin');
+
+		$raw_data = file_get_contents('http://localhost:3002/TopUpSTIC');
 		$data = json_decode($raw_data, true);
 		if($data['Transaction']== "Success"){
 			return $data['Transaction'];
@@ -1935,12 +2115,15 @@ $Paid = 'half';
 		else{
 			return $data['Transaction'];
 		}
-	}
-		public function ConvertToETH($amount,$WalletPubkey){
+		}
+		public function RedeemSTICoin(){
+		
+		if(!isset($this->TempCardAccount)){
+			return false;
+		}
 		$host    = "localhost";
 		$port    = 8080;
-		$amountETH = $amount/$this->getCurrencyValue('SGD');
-	
+		
 		date_default_timezone_set('UTC');
 		$this->getEscrow();
 		$textToEncrypt = $this->getEscrowPrivate();
@@ -1948,7 +2131,7 @@ $Paid = 'half';
 		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
 		$iv = substr($secret, 0, 16);
 		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
-		$arr = array('REQUEST' => "ConvertToETH",'AMOUNT'=>$amount,'AMOUNTETH'=>$amountETH,'WALLETPUBKEY'=>$WalletPubkey,'ESCROWPRIVATE'=> $encryptedMessage ,'PUBKEY' =>$this->getPubKey());
+		$arr = array('REQUEST' => "RedeemSTIC",'AMOUNT'=>$this->TempAmount,'ACCOUNT'=>  $this->TempCardAccount,'ESCROWPRIVATE'=> $encryptedMessage ,'PUBKEY' =>$this->getPubKey());
 		$message = json_encode($arr);
 		$socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
 		$result = socket_connect($socket, $host, $port) or die("Could not connect to server\n");  
@@ -1957,14 +2140,19 @@ $Paid = 'half';
 		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
 		}
 		socket_close($socket);
-		$raw_data = file_get_contents('http://localhost:3003/ConvertToETH');
+		$this->TempCardAccount = '';
+		$this->TempAmount = '';
+		unset($this->TempCardAccount);
+		unset($this->TempAmount);
+		$raw_data = file_get_contents('http://localhost:3003/RedeemSTIC');
 		$data = json_decode($raw_data, true);
 		if($data['Transaction']== "Success"){
-			return $data['Transaction'];
+			return true;
 		}
 		else{
-			return $data['Transaction'];
+			return false;
 		}
+		
 	}
 	public function PayProduct($PubKey,$Amount,$Title){
 		$host    = "localhost";
@@ -2056,7 +2244,7 @@ $Paid = 'half';
 	
 		
 	}
-	public function EditProfileValidate($Email,$FName,$LName,$ContactNumber,$DispName,$Address,$ProfilePicCurrent,$ProfilePicDest){
+	public function EditProfileValidate($Email,$FName,$LName,$ContactNumber,$DispName,$Address,$ProfilePicCurrent,$ProfilePicDest,$fileempty){
 		$Email = preg_replace('/(\'|&#0*39;)/', '', $Email);
 		$FName = preg_replace('/(\'|&#0*39;)/', '', $FName);
 		$LName = preg_replace('/(\'|&#0*39;)/', '', $LName);
@@ -2070,12 +2258,20 @@ $Paid = 'half';
 			
 		}
 		$ID = $this->getUID();
+
+		if(! $fileempty){
 		$sql = "UPDATE `users` SET `DisplayName`= '$DispName',`Email`= '$Email',`FirstName`= '$FName',`LastName`='$LName',`ContactNumber`='$ContactNumber',`Address`= '$Address', `ProfilePicture`='$ProfilePicDest' WHERE `UserID` = '$ID' ";
-		$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
-		echo $this->connect()->error;
-		move_uploaded_file($ProfilePicCurrent, $ProfilePicDest);
-		if($this->ProfilePic!="profilepictures/default.jpg"){
-			unlink($this->ProfilePic);
+			$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
+			echo $this->connect()->error;
+			move_uploaded_file($ProfilePicCurrent, $ProfilePicDest);
+			if($this->ProfilePic!="profilepictures/default.jpg"){
+				unlink($this->ProfilePic);
+			}
+		}
+		else{
+			
+			$sql = "UPDATE `users` SET `DisplayName`= '$DispName',`Email`= '$Email',`FirstName`= '$FName',`LastName`='$LName',`ContactNumber`='$ContactNumber',`Address`= '$Address',`ProfilePicture`='$this->ProfilePic' WHERE `UserID` = '$ID' ";	
+			$result = $this->connect()->query($sql) or die( $this->connect()->error);  
 		}
 		return "validated";
 	}
@@ -2109,8 +2305,7 @@ $Paid = 'half';
 
 class Admin extends StandardUser 
 {
-	
-	
+
 	
 	public function __construct($Object){
 		$this->UID = $Object->getUID();
@@ -2171,6 +2366,7 @@ class Admin extends StandardUser
 	}
 	return $ArrayOfContracts;
 	}
+	
 	public function Refund_Admin($ContractID,$Amount){
 		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
@@ -2326,7 +2522,7 @@ class Admin extends StandardUser
 		$result = $this->connect()->query($sql) or die( $this->connect()->error);
 		
 	}
-
+	
 	public function AddEscrow($pubkey,$privatekey){
 		$privatekey = preg_replace('/(\'|&#0*39;)/', '', $privatekey);
 		while(true){					
@@ -2341,6 +2537,16 @@ class Admin extends StandardUser
 				$sql = "INSERT INTO users (UserID,PublicKey,PrivateKey,AccountType)VALUES('".$UserID."','".$pubkey."','".$privatekey."','Escrow' )";
 				$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
 				
+	}
+	public function AddAds($File,$UserID){
+	
+		$sql = "INSERT INTO `advertisements` (`AdsImage`, `UserID`)VALUES('".$File."','".$UserID."')";
+		$result = $this->connect()->query($sql) or die( $this->connect()->error);    
+	}
+	public function RemoveAds($ImageID){
+		$sql = "DELETE FROM `advertisements` WHERE AdsImage='$ImageID'";
+		$result = $this->connect()->query($sql) or die( $this->connect()->error);
+		
 	}
 	
 }

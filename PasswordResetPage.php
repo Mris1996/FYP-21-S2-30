@@ -3,45 +3,6 @@
 	require_once("NavBar.php"); 
 ?>
 
-<!-- 
-User Story: 
-#71 As a base user, I want to retrieve or change my password 
-as I have lost my password.
-
-Basic Function:
-1) User keys in temporary password, username and new password (twice)             [DONE]
-2) Temporary password is verified in the database with username                   [DONE in Users.php]
-3) If matches, new password is hashed and overwrites                              [DONE in Users.php]
-4) All temporary passwords associated with the username are cleared from database [DONE in Users.php]
-5) Shows password reset success and user then redirected to login page            [DONE]
-
-Design Goals:
-- Should have basic html structure                                 [DONE]
-- Should have form fields for keying in information                [DONE]
-	UserID               [DONE]
-	Temporary Password   [DONE]
-	New Password         [DONE]
-	Confirm New Password [DONE]
-	
-- Username can be stored in session so user need not re-key
-- As used input is required, input validation is needed
-  Do validation for User ID                                               [DONE]                                                
-  Do validation for new password if its strong enough                     [DONE]
-  Do validation if new password matches confirm new password              [DONE]
-  
-- Can only be accessed by non-login users                                 [DONE]
-- Validate if "UserID" keyed in exists in database (users) when inserting [DONE in Users.php]
-- User SHOULD NOT be able to "refresh" page to re-submit form             [DONE]
-- Can only be accessed by non-login user                                  [DONE]
-- Basic CSS Styling                                                       [DONE]
-- Validate if UserID and hashed temporary password matches in database    [DONE in Users.php]
-- Page can only be accessed by re-direct from "ForgetPasswordPage"
-- Maybe upon successful execution, redirect user to "Login page"          [DONE]
--->
-
-<!--This page is called from ForgetPasswordPage.php and from user email-->
-
-<!--Php Code -->
 <?php
 	// Check if the user is logged in.
 	// Only NON-logged in users are allowed to view this page
@@ -158,17 +119,34 @@ Design Goals:
 				width:200px;
 			}
 			.ResetPassword_GUI{
-				margin: auto;
+					margin: auto;
+				margin-top:2%;
 				width: 30%;
-				border: 3px solid pink; 
+				border:1px solid black;
+				border-radius:10px;
 				padding: 10px;
+				box-shadow: 2px 4px 2px 2px gray;
+			}
+			
+			#forgetbtn {
+				border:none;
+				background-color:purple;
+				color:white;
+				font-size:20px;
+				border-radius:10px;
+				margin-right:10px;
+			}
+			#forgetbtn:hover {
+
+				outline:60%;
+				filter: drop-shadow(0 0 5px purple);
 			}
 		</style>
 	</head>
 	
 	<body>
 		<div class="ResetPassword_GUI">
-			<!--Form-->
+			<h1>Password Reset</h1>
 			<form method="post" name="resetPasswordForm">
 			
 				<p>Please key in your UserID and New Password.</p>
@@ -192,7 +170,7 @@ Design Goals:
 				<input class="input" id="confirm_new_password" type="password" name="confirm_new_password" placeholder="Confirm New Password" autocomplete="off" required><br><br>
 				
 				<!--Submit Button-->
-				<input type="submit" name="ResetPasswordButton" value="submit" name="submit" style="float:left;"/><br><br> 
+				<input type="submit" name="ResetPasswordButton" id="forgetbtn" value="Reset" name="submit" style="float:left;"/><br><br> 
 				
 				<!--Display Error message box-->
 				<span class="error">&nbsp;&nbsp;<?php echo $error;?></span><br><br>
@@ -210,37 +188,3 @@ Design Goals:
 		</script>
 	</body>
 </html>
-
-<!-- 
-Links used:
-PHP Logical Operators:
-https://www.w3schools.com/php/php_operators.asp
-
-Preventing SQL injection via PHP Data Objects (PDO):
-https://dev.to/anastasionico/good-practices-how-to-sanitize-validate-and-escape-in-php-3-methods-139b
-https://www.w3schools.com/php/php_mysql_prepared_statements.asp
-https://www.php.net/manual/en/pdo.prepare.php
-https://www.php.net/manual/en/pdo.prepared-statements.php
-
-Sanitizing input fields:
-https://stackoverflow.com/questions/4223980/the-ultimate-clean-secure-function/4224002#4224002
-https://dev.to/anastasionico/good-practices-how-to-sanitize-validate-and-escape-in-php-3-methods-139b
-https://www.geeksforgeeks.org/how-to-validate-and-sanitize-user-input-with-php/
-https://www.w3schools.com/php/php_filter_advanced.asp
-
-No need to sanitize password input fields:
-https://stackoverflow.com/questions/45538138/is-it-advisable-to-clean-password-input-too
-
-Validate password strength:
-https://www.codexworld.com/how-to/validate-password-strength-in-php/
-https://www.cluemediator.com/how-to-validate-password-strength-in-php
-https://www.coding.academy/blog/how-to-use-regular-expressions-to-check-password-strength
-
-CSS:
-https://www.w3schools.com/howto/howto_css_login_form.asp
-https://www.w3schools.com/css/css_form.asp
-https://stackoverflow.com/questions/3381659/how-to-fix-the-size-of-password-input-field
-https://stackoverflow.com/questions/33983718/adding-height-to-a-password-box-input/51709868
-
-
--->

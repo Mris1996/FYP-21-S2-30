@@ -1,69 +1,159 @@
-<?php require_once("NavBar.php");?> 
+<?php require_once("NavBar.php");
+$BaseUserOBJ = new BaseUser("index page");	
+?> 
 <style>
 .Carousel{
-	width:80%;
-	margin-left:auto;
-	margin-right:auto;
-}
-.container {
-	position: initial;
-	width: 20%;
-	height:500px;
-	float:left;
-	margin-left:200px;
+	
+	width:900px;
+	height:600px;
+	margin:auto;
+	margin-bottom:100px;
+
+
  
-  
-}
-.image {
-  opacity: 1;
-  display: block;
-  width: 100%;
-  height: auto;
-  transition: .5s ease;
-  backface-visibility: hidden;
 }
 
-.middle {
-  transition: .5s ease;
-  opacity: 0;
-  position: relative;
-  
-  left: 50%;
-  transform: translate(-30%,-100%);
-  -ms-transform: translate(-30%, -30%);
+
+.card {
+	font-family: 'Roboto';font-size: 22px;
+  border: 2px solid purple;
+  border-radius: 25px;
+  font-size:5px;
+  overflow:hidden;
+ background-color:white;
+  margin: auto;
   text-align: center;
+  float:left;
+ display: inline-block;
+ margin-left:50px;
+ margin-top:50px;
+ height:320px;
+ width:300px;
+ margin-bottom:50px;
+
+}
+.card:hover {
+  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 1);
 }
 
-.container:hover .image {
-  opacity: 0.3;
-}
 
-.container:hover .middle {
-  opacity: 1;
+
+.card image{
+position: absolute;
+top:    0;
+bottom:   0;	
+	
+}
+.card:hover {
+  cursor:pointer;
+   transform: scale(1.5); 
+   z-index:1;
 }
 
 .text {
-
-  background-color: black;
-  color: white;
+  
+  background-color: white;
+  color:purple;
   font-size: 16px;
-  padding: 20px 0px;
-  width:200px;
+  width:80%;
   margin:auto;
 }
 .Rec_Prod_GUI{
-	width: 100%;
-	display:block;
-	height:500px;
+	margin-top:2%;
+	width: 90%;
+	display:inline;
 	float:left;
-	margin-left:100px;
-	margin-bottom:100px;
+	margin-left:5%;
+	border-radius:20px;
+	  background-color:#23084D ;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color:white;
+	background-repeat: no-repeat; /* Do not repeat the image */
+	background-size: cover; /* Resize the background image to cover the entire container */
+	background-image: url('systemimages/ReccomendedWP.jpg');
+	  background-attachment: fixed;
+	
 
 }	
+
+.Rec_Prod_GUI .card{
+ margin-right:20px;
+ 
+}
+.sorter{
+
+	font-family: 'roboto';font-size: 22px;
+	 background-color:white ;
+	font-size:20px;
+	display:block;
+	width:100%;
+	opacity:0.9;
+	color:white;
+	float:right;
+	
+}
+.sorter input{
+	border: 2px solid white;
+	background-color:purple;
+	color:white;
+	border-radius:5px;
+}
+.sorter input:hover{
+	
+	transform: scale(1.1); 
+   outline:60%;
+    filter: drop-shadow(0 0 6px white);
+}
+#container{
+
+
+	width:80%;
+	
+
+	left:1%;
+	margin:auto;
+	margin-top:5%;
+}
+#sortcontent{
+	opacity:1;
+	margin-left:80px;
+	width:400px;
+	height:180px;
+	color:purple;
+	text-align:left;
+	background-color:white;
+	
+}
+.adsimage{
+ maring:auto;
+transition: 0.3s;
+  object-fit: contain;
+  width:900px;
+  height:600px;
+  border:1px solid black;
+background-repeat: no-repeat; /* Do not repeat the image */
+	background-size: cover; /* Resize the background image to cover the entire container */
+	background-image: url('systemimages/adsbackground.jpg');
+	  background-attachment: fixed;
+ 	 opacity:0.9;
+  filter: drop-shadow(0 0 5px black);
+}
+.adsimage :not(img){
+
+}
+
+
 </style>
 
+<?php 
+$ArrayOFAds = $BaseUserOBJ ->ListOfAds();
+if(sizeof($ArrayOFAds )!=0){
+?>
 
 <div class="Carousel">
+
 <div id="carousel-example-2" class="carousel slide carousel-fade" data-ride="carousel">
   <!--Indicators-->
   <ol class="carousel-indicators">
@@ -71,47 +161,30 @@
     <li data-target="#carousel-example-2" data-slide-to="1"></li>
     <li data-target="#carousel-example-2" data-slide-to="2"></li>
   </ol>
-  <!--/.Indicators-->
-  <!--Slides-->
-  <div class="carousel-inner" role="listbox">
-    <div class="carousel-item active">
+   <div class="carousel-inner" role="listbox">
+   <div class="carousel-item active">
       <div class="view">
-        <img class="d-block w-100" src="ads/Sample.png"
-          alt="First slide">
+        <img class="adsimage"  src="<?php echo $ArrayOFAds[0][0];?>"
+         >
+        <div class="mask rgba-black-light" style="background-color:black"></div>
+      </div>
+    </div>
+<?php
+for($x = 1;$x<sizeof($ArrayOFAds);$x++){
+?>
+ 
+    <div class="carousel-item">
+      <div class="view">
+        <img class="adsimage" src="<?php echo $ArrayOFAds[$x][0];?>"
+          >
         <div class="mask rgba-black-light"></div>
       </div>
-      <div class="carousel-caption">
-        <h3 class="h3-responsive">Light mask</h3>
-        <p>First text</p>
-      </div>
     </div>
-    <div class="carousel-item">
-      <!--Mask color-->
-      <div class="view">
-        <img class="d-block w-100" src="ads/Sample2.png"
-          alt="Second slide">
-        <div class="mask rgba-black-strong"></div>
-      </div>
-      <div class="carousel-caption">
-        <h3 class="h3-responsive">Strong mask</h3>
-        <p>Secondary text</p>
-      </div>
-    </div>
-    <div class="carousel-item">
-      <!--Mask color-->
-      <div class="view">
-        <img class="d-block w-100" src="ads/Sample3.png"
-          alt="Third slide">
-        <div class="mask rgba-black-slight"></div>
-      </div>
-      <div class="carousel-caption">
-        <h3 class="h3-responsive">Slight mask</h3>
-        <p>Third text</p>
-      </div>
-    </div>
+
+<?php
+}
+?>
   </div>
-  <!--/.Slides-->
-  <!--Controls-->
   <a class="carousel-control-prev" href="#carousel-example-2" role="button" data-slide="prev">
     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
     <span class="sr-only">Previous</span>
@@ -126,50 +199,56 @@
 
   </div>
 </div>
+
+<script>
+					function clickproduct(ID){
+						location.replace("ProductPage.php?ID="+ID);
+					}
+</script>
+
+
+	
 <?php
+}
 if(isset($_SESSION['ID'])){
-	echo"<div class='Rec_Prod_GUI'><hr>
-	<center><h1>Recommended for you:</h1></center>
+	
+	echo"<div class='Rec_Prod_GUI'>
+<center><h1 style='margin-top:30px'>Specially picked for you!</h1></center>
 	";
 	$ArrayOfRecProducts = $_SESSION['Object']->UserProductBehaviourAnalysis();
 	foreach($ArrayOfRecProducts as $val){
 		$ProductObj = new Products();
 		$ProductObj->InitialiseProduct($val);
 		echo'
-			
-			<div class="container">
-			<img src="'.$ProductObj->Image.'" class="image" style="width:500px;height:400px">
-			<div class="middle">
-			<div class="text">Seller:<a href="ProfilePage.php?ID='.$ProductObj->SellerUserID.'">'.$ProductObj->SellerUserID.'</a></div>
-			<div class="text">Product Name:'.$ProductObj->ProductName.'</div>
-			<div class="text">Category:'.$ProductObj->ProductCategory.'</div>
+
+			<div class="card" onclick="clickproduct(this.id)" id = "'.$val.'">
+			<img src="'.$ProductObj->Image.'" class="image" style="object-fit: cover;width:200px;height:200px;border-radius:20px;margin-top:20px">
+			<div class="text" style="font-size:10px"><b>'.$ProductObj->ProductCategory.'</b></div>
+			<div class="text" style="font-size:15px"><b>'.$ProductObj->ProductName.'</b></div>
 			<div class="text">Date Listed:<i>'.$ProductObj->DateOfListing.'</i></div>
-			<div class="text">Initial Price:'.$_SESSION['Object']->getCurrency().number_format($ProductObj->ProductInitialPrice, 2, '.', '').'</div>
-			<form action="ProductPage.php?ID='.$ProductObj->ProductID.'" method="post"></br>
-			<input type="submit" value="Product Page"/>
-			</form>
-			</div>
-			</div>';
+			<div class="text" style="font-size:20px;"><b>'.$_SESSION['Object']->getCurrency().number_format($ProductObj->ProductInitialPrice, 2, '.', '').'</b></div>
+		
+			</div></br>';
 		
 		
 	}
 	echo'</div>';
 }
-
 ?>
-<hr>
-<hr style="margin-top:500px">
+
 <div class="sorter">
-<form method="post" style="margin-top:20px">
-<Label>Sort By:</Label></br>
-<input type="radio" id="ASC" name="Order" checked = "true" value="ASC"><label for="ASC">Ascending</label><br>
-<input type="radio" id="DESC" name="Order" value="DESC"><label for="DESC">Descending</label><br>
+<div id="sortcontent">
+<form method="post" style="">
+<Label style="margin-right:40px;font-size:30px;"><b>Sort</b></Label></br>
+<input type="radio" id="ASC" name="Order" checked = "true" value="ASC">&nbsp;&nbsp;&nbsp;&nbsp;<label for="ASC">Ascending</label><br>
+<input type="radio" id="DESC" name="Order" value="DESC">&nbsp;&nbsp;&nbsp;&nbsp;<label for="DESC">Descending</label><br>
 <input type="submit" name="SortCat" value="Category">
 <input type="submit" name="SortPrice" value="Price">
 <input type="submit" name="SortDate" value="Date">
 </form>
 </div>
-<hr>
+</div>
+<center><Label style="font-size:50px;"><b>Products</b></Label></center>
 <?php
 if (!isset ($_GET['page']) ) {  
 	$page = 1;  
@@ -191,7 +270,7 @@ if (!isset ($_GET['Cat']) ) {
 } else {  
 	$Category = "All";	
 }
-$BaseUserOBJ = new BaseUser("index page");	
+
 
 if(isset($_POST['SortDate'])){
 
@@ -213,4 +292,6 @@ $BaseUserOBJ->ViewAllProduct($Sortby,$Order,$Category,$page,"index.php");
 
    
 ?>
+
+</div>
 <?php require_once("Footer.php");?> 

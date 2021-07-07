@@ -1,21 +1,38 @@
 <style>
 .footer-basic {
-  padding:40px 0;
-  background-color:#ffffff;
-  color:#4b4c4d;
+ margin: 0;
+padding-top:20%
 }
 footer {
-    clear: both;
-    position: relative;
-    height: 100px;
-    margin-top: 500px;
-	text-align:center;
-}
+	
+	 box-shadow:
+    0 0 0 0 #fff,  /* inner white */
+    0 0 0 0 #f0f, /* middle magenta */
+    0 0 50px 1px #0ff; /* outer cyan */
+	color:white;
+	font-size:20px;
+	background-repeat: no-repeat; /* Do not repeat the image */
+	background-size: cover; /* Resize the background image to cover the entire container */
+	background-image: url('systemimages/footerwallpaper.jpg');
+	clear: both;
+	position: relative;
+	height: 100px;
+  	width:100%;
 
+	text-align:center;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-position: center top;
+}
+footer a{
+	font-size:20px;
+	color:white;
+	
+}
 </style>
 
+</div>
 
-<body>
     <div class="footer-basic">
         <footer>
 		<hr>
@@ -28,10 +45,7 @@ footer {
                 <li class="list-inline-item"><a href="ContactPage.php">Contact Us</a></li>
                 <li class="list-inline-item"><a href="#">Terms and conditions</a></li>
             </ul>
-            <p class="copyright">S.T.I.C Version 0.2 © 2021</p>
+           <b> <p class="copyright">S.T.I.C Version 0.3 © 2021</p> </b>
         </footer>
     </div>
    
-</body>
-
-</html>

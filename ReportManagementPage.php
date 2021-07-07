@@ -7,6 +7,67 @@
 .ReportedContract_GUI{
 	display:none;
 }
+.formcontainer{
+	width:700px;
+	height:150px;
+	text-align:left;
+	margin:auto;
+	border:1px solid black;
+	border-radius:20px;
+	box-shadow:5px 5px gray;
+}
+.formcontainer input[type="submit"]{
+	margin-left:1%;
+	float:left;
+	
+}
+.formcontainer input[type="text"]{
+
+	text-align:center;
+	
+}
+#AllReports{
+	
+	background-color:white;
+	width:1700px;
+	
+	color:purple;
+	border:1px solid grey;
+	margin:auto;
+	text-align:center;
+}
+ table,tr,th,td{
+	
+	border:1px solid #e8e6e6; 
+ }
+ tr{
+	 height:50px;
+	 vertical-align: text-bottom;
+ }
+ button,input[type=submit],input[type=button] {
+	margin-top:20px;
+	border:none;
+	background-color:purple;
+	color:white;
+	font-size:20px;
+	border-radius:10px;
+	margin-right:10px;
+}
+input[type=submit]:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+input[type=button]:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+button:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
 </style>
 <script>
 $(document).ready(function(){
@@ -33,6 +94,43 @@ $(document).ready(function(){
 <button class="ContractList">Reported Contracts</button>
 
 <?php
+if (isset ($_GET['page3']) ) {  
+
+?>
+<script>
+$(document).ready(function(){
+    $(".ReportedUserGUI").hide();
+	$(".ReportedProduct_GUI").hide();
+	$(".ReportedContract_GUI").show();
+});
+</script>
+<?php
+} 
+
+if (isset ($_GET['page2']) ) {  
+
+?>
+<script>
+$(document).ready(function(){
+ $(".ReportedUserGUI").hide();
+	$(".ReportedProduct_GUI").show();
+	$(".ReportedContract_GUI").hide();
+});
+</script>
+<?php
+} 
+if (isset ($_GET['page']) ) {  
+
+?>
+<script>
+$(document).ready(function(){
+    $(".ReportedUserGUI").show();
+	$(".ReportedProduct_GUI").hide();
+	$(".ReportedContract_GUI").hide();
+});
+</script>
+<?php
+} 
 if(!isset($_SESSION['ID'])){
 	echo '<script> location.replace("index.php")</script> ';
 }
@@ -44,7 +142,7 @@ $ArrayOfUsers = $_SESSION['Object']->ListOfReportedUsers();
 echo'<h1>Reported Users</h1>';
 if(!empty($ArrayOfUsers)){ 
 
-echo'<hr><table class="table table-borderless table-dark">';
+echo'<hr><table id="AllReports" >';
 echo'<tr>
 <th>UserID</th>
 <th>NumberOfReports</th>
@@ -76,8 +174,8 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 }
 echo'</table>';
 
-echo'<div style="margin-top:10px;width:1000px;margin-left:auto;margin-right:auto;text-align:center">';			
-echo'<b style="bottom: 20;">Page</b></BR>';
+echo'<div class = "pagination" >';			
+echo'<center><b style="bottom: 20;">Page</b></center></BR>';
 echo '<a href = "ReportManagementPage.php?page=1">First </a>'; 
 for($page = 1; $page<=$number_of_page; $page++) { 
 	if($page==1){
@@ -102,7 +200,7 @@ $ArrayOfProducts = $_SESSION['Object']->ListOfReportedProducts();
 echo'<h1>Reported Products</h1>';
 if(!empty($ArrayOfProducts)){ 
 
-echo'<hr><table class="table table-borderless table-dark">';
+echo'<hr><table id="AllReports" >';
 echo'<tr>
 <th>ProductID</th>
 <th>Seller</th>
@@ -138,8 +236,8 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 }
 echo'</table>';
 
-echo'<div style="margin-top:10px;width:1000px;margin-left:auto;margin-right:auto;text-align:center">';			
-echo'<b style="bottom: 20;">Page</b></BR>';
+echo'<div class = "pagination" >';			
+echo'<center><b style="bottom: 20;">Page</b></center></BR>';
 echo '<a href = "ReportManagementPage.php?page2=1">First </a>'; 
 for($page2 = 1; $page2<=$number_of_page2; $page2++) { 
 	if($page2==1){
@@ -167,7 +265,7 @@ $ArrayOfUsers = $_SESSION['Object']->ListOfReportedContracts();
 echo'<h1>Reported Contracts</h1>';
 if(!empty($ArrayOfUsers)){ 
 
-echo'<hr><table class="table table-borderless table-dark">';
+echo'<hr><table id="AllReports" >';
 echo'<tr>
 <th>ContractID</th>
 <th>Status</th>
@@ -203,8 +301,8 @@ for($x = $page_num_min;$x<$page_num_max;$x++){
 }
 echo'</table>';
 
-echo'<div style="margin-top:10px;width:1000px;margin-left:auto;margin-right:auto;text-align:center">';			
-echo'<b style="bottom: 20;">Page</b></BR>';
+echo'<div class = "pagination" >';			
+echo'<center><b style="bottom: 20;">Page</b></center></BR>';
 echo '<a href = "ReportManagementPage.php?page3=1">First </a>'; 
 for($page3 = 1; $page3<=$number_of_page3; $page3++) { 
 	if($page3==1){

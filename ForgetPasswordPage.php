@@ -73,21 +73,38 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<style type="text/css">
-			.center {
+		<style>
+			.ForgetPassword_GUI {
 				margin: auto;
+				margin-top:2%;
 				width: 30%;
-				border: 3px solid blue; 
+				border:1px solid black;
+				border-radius:10px;
 				padding: 10px;
+				box-shadow: 2px 4px 2px 2px gray;
+
+			}
+			#forgetbtn {
+				border:none;
+				background-color:purple;
+				color:white;
+				font-size:20px;
+				border-radius:10px;
+				margin-right:10px;
+			}
+			#forgetbtn:hover {
+
+				outline:60%;
+				filter: drop-shadow(0 0 5px purple);
 			}
 		</style>
 	</head>
 	
 	<body>
 		<!--Div class here is turned "off" later to display email sent message -->
-		<div class="ForgetPassword_GUI center">
+		<div class="ForgetPassword_GUI">
 			<form method="post" name="recoverPasswordForm">
-			
+				<h1>Password Recovery</h1>
 				<p>Please key in your UserID and email address.</p>
 				<p>We will send you an email to reset your password.</p>
 			
@@ -101,7 +118,7 @@
 				<input type="email" id="email" name="ForgetPassEmail" placeholder="abc@gmail.com" autocomplete="off" required><br><br>
 				
 				<!--Submit Button-->
-				<input type="submit" name="ForgetButton" value="submit" name="submit" style="float:left;"/><br><br> 
+				<input type="submit" id="forgetbtn" name="ForgetButton" value="submit" name="submit" style="float:left;"/><br><br> 
 				
 				<!--Display Error message box-->
 				<span class="error">&nbsp;&nbsp;<?php echo $EmailErr;?></span><br><br>

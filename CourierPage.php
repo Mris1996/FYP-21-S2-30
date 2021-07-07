@@ -100,7 +100,7 @@ $BaseUserOBJ->CourierAcceptService($ContractID);
 $BaseUserOBJ->CourierUpdate($_GET['ID']);
 echo"
 <script>
-alert('Thank you for you service');
+alert('Thank you for your service');
 location.reload();
 </script>
 ";

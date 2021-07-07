@@ -41,13 +41,82 @@ label+input+textarea {
 	/* Margin: 0% for top, 30% for right, 0% for bottom, 4% for left */
 	margin: 0 30% 0 4%;
 }
+#innercontainer1 button {
+	border:none;
+	background-color:purple;
+	color:white;
+	font-size:20px;
+	border:1px solid white;
+	height:100px;
+	width:100%
+}
+#innercontainer1 button:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+#container{
+	width:1400px;
+	height:700px;
+	border:1px solid black;
+	border-radius: 10px;
+	overflow:hidden;
+	box-shadow:5px 5px gray;
+	margin:auto;
+	margin-top:2%;
+	
+}
+#innercontainer1{
+width:20%;
+height:100%;
+float:left;	
+	border:1px solid black;
+}
 
+#innercontainer2{
 
+width:80%;
+height:100%;
+overflow:scroll;
+float:right;
+display:inline-block;
+background-color:white;	
+}
+#innercontainer2::-webkit-scrollbar {
+    width: 0.2em;
 
+}
+ 
+#innercontainer2:-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+ 
+#innercontainer2::-webkit-scrollbar-thumb {
+  background-color: black;
+  outline: 1px solid black;
+  
+}
+#donebtn {
+	border:none;
+	background-color:purple;
+	color:white;
+	font-size:20px;
+	border-radius:10px;
+	margin-right:10px;
+}
+#donebtn:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
 </style>
-<button class="EditProfile">Edit Profile</button>
-<button class="ChangePassword">Change Password</button>
+<div id="container">
+<div id="innercontainer1">
 
+<button class="EditProfile">Edit Profile</button></br>
+<button class="ChangePassword">Change Password</button>
+</div>
+<div id="innercontainer2">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
 $(document).ready(function(){
@@ -62,7 +131,7 @@ $(document).ready(function(){
 
 });
 </script>
-<hr>
+
 <?php 
 $submit = true;
 $EditProfileFirstNameError = $EditProfileContactError = $EditProfileLastNameError  =  $EditProfileEmailError =  $EditProfileAddressError = $EditProfileDisplayNameError =  $EditProfileFileErr = ""; 
@@ -132,7 +201,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['EditProfileButton'])){
 			$EditProfileContactError = "Invalid Phone Number";
 		}
 	}
-	
+	$fileempty  = false;
 	if (empty($_POST["file"])){
 		$file = $_FILES['file'];
 		$File = $_FILES['file']['name'];
@@ -167,10 +236,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['EditProfileButton'])){
 		} else {
 			if($fileSize==0){
 				$fileempty = true;
-				$fileTmpName = $_SESSION['Object']->ProfilePic;
-				$fileExt = explode('.',$_SESSION['Object']->ProfilePic);
-				$fileActualExt = strtolower(end($fileExt));
-				$FileNew = uniqid('', true).".".$fileActualExt;
 			}
 			else{	
 				$EditProfileFileErr= "You cannot upload files of this type!";
@@ -186,8 +251,14 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['EditProfileButton'])){
 			echo '<script> location.replace("SettingsPage.php")</script> ';
 		}
 		else{
+			if(isset($FileNew)){
 			$FileNew = 'profilepictures/'.$FileNew;
-			if($_SESSION['Object']->EditProfileValidate($_POST["EditProfileEmail"],$_POST["EditProfileFirstName"],$_POST["EditProfileLastName"],$_POST["EditProfileContact"],$_POST["EditProfileDisplayName"],$_POST["EditProfileAddress"],$fileTmpName,$FileNew)=="validated"){
+			}
+			else{
+				$fileTmpName = '';
+				$FileNew = '';
+			}
+			if($_SESSION['Object']->EditProfileValidate($_POST["EditProfileEmail"],$_POST["EditProfileFirstName"],$_POST["EditProfileLastName"],$_POST["EditProfileContact"],$_POST["EditProfileDisplayName"],$_POST["EditProfileAddress"],$fileTmpName,$FileNew,$fileempty)=="validated"){
 				$EditProfile = false;
 				echo'<script>alert("Successfully updated your profile, please check your profile")</script>';
 				$_SESSION['Object']->setUID($_SESSION['Object']->getUID());
@@ -195,7 +266,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['EditProfileButton'])){
 				
 				
 			}
-			else if($_SESSION['Object']->EditProfileValidate($_POST["EditProfileEmail"],$_POST["EditProfileFirstName"],$_POST["EditProfileLastName"],$_POST["EditProfileContact"],$_POST["EditProfileDisplayName"],$_POST["EditProfileAddress"],$fileTmpName,$FileNew)=="Email error"){
+			else if($_SESSION['Object']->EditProfileValidate($_POST["EditProfileEmail"],$_POST["EditProfileFirstName"],$_POST["EditProfileLastName"],$_POST["EditProfileContact"],$_POST["EditProfileDisplayName"],$_POST["EditProfileAddress"],$fileTmpName,$FileNew,$fileempty)=="Email error"){
 				$EditProfileEmailError = "Email already exists";
 				$EditProfile = false;
 			}
@@ -211,9 +282,7 @@ $_POST["EditProfileContact"]  = "";
 $_POST["EditProfileAddress"]  = "";
 $EditProfile = false;
 }
-if(!$EditProfile){
-echo'<style> .EditProfile_GUI{display:none;}</style>';	
-}
+
 
 ?>
 <script>
@@ -266,10 +335,10 @@ function UpdatePicture(){
 	<span class="error">&nbsp;&nbsp;<?php echo $EditProfileAddressError;?></span><br /><br />
 
 
-	<input type="Submit" name="EditProfileButton" value="Done" style="float:right;"/></br> 
+	<input type="submit" name="EditProfileButton" id="donebtn" value="Done" style="float:right;"/></br> 
 </form>
 </div>
-<hr>
+
 </div>
 
 <?php 
@@ -361,8 +430,10 @@ echo'<style> .ChangePassword_GUI{display:none;}</style>';
 	<input type="password" name="ChangePasswordNewConfirmPassword">
 	<span class="error">&nbsp;&nbsp;<?php echo $ChangePasswordNewConfirmPasswordError;?></span><br /><br />
 
-	<input type="Submit" name="ChangePasswordButton" value="Change Password" style="float:right;"/></br> 
+	<input type="Submit" name="ChangePasswordButton" id="donebtn" value="Change Password" style="float:right;"/></br> 
 </form>
 </div>
-<hr>
+
+</div>
+</div>
 <?php require_once("Footer.php");?>

@@ -47,7 +47,11 @@ label,span{
 	display:inline-block;
 	width:200px;
 	margin-right:5px;
+	margin-left:2%;
 	text-align:center;
+}
+.Offer_GUI h1,h2{
+	margin-left:2%;
 }
 .Insert_GUI input[type="submit"]{
 	font-size:30px;
@@ -65,41 +69,40 @@ input[type="text"]{
 	font-family: arial;
 	width:200px;
 }
-.Post_Insert_GUI{
-	margin-left:auto;
-	margin-right:auto;
-	margin-bottom:20px;
-	width:500px;
-	height:300px;
-	text-align:center;
-	opacity:0.8;
-	font-size:30px;
 
+.Offer_GUI{
+	width:1200px;
+	height:800px;
+	margin:auto;
+		border-radius:20px;
+	box-shadow:5px 5px gray;
+		border:1px solid black;
 }
-.ConfirmList_GUI{
-	margin-left:auto;
-	margin-right:auto;
-	margin-bottom:20px;
-	width:500px;
-	height:300px;
-	text-align:left;
-	opacity:0.8;
-	font-size:30px;
+button,input[type=submit] {
 	
+	border:none;
+	background-color:purple;
+	color:white;
+	font-size:30px;
+	border-radius:10px;
+	margin-right:10px;
+}
+input[type=submit]:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
 }
 </style>
 <div class="Offer_GUI">
-<h1 style="font-size:70px"><center>Offer for <?php echo $ProductID;?></center></h1>	
+<h1 style="font-size:70px"><center>Offer for <?php echo $ProductObj->ProductName;?></center></h1>	
     <form method="post" enctype="multipart/form-data">  
 	
 	<h2>Product Information</h2>
 		<div style="width:1000px;margin:auto">
-		<img src="<?php echo $ProductObj->Image;?>" style="width:50%;margin:auto"></br>
+		<center><img src="<?php echo $ProductObj->Image;?>" style="width:50%;margin:auto;object-fit: cover;" width="200" height="300"></br></center>
 	
-		<label>Product Name:</label><b><?php echo $ProductObj->ProductName;?></b></br>
+		<label>Product ID:</label><b><?php echo $ProductObj->ProductID;?></b></br>
 		<label>Product Owner:</label><b><?php echo $_SESSION['Object']->getUserDisplayName($ProductObj->SellerUserID)?></b></br>
-		<label>Product Caption:</label><b><?php echo $ProductObj->ProductCaption?></b></br>
-		<label>Product Description:</label><b><?php echo $ProductObj->ProductDescription?></b></br>
 		<label>Product Initial Price:</label><b><?php echo $_SESSION['Object']->getCurrency().$ProductObj->ProductInitialPrice?></b></br>
 		</div>
 	<hr>
@@ -109,12 +112,12 @@ input[type="text"]{
 		<span class="error">&nbsp;&nbsp;<?php echo $DateRequiredError;?></span><br /><br />
 	
 		
-		<label>Offer(SGD):</label>
+		<label>Offer(<?php echo $_SESSION['Object']->getCurrency()?>):</label>
 		<input type="number" id="Offer" name="Offer" min="0.00" step="any">
 		<span class="error"><?php echo $OfferError;?></span><br />
 		<br />
 		
-		<input type="submit" name="submit" value="Submit">
+		<input type="submit" name="submit" style="float:right;margin-right:2%;" value="Submit">
     </form>
 </div>
 
