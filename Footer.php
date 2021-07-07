@@ -45,7 +45,7 @@ footer a{
                 <li class="list-inline-item"><a href="ContactPage.php">Contact Us</a></li>
                 <li class="list-inline-item"><a href="#">Terms and conditions</a></li>
             </ul>
-           <b> <p class="copyright">S.T.I.C Version 0.3 © 2021</p> </b>
+           <b> <p class="copyright">S.T.I.C Version 0.4 © 2021</p> </b>
         </footer>
     </div>
    
