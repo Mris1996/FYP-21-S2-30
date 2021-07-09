@@ -20,7 +20,7 @@ session_start();
 	border:none;
 	background-color:purple;
 	color:white;
-	font-size:30px;
+	font-size:20px;
 	border-radius:10px;
 	margin-right:10px;
 }

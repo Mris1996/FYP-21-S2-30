@@ -99,7 +99,7 @@ margin-top:2%;
 	background-color:purple;
 	color:white;
 	height:50px;
-	font-size:30px;
+	font-size:20px;
 	width:200px;
 	margin-top:10px;
 	border-radius:40px;
@@ -320,7 +320,7 @@ bottom:   0;
 
 <p style="margin-left:2%;font-size:25px;">Status: <?php echo$ProductObj->Status?></p>
 <center><h2 style="text-align:center;margin-left:2%;color:green;font-size:40px"><b><?php echo$BaseUserOBJ->getCurrency().$ProductObj->ProductInitialPrice?></b></h2></center></br>
-<i style="float:right;margin-right:2%;">Price subjected to change upon negotiating</i>
+<i style="float:right;margin-right:2%;">Price is subjected to changes upon negotiating</i>
 </br></br></br></br></br>
 <p style="float:right;margin-right:2%;font-size:25px;">Product Expiry:<?php echo $ProductObj->DateOfExpiry?></p></br>
 
