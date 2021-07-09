@@ -1,5 +1,4 @@
 <?php
-
 class BaseUser
 {
 	public $UID;
@@ -26,7 +25,6 @@ class BaseUser
 			$this->createEthereumAccount();
 		}
 	}
-	
 	public function LoginValidate($ID,$Pass)
 	{	$ID = filter_var($ID, FILTER_SANITIZE_STRING);
 		$ID = preg_replace('/(\'|&#0*39;)/', '', $ID);
@@ -43,11 +41,8 @@ class BaseUser
 			while($row = $result->fetch_assoc()){ 
 				if(Password_verify($Pass,$row["Password"]))
 				{	$validated = true;
-					
 				}
-				
 			}	
-			
 			if($validated)
 			{	
 				$this->setUID($ID);
@@ -59,7 +54,6 @@ class BaseUser
 				return false;
 			}
 		}
-		
 	}
 	public function LogOut(){
 		$sql="UPDATE `users` SET `LoginCount`= `LoginCount`-1 WHERE `UserID`='".$this->getUID()."'";
@@ -77,7 +71,6 @@ class BaseUser
 	public function CourierAcceptService($ContractID){
 			$sql = " UPDATE `contracts` SET `Status`= 'Seller has accepted service', `TotalAccepted`= '1' WHERE `ContractID`= '".$ContractID."' ";
 			$result = $this->connect()->query($sql) or die($this->connect()->error); 
-		
 	}
 	public function SendVerfication($email){
 		$data            = "";
@@ -87,11 +80,8 @@ class BaseUser
 		$result          = "";
 		$sql             = "";
 		$temp_password   = "";
-
 		$sql = "SELECT * FROM users WHERE UserID='".$this->getUID()."'";
-
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
-
 		if ($result->num_rows == 1)
 		{
 			$data = '1234567890';
@@ -102,10 +92,8 @@ class BaseUser
 			$hashed_password = password_hash($temp_password, PASSWORD_DEFAULT);
 			$sql = "SELECT * FROM OTP WHERE UserID='".$this->getUID()."'";
 			$result = $this->connect()->query($sql) or die($this->connect()->error);
-			
 			if ($result->num_rows > 0)
 			{
-				
 				$sql = "UPDATE `OTP` SET `Password`='".$hashed_password."',`Attempt`=`Attempt`+1 WHERE UserID='".$this->getUID()."'";
 				$result = $this->connect()->query($sql) or die($this->connect()->error);
 			}
@@ -117,14 +105,12 @@ class BaseUser
 			$subject = "OTP password";
 			$body = "Your OTP password is:".$temp_password;
 			$headers = "From: S.T.I.C";
-			
 			mail($to_email, $subject, $body, $headers);
 			return;
 		}
 	}
 	public function VerifyOTP ($temporary_password)
 	{
-	
 	return "Success";
 		// Initialize variables
 		$new_hashed_password = "";
@@ -132,7 +118,6 @@ class BaseUser
 		$row = "";
 		$sql = "";
 		$retrieved_hash_password = "";
-		
 		// Validation for UserID
 		$sql = "SELECT * FROM OTP WHERE UserID='".$this->getUID()."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);  // Executing the query 
@@ -141,38 +126,29 @@ class BaseUser
 			$retrieved_hash_password = $row["Password"];
 			$attempts = $row["Attempt"];
 		}
-		
 		if($attempts>2){
-		
 			$sql = "DELETE FROM OTP WHERE UserID='".$this->getUID()."'";
 			$result = $this->connect()->query($sql) or die($this->connect()->error);
 			return "Max Attempt";
-			
 		}
 			// Compare hashed passwords
 			if (password_verify($temporary_password, $retrieved_hash_password)) 
 			{
-				
 				$sql = "DELETE FROM OTP WHERE UserID='".$this->getUID()."'";
 				$result = $this->connect()->query($sql) or die($this->connect()->error);
 				return "Success";
-					
 			} 
-			
 			else { return "Wrong OTP"; } // When Temporary password do not match		
 	}
 	public function ListOfAds(){
-		
 		$sql = "SELECT * FROM `advertisements` ";
 		$adsarray = array();
-	
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		while($row = $result->fetch_assoc())
 		{ 	
 			$temparray= array($row['AdsImage'],$row['UserID'],$row['Date']);
 			array_push($adsarray,$temparray);
 		}
-			
 		return $adsarray;
 	}
 	public function ForgetPassword ($userid, $email)
@@ -186,17 +162,13 @@ class BaseUser
 		$temp_password   = "";
 		$user_email      = "";
 		$user_userid     = "";
-		
 		// Validation here AGAIN just in case this method is called elsewhere which might lack validation.
 		$user_userid = filter_var($userid, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);  // Sanitize userid
 		$user_email  = filter_var($email, FILTER_SANITIZE_EMAIL);                            // Sanitize email
-		
 		// Query to check user ID if it exists in Database (Users)
 		$sql = "SELECT * FROM users WHERE UserID='".$user_userid."'";
-		
 		// Executing the query above
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
-
 		// By right since UserID is unique, should only have 1 row as result
 		// Designed for Default-Deny structure
 		if ($result->num_rows == 1)
@@ -208,20 +180,15 @@ class BaseUser
 			{
 				$temp_password .= substr(str_shuffle($data), 0, 1);
 			}
-			
 			// Hash temporary password
 			$hashed_password = password_hash($temp_password, PASSWORD_DEFAULT);
 			$sql = "SELECT * FROM temporarypassword WHERE UserID='".$user_userid."'";
 			$result = $this->connect()->query($sql) or die($this->connect()->error);
-			
-			
 			if ($result->num_rows > 0)
 			{
 				$sql = "DELETE FROM temporarypassword WHERE UserID='".$user_userid."'";
 				$result = $this->connect()->query($sql) or die($this->connect()->error);
 			}
-			
-			
 			$sql = "INSERT INTO `temporarypassword` (`UserID`, `Password`) VALUES ('".$user_userid."','".$hashed_password."')";
 			$result = $this->connect()->query($sql) or die($this->connect()->error); 
 			$header  = "From:fyp21s230@gmail.com \r\n";
@@ -231,24 +198,17 @@ class BaseUser
 			$msg = "Your temporary password is: ".$temp_password."\nClick on the link below to reset your password:\n<a href ='http://0621eb739b7e.ngrok.io/FYP-21-S2-30/PasswordResetPage.php'>Reset Password</a>";
 			// Tells the system to wrap words if longer than 70
 			$msg = wordwrap($msg,70);
-			
 			// Send mail
 			if(mail($user_email,"Reset Password",$msg,$header)){ return "SUCCESS"; }
 			else { return "Error occured! Please retry!"; }
 		}
 		else
 		{
-			
 			return "Error occured! Please retry!";
-			
-				
 		}
-		
 	}
-	
 	public function ResetPassword ($userid, $temporary_password, $new_password)
 	{
-		
 		// Initialize variables
 		$new_hashed_password = "";
 		$result = "";
@@ -256,19 +216,15 @@ class BaseUser
 		$sql = "";
 		$retrieved_hash_password = "";
 		$user_userid = "";
-		
 		// Validation for UserID
 		$user_userid = filter_var($userid, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);  // Sanitize userid
 		$sql = "SELECT * FROM temporarypassword WHERE UserID='".$user_userid."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);  // Executing the query 
-
 		// By right since UserID is unique, should only have 1 row as result
 		if ($result->num_rows == 1)
 		{
-			
 			$row = $result -> fetch_row();
 			$retrieved_hash_password = $row[1];
-			
 			// Compare hashed passwords
 			if (password_verify($temporary_password, $retrieved_hash_password)) 
 			{
@@ -276,32 +232,26 @@ class BaseUser
 				// Delete all temporary passwords associated with the username from database (temporaryPassword)
 				$sql = "DELETE FROM temporarypassword WHERE UserID='".$user_userid."'";
 				$result = $this->connect()->query($sql) or die($this->connect()->error);
-			
 				// Check if UserID exists in Database (Users)	
 				$sql = "SELECT * FROM users WHERE UserID='".$user_userid."'"; 			
 				$result = $this->connect()->query($sql) or die($this->connect()->error); 
 				// By right since UserID is unique, should only have 1 row as result
 				if ($result->num_rows == 1)
 				{
-					
 					// Hash new password
 					$new_hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-			
 					// Update of new password in database (users)
 					$sql = "UPDATE `users` SET `Password`='".$new_hashed_password."' WHERE `UserID`= '".$user_userid."'";					
 					$result = $this->connect()->query($sql) or die($this->connect()->error); 
-					
 					// Once all functions successfully execute, then return "success"
 					return "SUCCESS";
 				}
 				else { return "Error occured! Please retry!"; } // User would need to obtain another Temporary Password
-				
 			} 
 			else { return "Error occured! Please retry!"; } // When Temporary password do not match			
 		}
 		else
 		{
-	
 			return "Error occured! Please retry!";		
 		}
 	}
@@ -319,13 +269,10 @@ class BaseUser
 		$CurrencyVal = json_decode($response,true);
 		curl_close($ch);
 		return $CurrencyVal[$Currency];
-		
 	}
-
 	public function getPubKeyFromUID($UID){
 		$sql = "SELECT * FROM users WHERE UserID='".$UID."'" ;
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
-	
 		while($row = $result->fetch_assoc())
 		{ 	
 			$PubKey = $row['PublicKey'];
@@ -335,19 +282,15 @@ class BaseUser
 	public function GetAccountBalanceFromServer($PubKey){
 		$sql = "SELECT * FROM users WHERE PublicKey='".$PubKey."'" ;
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
-	
 		while($row = $result->fetch_assoc())
 		{ 	
 			$Bal = $row['AccountBalance'];
 		}
-
-		 	
 		 $Bal = number_format($Bal, 2, '.', '');
 		 $this->AccountBalance = $Bal;
 		 return $Bal;
 	}
 	public function createEthereumAccount(){
-		
 		$host    = "localhost";
 		$port    = 8080;
 		$arr = array('REQUEST' => "GetNewAccount");
@@ -363,10 +306,8 @@ class BaseUser
 		$data = json_decode($raw_data, true);
 		$this->PubKey =  $data['pubkey'];
 		$this->PrivateKey = $data['privatekey'];
-		
 	}
 	public function SignUpValidate($ID,$Email,$Pass,$FName,$LName,$ContactNumber,$DispName,$DOB,$Address,$ProfilePicCurrent,$ProfilePicDest){
-		
 		$ID = preg_replace('/(\'|&#0*39;)/', '', $ID);
 		$Pass = preg_replace('/(\'|&#0*39;)/', '', $Pass);
 		$Email = preg_replace('/(\'|&#0*39;)/', '', $Email);
@@ -374,20 +315,17 @@ class BaseUser
 		$LName = preg_replace('/(\'|&#0*39;)/', '', $LName);
 		$DispName = preg_replace('/(\'|&#0*39;)/', '', $DispName);
 		$Address = preg_replace('/(\'|&#0*39;)/', '', $Address);
-		
 		$sql = "SELECT * FROM users WHERE UserID='".$ID."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		if ($result->num_rows != 0) 
 		{
 			return "UserID error";
-			
 		}
 		$sql = "SELECT * FROM users WHERE Email='".$Email."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		if ($result->num_rows != 0) 
 		{
 			return "Email error";
-			
 		}
 		$HPass = password_hash($Pass, PASSWORD_DEFAULT);
 		$Type = "Standard";
@@ -401,7 +339,6 @@ class BaseUser
 		move_uploaded_file($ProfilePicCurrent, $ProfilePicDest);
 		return "validated";
 	}
-	
 	public function getUID(){
 		return 	$this->UID;
 	}
@@ -411,7 +348,6 @@ class BaseUser
 		if ($result->num_rows == 0) 
 			{
 				return false;
-
 			}	
 		while($row = $result->fetch_assoc())
 		{ 	
@@ -430,11 +366,8 @@ class BaseUser
 			$this->Status = $row["Status"];
 			$this->ProfilePic = $row["ProfilePicture"];
 			$this->Reported = $row["Reported"];
-
 	}
-	
 	return true;
-		
 	}
 	public function setUID_Admin($UID){
 		$sql = "SELECT * FROM users WHERE UserID='".$UID."'" ;
@@ -442,7 +375,6 @@ class BaseUser
 		if ($result->num_rows == 0) 
 			{
 				return false;
-
 			}	
 		while($row = $result->fetch_assoc())
 		{ 	
@@ -461,9 +393,7 @@ class BaseUser
 			$this->ProfilePic = $row["ProfilePicture"];
 			$this->Reported = $row["Reported"];
 	}
-	
 	return true;
-		
 	}
 	public function getPrivate(){
 		return 	$this->PrivateKey;
@@ -513,7 +443,6 @@ class BaseUser
 		$dbname = "sticdb";
 		$conn = new mysqli($servername, $username, $password, $dbname);
 		return $conn;
-		
 	}
 	public function getUserDisplayName($UID){
 		$sql = "SELECT * FROM users WHERE UserID='".$UID."'" ;
@@ -536,20 +465,16 @@ class BaseUser
 		if($Type=="User"){
 			$ID = trim($ID);
 			$sql = "SELECT * FROM users WHERE UserID='".$ID."'" ;
-			
 		}
 		if($Type=="Product"){
 			$ID = trim($ID);
 			$sql = "SELECT * FROM product WHERE ProductID='".$ID."'" ;
-			
 		}
-
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 			while($row = $result->fetch_assoc())
 			{ 
 				$Data = $row['Review'];
 			}
-			
 			if($Data!=null&&sizeof(json_decode($Data))!=0){
 				$Data = json_decode($Data, true);
 				$Data[$ReviewID]=[''];
@@ -568,20 +493,16 @@ class BaseUser
 		if($Type=="User"){
 			$ID = trim($ID);
 			$sql = "SELECT * FROM users WHERE UserID='".$ID."'" ;
-			
 		}
 		if($Type=="Product"){
 			$ID = trim($ID);
 			$sql = "SELECT * FROM product WHERE ProductID='".$ID."'" ;
-			
 		}
-
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 			while($row = $result->fetch_assoc())
 			{ 
 				$Data = $row['Review'];
 			}
-	
 			if($Data!=null&&sizeof(json_decode($Data))!=0){
 				$Data = json_decode($Data, true);
 				$DuplicateData = $Data;
@@ -592,7 +513,6 @@ class BaseUser
 				for($i =0;$i<sizeof($Data);$i++){
 				if($Data[$i] != ['']){
 				echo'
-		
 				<div class="media border p-3" style="width:40%;margin:auto;margin-top:5px;">
 				<div class="media-body">
 				<h4>'.$Data[$i]["User"].'<small>   <i>Posted on '.$Data[$i]["Date"].'</i></small></h4>
@@ -600,7 +520,6 @@ class BaseUser
 				echo $this->UID;
 				if(isset($_SESSION['ID'])){
 				if(trim($Data[$i]["User"])== $_SESSION['ID']){
-						
 					echo'
 					<form method="post">
 					<input type="submit" name="deletecomment" id="deletebtn" style="float:right;" value="delete">
@@ -627,18 +546,12 @@ class BaseUser
 				<div class="media-body">
 				<b style="margin:auto;"> No Reviews Yet</b></div>
 				</div></br>';	
-				
 			}
-			
-			
 	}
 	public function ViewAllProduct($sortby,$Order,$Category,$page,$pagename){
-
 			if($Category=="All"){
-
 					$sql = "SELECT * FROM product WHERE Status = 'Available' ORDER BY $sortby $Order" ;
 			}
-			
 			else{
 					$sql = "SELECT * FROM product WHERE Status = 'Available' AND ProductCategory = '".$Category."' ORDER BY $sortby $Order" ;
 			}
@@ -655,7 +568,6 @@ class BaseUser
 					<center><b style="margin-top:5%;font-size:50px">No products in this category</b></center>';
 				return;
 			}
-			
 			if($Category=="All"){
 					$sql = "SELECT * FROM product WHERE Status = 'Available' ORDER BY $sortby $Order LIMIT " . $page_first_result . ',' . $this->results_per_page; 
 			}
@@ -674,7 +586,6 @@ class BaseUser
 			</script>
 			<?php
 			echo'
-			
 			<div class="card" onclick="clickproduct(this.id)" id = "'.$row["ProductID"].'">
 			<a href="#" class="fill-div"></a>
 			<img src="'.$row["Image"].'" class="image" style="object-fit: cover;width:200px;height:200px;border-radius:20px;margin-top:20px">
@@ -683,7 +594,6 @@ class BaseUser
 			<div class="text">Date Listed:<i>'.date('d-m-Y',$row["DateOfListing"]).'</i></div>
 			<div class="text" style="font-size:16px"><b>'.$this->getCurrency().number_format($row["ProductInitialPrice"], 2, '.', '').'</b></div>
 			</div>';
-			
 			}
 			echo'</div>';
 			if($number_of_page>1){
@@ -692,9 +602,7 @@ class BaseUser
 			echo '<a href = "'.$pagename.'?Ord='.$Order.'&Sb='.$sortby.'&page=1">First </a>'; 
 			for($page = 1; $page<= $number_of_page; $page++) { 
 				if($page==1){
-
 				echo '<a href = "'.$pagename.'?Ord='.$Order.'&Sb='.$sortby.'&page=' . $page . '">' . $page . ' </a>';  
-				
 				}
 				else{
 				echo '<a href = "'.$pagename.'?Ord='.$Order.'&Sb='.$sortby.'&page=' . $page . '">' . $page . ' </a>';  
@@ -703,10 +611,8 @@ class BaseUser
 			echo '<a href = "'.$pagename.'?Ord='.$Order.'&Sb='.$sortby.'&page=' . $number_of_page . '">Last </a>';  
 			echo'</div>';
 			}
-			
 			}
 	public function ViewSearchProduct($sortby,$Order,$Query,$page){
-			
 			$sql = "SELECT * FROM product WHERE ProductName LIKE '%$Query%' or ProductCategory LIKE '%$Query' or SellerUserID LIKE '%$Query%' ORDER BY $sortby $Order" ;
 			$result = $this->connect()->query($sql) or die($this->connect()->error); 
 			$number_of_result = mysqli_num_rows($result);  
@@ -719,17 +625,13 @@ class BaseUser
 			{
 				echo'
 					<b>No search result found</b>';
-
 			}
-
 			$sql = "SELECT * FROM product WHERE ProductName LIKE '%$Query%' or ProductCategory LIKE '%$Query' or SellerUserID LIKE '%$Query%' ORDER BY $sortby $Order LIMIT " . $page_first_result . ',' . $this->results_per_page; 
 			$result = mysqli_query($this->connect(), $sql);  
 			echo'<div id="container">';
 			while($row = $result->fetch_assoc())
 			{ 
-
 			echo'
-			
 			<div class="card" onclick="clickproduct(this.id)" id = "'.$row["ProductID"].'">
 			<a href="#" class="fill-div"></a>
 			<img src="'.$row["Image"].'" class="image" style="object-fit: cover;width:200px;height:200px;border-radius:20px;margin-top:20px">
@@ -752,9 +654,7 @@ class BaseUser
 			echo '<a href = "SearchPage.php?query='.$Query.'&Ord='.$Order.'&Sb='.$sortby.'&page=1">First </a>'; 
 			for($page = 1; $page<= $number_of_page; $page++) { 
 				if($page==1){
-
 				echo '<a href = "SearchPage.php?query='.$Query.'&Ord='.$Order.'&Sb='.$sortby.'&page=' . $page . '">' . $page . ' </a></br>';  
-				
 				}
 				else{
 				echo '<a href = "SearchPage.php?query='.$Query.'&Ord='.$Order.'&Sb='.$sortby.'&page=' . $page . '">' . $page . ' </a>';  
@@ -763,9 +663,7 @@ class BaseUser
 			echo '<a href = "SearchPage.php?query='.$Query.'&Ord='.$Order.'&Sb='.$sortby.'&page=' . $number_of_page . '">Last </a>';  
 			echo'</div>';
 			}			
-			
 	}
-	
 	public function ViewAllUserProduct($sortby,$Order,$UID,$User){
 			if($User == $this->getUID()){
 				$sql = "SELECT * FROM product WHERE SellerUserID = '$UID' ORDER BY Status , $sortby  $Order" ;
@@ -778,12 +676,10 @@ class BaseUser
 			{
 				echo'
 					<b>This user has not listed any products</b>';
-
 			}	
 				echo'
 			<div id="container">
 			';
-			
 			echo"<h1>User's Products</h1>";
 			while($row = $result->fetch_assoc())
 			{ 
@@ -810,31 +706,16 @@ class BaseUser
 			<div class="text">Date Listed:<i>'.date('d-m-Y',$row["DateOfListing"]).'</i></div>
 			<div class="text" style="font-size:16px"><b>'.$this->getCurrency().number_format($row["ProductInitialPrice"], 2, '.', '').'</b></div>
 			</div>';
-			
 			}	
-			
-		
 	}
-			
-			
-			
-		
-			
 	}
-	
-
-
-
-
 class StandardUser extends BaseUser 
 {
 	private $EscrowPrivate;
 	public $notficationsize;
 	private $TempCardAccount;
 	private $TempAmount;
-	
 	public function __construct($Object){
-	
 		$this->UID = $Object->getUID();
 		$this->DisplayName =  $Object->getDisplayName();
 		$this->PubKey =  $Object->getPubKey();
@@ -865,7 +746,6 @@ class StandardUser extends BaseUser
 	}
 		$sql = "INSERT INTO `notification`(`UserID`, `Message`, `Hyperlink`,`NotificationID`) VALUES ('".$UID."','".$Message."','".$Link."','".$NotificationID."')";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
-			
 		?>
 		<script>
 		console.log('<?php echo $NotificationID?>');
@@ -876,7 +756,6 @@ class StandardUser extends BaseUser
 		</script>
 		<?php
 	}
-		
 	public function getNotification(){
 		$returnarr = array();
 		$sql = "SELECT * FROM `notification`  WHERE  UserID ='".$this->getUID()."' Order BY `NotificationID` DESC ";
@@ -884,7 +763,6 @@ class StandardUser extends BaseUser
 		while($row = $result->fetch_assoc())
 		{
 			array_push($returnarr,$row['NotificationID']);
-			
 		}	
 		return $returnarr;
 	}
@@ -896,9 +774,7 @@ class StandardUser extends BaseUser
 		{
 			$returnarr['msg']=$row['Message'];
 			$returnarr['hreflink']= $row['Hyperlink'];
-			
 		}	
-		
 		return $returnarr;
 	}
 	public function RemoveNotification($ID){
@@ -910,19 +786,14 @@ class StandardUser extends BaseUser
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 	}
 	public function RecommendedProduct($Category,$Name,$ProductID){
-			
 		$sql = "SELECT * FROM product WHERE SellerUserID != '".$this->getUID()."' AND ProductID != '".$ProductID."' AND(ProductCategory = '".$Category."' OR ProductName LIKE '%".$Name."%') ORDER BY RAND()";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		$recommendedarray = array();
 		while(sizeof($recommendedarray)!=3){
 		while($row = $result->fetch_assoc())
 		{
-
 			array_push($recommendedarray,$row['ProductID']);
-
-			
 		}	
-
 		if(sizeof($recommendedarray)==0){		
 			$Name = str_split($Name, 1);
 			foreach ($Name as $Val){
@@ -930,9 +801,7 @@ class StandardUser extends BaseUser
 				$result = $this->connect()->query($sql) or die($this->connect()->error); 
 					while($row = $result->fetch_assoc())
 			{
-	
 			array_push($recommendedarray,$row['ProductID']);
-
 			}	
 			}
 		}
@@ -941,19 +810,14 @@ class StandardUser extends BaseUser
 				$result = $this->connect()->query($sql) or die($this->connect()->error); 
 					while($row = $result->fetch_assoc())
 			{
-	
 				array_push($recommendedarray,$row['ProductID']);
-
 			}
-			
 		}
 		arsort($recommendedarray);
 	    $recommendedarray= 	array_unique($recommendedarray);
 		$recommendedarray = array_slice($recommendedarray, 0, 3, true);
-		
 		}
 		return $recommendedarray;
-		
 	}
 	public function UserProductBehaviourAnalysis(){
 		$sql = "SELECT * FROM users  WHERE  UserID ='".$this->getUID()."' ";
@@ -961,9 +825,7 @@ class StandardUser extends BaseUser
 		while($row = $result->fetch_assoc())
 		{
 			$TagsArray = json_decode($row['Tags'],true);
-			
 		}	
-		
 		$counts = array_count_values($TagsArray);
 		arsort($counts);
 		$top_with_count = array_slice($counts, 0, 2, true);
@@ -973,12 +835,9 @@ class StandardUser extends BaseUser
 		$recommendedarray = array();
 		$size = sizeof($TagsArray);
 		$newones = array_slice($TagsArray, $size-2, $size, true);
-		
 		$top = array_merge($top,$newones);
-	
 		while($row = $result->fetch_assoc())
 		{
-		
 			$counter = 0;
 			$TagsArray = json_decode($row['Tags'],true);
 			if(!empty($TagArray)){
@@ -989,25 +848,19 @@ class StandardUser extends BaseUser
 			}
 			}
 			$recommendedarray[$row['ProductID']]=$counter;
-
-			
 		}	
 		arsort($recommendedarray);
 		$recommendedarray = array_slice($recommendedarray, 0, 3, true);
 		$recommendedarray = array_keys($recommendedarray);
 		return $recommendedarray;
 	}
-	
 	public function AddUserTags($Tag){
-		
 		$Tag = strtoupper($Tag);
 		$sql = "SELECT * FROM users  WHERE  UserID ='".$this->getUID()."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		while($row = $result->fetch_assoc())
 		{
 			$TagsArray = json_decode($row['Tags'],true);
-			
-				
 		}
 		if(empty($TagsArray )){
 			$TagsArray = array();
@@ -1020,23 +873,16 @@ class StandardUser extends BaseUser
 		$to_remove = array();
 		$myfile = fopen("Wordstoremove.txt", "r") or die("Unable to open file!");
 		while(($line = fgets($myfile)) !== false) {
-
 			array_push($to_remove,preg_replace("/\s+/", "", strtoupper($line)));
-	
 		}
 		fclose($myfile);
-
 		$TagsArray = array_diff($TagsArray, $to_remove);
 		$TagsArray = array_unique($TagsArray);
 		$JsonData = json_encode($TagsArray);
-		
 		$sql = "UPDATE `users` SET `Tags`='".$JsonData."' WHERE  UserID='".$this->getUID()."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);  
-	
 	}
-	
 	public function NewOffer($Offer,$DateRequired,$SellerID,$ProductID,$InitialOffer){
-
 		while(true){					
 					$ContractID = str_pad(rand(0000,9999),4,0,STR_PAD_LEFT).str_pad(rand(0000,9999),4,0,STR_PAD_LEFT).str_pad(rand(0000,9999),4,0,STR_PAD_LEFT).chr(rand(97,122)).chr(rand(97,122)).chr(rand(97,122)).str_pad(rand(0000,9999),4,0,STR_PAD_LEFT). substr(rand(0000,9999), 2, 4);
 					$result = $this->connect()->query("SELECT count(*) as 'c' FROM contracts WHERE ContractID='".$ContractID."'");
@@ -1046,7 +892,6 @@ class StandardUser extends BaseUser
 						break;
 					  }
 				}
-				
 		$sql = "INSERT INTO `contracts`(`ContractID`,`InitialOffer`,`NewOffer`,`DateRequired`, `BuyerUserID`, `SellerUserID`, `ProductID`) VALUES ('".$ContractID."','".$InitialOffer."','".$Offer."','".$DateRequired."','".$this->getUID()."','".$SellerID."','".$ProductID."')";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		$this->addNotification($SellerID,"ContractID:".$ContractID.", new offer has been made","MyContractsPage.php");
@@ -1059,16 +904,12 @@ class StandardUser extends BaseUser
 		 	while($row = $result->fetch_assoc())
 		{
 			array_push($ArrayOfTransactions,$row['TransactionID']);
-			
-				
 		}
 		return $ArrayOfTransactions;
 	}
 	public function ListOfTransactions($Type){
-		
 		if($Type=="Receiver"){
 		 $sql = "SELECT * FROM transactions WHERE Receiver ='".$this->getPubKey()."' ORDER BY Date DESC";
-		
 		}
 		if($Type=="Sender"){
 		$sql = "SELECT * FROM transactions WHERE Sender ='".$this->getPubKey()."' ORDER BY Date DESC";
@@ -1078,21 +919,16 @@ class StandardUser extends BaseUser
 		while($row = $result->fetch_assoc())
 		{
 			array_push($ArrayOfTransactions,$row['TransactionID']);
-			
-				
 		}
 		return $ArrayOfTransactions;
 	}
 		public function ListOfTransactionsAll(){
-	
 		$sql = "SELECT * FROM transactions WHERE Receiver ='".$this->getPubKey()."' OR Sender ='".$this->getPubKey()."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		$ArrayOfTransactions = array();
 		while($row = $result->fetch_assoc())
 		{
 			array_push($ArrayOfTransactions,$row['TransactionID']);
-			
-				
 		}
 		return $ArrayOfTransactions;
 	}
@@ -1102,8 +938,6 @@ class StandardUser extends BaseUser
 		while($row = $result->fetch_assoc())
 		{
 			return $row['Title'];
-			
-				
 		}
 	}
 	public function getTransactionSender($ID){
@@ -1112,21 +946,16 @@ class StandardUser extends BaseUser
 		while($row = $result->fetch_assoc())
 		{
 			$PubKey =  $row['Sender'];
-			
-				
 		}
 		$sql = "SELECT * FROM users WHERE PublicKey ='".$PubKey."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		if ($result->num_rows == 0) 
 		{
 			return $ID;
-
 		}
 		while($row = $result->fetch_assoc())
 		{
-			
 			 return $row['UserID'];
-				
 		}
 	}
 	public function getTransactionReceiver($ID){
@@ -1134,22 +963,17 @@ class StandardUser extends BaseUser
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		while($row = $result->fetch_assoc())
 		{
-			
 			$PubKey = $row['Receiver'];
-				
 		}
 		$sql = "SELECT * FROM users WHERE PublicKey ='".$PubKey."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		if ($result->num_rows == 0) 
 		{
 			return $ID;
-
 		}
 		while($row = $result->fetch_assoc())
 		{
-			
 			 return $row['UserID'];
-				
 		}
 	}
 	public function getTransactionDate($ID){
@@ -1157,9 +981,7 @@ class StandardUser extends BaseUser
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		while($row = $result->fetch_assoc())
 		{
-			
 			 return $row['Date'];
-				
 		}
 	}
 		public function getTransactionAmount($ID){
@@ -1167,9 +989,7 @@ class StandardUser extends BaseUser
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		while($row = $result->fetch_assoc())
 		{
-			
 			 return $row['Amount'];
-				
 		}
 	}
 	public function ListOfContracts($ContractType){
@@ -1186,43 +1006,33 @@ class StandardUser extends BaseUser
 		if ($result->num_rows == 0) 
 			{
 				return false;
-
 			}
 		$ArrayOfContracts = array();
 		while($row = $result->fetch_assoc())
 		{
 			array_push($ArrayOfContracts,$row['ContractID']);
-			
-				
 		}
 		return $ArrayOfContracts;
 	}
 	/*
 	public function Chat($UserID){
-	
 		$sql = "SELECT * FROM negotiation WHERE UserID='".$UserID."' AND UserID2='".$this->getUID()."' OR UserID='".$this->getUID()."' AND UserID2='".$UserID."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		if ($result->num_rows == 0) 
 		{	
-			
 			$FullMessageArray = array();
 			$JSONdata = Json_encode($FullMessageArray);
 			$sql = "INSERT INTO `negotiation`(`UserID`, `Message`, `UserID2`) VALUES ('".$this->getUID()."','".$JSONdata."','".$UserID ."')";
 			$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		}
-		
 	}
 	public function DeleteChat($UserID){
-		
 		$sql = "DELETE FROM negotiation WHERE UserID='".$UserID."' AND UserID2='".$this->getUID()."' OR UserID='".$this->getUID()."' AND UserID2='".$UserID."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
-		
 	}
 	public function AllChatsArray(){
-	
 		$sql = "SELECT * FROM negotiation WHERE UserID='".$this->getUID()."' OR UserID2='".$this->getUID()."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
-		
 		if ($result->num_rows == 0) 
 		{
 			echo'<b>You have no chats currently</b>';
@@ -1231,24 +1041,18 @@ class StandardUser extends BaseUser
 			echo'<form method="post">';
 			while($row = $result->fetch_assoc())
 			{
-					
 					if($row['UserID']!=$this->getUID()){
 					echo'<input type="submit" name ="Chat_with" value="'.$row['UserID'].'"></br>';
-					
 					}
 					else{
 					echo'<input type="submit" name ="Chat_with" value="'.$row['UserID2'].'"></br>';	
 					}
-					
-					
 			}
 			echo'</form>';
 		}
-			
 	}*/
 	public function InsertOrdinaryChat($User1,$User2,$Message){
 		$Message = preg_replace('/(\'|&#0*39;)/', '', $Message);
-	
 		$sql = "SELECT * FROM negotiation WHERE UserID='".$User1."' AND UserID2='".$User2."' OR UserID='".$User2."' AND UserID2='".$User1."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		if ($result->num_rows == 0) 
@@ -1261,9 +1065,7 @@ class StandardUser extends BaseUser
 		else{
 			while($row = $result->fetch_assoc())
 			{ 
-			
 				$FullMessageArray = Json_decode( $row["Message"],true);
-
 			}
 			array_push($FullMessageArray,$Message);
 			$JSONdata = Json_encode($FullMessageArray);
@@ -1271,7 +1073,6 @@ class StandardUser extends BaseUser
 			$result = $this->connect()->query($sql) or die($this->connect()->error);  
 		}               
 	}
-
 	public function InsertChat($ContractID,$User,$Message,$Type){
 	    $Message = preg_replace('/(\'|&#0*39;)/', '', $Message);
 		$Message = array("Message"=>$Message , "User"=>$User , "Time"=>Time() ,"Type"=>$Type);
@@ -1287,9 +1088,7 @@ class StandardUser extends BaseUser
 		else{
 			while($row = $result->fetch_assoc())
 			{ 
-			
 				$FullMessageArray = Json_decode( $row["Message"],true);
-
 			}
 			array_push($FullMessageArray,$Message);
 			$JSONdata = Json_encode($FullMessageArray);
@@ -1300,10 +1099,8 @@ class StandardUser extends BaseUser
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		while($row = $result->fetch_assoc())
 		{ 
-		
 			$seller = $row["SellerUserID"];
 			$buyer = $row["BuyerUserID"];
-
 		}
 		if($User!=$buyer){
 			$this->addNotification($buyer,"ContractID:".$ContractID.", new message","MyContractsPage.php");
@@ -1311,21 +1108,15 @@ class StandardUser extends BaseUser
 		if($User!=$seller){
 			$this->addNotification($seller,"ContractID:".$ContractID.", new message","MyContractsPage.php");
 		}
-			
 	}
 	public function RetrieveChat($ContractID){
-	
 		$sql = "SELECT * FROM contracts WHERE ContractID = '".$ContractID."'";
-
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		$Msg = array();
 		while($row = $result->fetch_assoc())
 		{
 			$Msg = json_decode($row['Message'],true);
-			
-				
 		}
-
 		if(sizeof($Msg)>0){
 			for($x = 0; $x<sizeof($Msg);$x++){
 				if($Msg [$x]['User']==$this->getUID()){
@@ -1344,10 +1135,8 @@ class StandardUser extends BaseUser
 						 <span class="messsage-text">'.$Msg [$x]['Message'].'</span></br>';
 					echo'</div>';
 				}
-				
 			}
 		}
-		
 	}
 	public function generateCourierLink($ContractID){
 		$sql = "SELECT * FROM courier WHERE ContractID='".$ContractID."'";
@@ -1364,7 +1153,6 @@ class StandardUser extends BaseUser
 		$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
 	 	return $TempID;
 	}
-
 	public function getContractInfoFromSmartContract($ContractID){
 		$host    = "localhost";
 		$port    = 8080;
@@ -1383,7 +1171,6 @@ class StandardUser extends BaseUser
 		return $data;
 	}
 	public function UpdateContract($offer,$daterequired,$paymentmode,$ContractID,$Type,$DeliveryMode){
-		
 		$sql = " UPDATE `contracts` SET `Status`= '".$Type." has updated',`NewOffer`='".$offer."',`DateRequired`= '".$daterequired."',`Payment Mode`= '".$paymentmode."',`TotalAccepted`= '0' ,`DeliveryMode` = '".$DeliveryMode."'  WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		$sql = " UPDATE `contracts` SET `TotalAccepted`=  0 WHERE `TotalAccepted`<0 ";
@@ -1410,27 +1197,21 @@ class StandardUser extends BaseUser
 		}
 	}
 	public function RejectContract($ContractID){
-
 		$sql = " UPDATE `contracts` SET `Status`= 'Rejected',`Transaction` = 'Complete', `TotalAccepted`= 0 WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
-		
 	}
 	public function RequestRefund($ContractID){
-
 		$sql = " UPDATE `contracts` SET `Status`= 'Requested Refund', `TotalAccepted`= 0 WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		$sql = "SELECT * FROM contracts WHERE ContractID='".$ContractID."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		while($row = $result->fetch_assoc())
 		{ 
-		
 			$seller = $row["SellerUserID"];
-
 		}
 		$this->addNotification($seller ,"ContractID:".$ContractID.", Buyer has requested refund","MyContractsPage.php");
 	}
 	public function CancelOrder($ContractID){
-
 		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		while($row = $result->fetch_assoc())
@@ -1448,32 +1229,22 @@ $Paid = 'half';
 		{
 			$Amount = $Amount/2;
 		}
-		
 		if($Type == "Full-STICoins"&& $TransactionMessage == "On-Going"){
 			$Amount = $Amount;
 		}
-		
 		if($Type != "Full-STICoins_Later"&& $TransactionMessage == "On-Going"){
-		
 		$sql = "SELECT * FROM users WHERE UserID ='".$Transferto."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		while($row = $result->fetch_assoc())
 		{
 			$TransfertoPubkey = $row['PublicKey'];
-			
 		}
-		
 		$sql = "SELECT * FROM users WHERE UserID ='".$Transferfrom."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		while($row = $result->fetch_assoc())
 		{
-			
 			$TransferfromPubkey = $row['PublicKey'];
-			
 		}
-
-		
-		
 		$host    = "localhost";
 		$port    = 8080;
 		if($this->getUID()==$Transferfrom){
@@ -1495,7 +1266,6 @@ $Paid = 'half';
 		socket_write($socket, $message, strlen($message)) or die("Could not send data to server\n");
 		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
 		}
-	
 		socket_close($socket);
 		$raw_data = file_get_contents('http://localhost:3000/TransferAmount');
 		$data = json_decode($raw_data, true);
@@ -1505,7 +1275,6 @@ $Paid = 'half';
 		{ 
 			$TransactionData = $row['TransactionID'];
 		}
-	
 		$TransactionData = json_decode($TransactionData, true);
 		$NewData= array($data['TransactionHash'],date("d-m-Y"),$Amount,$Transferfrom,$Transferto);
 		array_push($TransactionData,$NewData);
@@ -1520,10 +1289,7 @@ $Paid = 'half';
 		}
 		}
 		$this->addNotification($Transferto ,"ContractID:".$ContractID.", Seller has cancelled order","MyContractsPage.php");
-		
 		return;
-			
-		
 	}
 	public function UpdateStatusDeal($ContractID){
 		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
@@ -1533,12 +1299,10 @@ $Paid = 'half';
 			$Type = $row['Payment Mode'];
 			$SellerUID = $row['SellerUserID'];
 		}
-
 		if($Type == "Half-STICoins")
 		{
 			$Paid = 'half';
 		}
-		
 		if($Type == "Full-STICoins"){
 			$Paid = 'full';
 		}
@@ -1578,14 +1342,12 @@ $Paid = 'half';
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		while($row = $result->fetch_assoc())
 		{
-			
 			$NumOfAccepted = $row['TotalAccepted'];
 			$Buyer = $row['BuyerUserID'];
 			$Seller = $row['SellerUserID'];
 		}
 		$Data = array($Buyer,$Seller);
 		$Jdata = json_encode($Data);
-		
 		return $NumOfAccepted ;
 	}
 	public function InitContract($ContractID){
@@ -1593,7 +1355,6 @@ $Paid = 'half';
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		while($row = $result->fetch_assoc())
 		{
-			
 			$Amount = $row['NewOffer'];
 			$Seller = $row['SellerUserID'];
 			$Buyer = $row['BuyerUserID'];
@@ -1603,14 +1364,12 @@ $Paid = 'half';
 		$Buyer = $this->getPubKeyFromUID($Buyer);
 		$host    = "localhost";
 		$port    = 8080;
-
 		date_default_timezone_set('UTC');
 		$this->getEscrow();
 		$textToEncrypt = $this->getEscrowPrivate();
 		$encryptionMethod = "AES-256-CBC";
 		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
 		$iv = substr($secret, 0, 16);
-		
 		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
 		$arr = array('REQUEST' => "InitContract",'AMOUNT'=>$Amount,'PRODUCTID'=>$ProductID,'CONTRACTID'=>$ContractID,'BUYERPUBLICKEY'=>$Buyer,'SELLERPUBLICKEY'=> $Seller ,'ESCROWPRIVATE'=>$encryptedMessage);
 		$message = json_encode($arr);
@@ -1621,7 +1380,6 @@ $Paid = 'half';
 		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
 		}
 		socket_close($socket);
-		
 	}
 	public function ToTransfer($ContractID){
 		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
@@ -1632,41 +1390,31 @@ $Paid = 'half';
 			$Type = $row['Payment Mode'];
 			$Status = $row['Status'];
 		}
-	
 		if($Seller==$this->getUID()){
-		
 			return True;
 		}
 		if($Type == "Half-STICoins"){
-	
 			return True;
 		}
 		if($Type == "Full-STICoins" && $Status == "Buyer has accepted"){
-			
 			return True;
 		}
 		if($Type == "Full-STICoins_Later" && $Status == "Buyer has accepted service"){
-				
 				return True;
 		}
 		else{
-
 			return False;
 		}
-		
-		
 	}
 	public function AmountToTransfer($ContractID){
 		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		while($row = $result->fetch_assoc())
 		{
-			
 			$Amount = $row['NewOffer'];
 			$Type = $row['Payment Mode'];
 			$Transactions =  $row['Transaction'];
 		}
-		
 		if($Transactions == "Complete"){
 			return $Amount;	
 		}
@@ -1685,7 +1433,6 @@ $Paid = 'half';
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		$Transferfrom = '';
 		$Transferto = '';
-		
 		while($row = $result->fetch_assoc())
 		{
 			$Transferto = $row['SellerUserID'];
@@ -1693,35 +1440,27 @@ $Paid = 'half';
 			$PaidStatus = $row['Paid'];
 			$TotalAmount = $row['NewOffer'];
 		}
-	
 		if($this->getUID()==$Transferfrom&&$PaidStatus!="full"){
-			
 		$sql = "SELECT * FROM users WHERE UserID ='".$Transferto."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		while($row = $result->fetch_assoc())
 		{
 			$TransfertoPubkey = $row['PublicKey'];
-			
 		}
 		$sql = "SELECT * FROM users WHERE UserID ='".$Transferfrom."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		while($row = $result->fetch_assoc())
 		{
-			
 			$TransferfromPubkey = $row['PublicKey'];
-			
 		}
 		$host    = "localhost";
 		$port    = 8080;
-
 		date_default_timezone_set('UTC');
 		$this->getEscrow();
 		$textToEncrypt = $this->getEscrowPrivate();
 		$encryptionMethod = "AES-256-CBC";
 		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
 		$iv = substr($secret, 0, 16);
-		
-	
 		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
 		$arr = array('REQUEST' => "ContractPayment",'CONTRACTID'=>$ContractID,'AMOUNT'=>$Amount,'BUYERPUBLICKEY'=>$TransferfromPubkey,'SELLERPUBLICKEY'=> $TransfertoPubkey ,'ESCROWPRIVATE'=>$encryptedMessage);
 		$message = json_encode($arr);
@@ -1756,53 +1495,40 @@ $Paid = 'half';
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		}
 		$this->UpdateStatusComplete($ContractID);	
-		
-		
 		return true;
-		
 	}
 	public function TransferAmountAccept($ContractID,$Amount){
-	
 		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		$Transferfrom = '';
 		$Transferto = '';
-		
 		while($row = $result->fetch_assoc())
 		{
 			$Transferto = $row['SellerUserID'];
 			$Transferfrom = $row['BuyerUserID'];
 			$PaidStatus = $row['Paid'];
 		}
-		
 		if($this->getUID()==$Transferfrom&&$PaidStatus!="half"&&$PaidStatus!="full"){
-			
 		$sql = "SELECT * FROM users WHERE UserID ='".$Transferto."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		while($row = $result->fetch_assoc())
 		{
 			$TransfertoPubkey = $row['PublicKey'];
-			
 		}
 		$sql = "SELECT * FROM users WHERE UserID ='".$Transferfrom."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		while($row = $result->fetch_assoc())
 		{
-			
 			$TransferfromPubkey = $row['PublicKey'];
-			
 		}
 		$host    = "localhost";
 		$port    = 8080;
-
 		date_default_timezone_set('UTC');
 		$this->getEscrow();
 		$textToEncrypt = $this->getEscrowPrivate();
 		$encryptionMethod = "AES-256-CBC";
 		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
 		$iv = substr($secret, 0, 16);
-		
-		
 		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
 		$arr = array('REQUEST' => "ContractPayment",'AMOUNT'=>$Amount,'CONTRACTID'=>$ContractID,'BUYERPUBLICKEY'=>$TransferfromPubkey,'SELLERPUBLICKEY'=> $TransfertoPubkey ,'ESCROWPRIVATE'=>$encryptedMessage);
 		$message = json_encode($arr);
@@ -1815,7 +1541,6 @@ $Paid = 'half';
 		socket_close($socket);
 		$raw_data = file_get_contents('http://localhost:3090/TransferAmount');
 		$data = json_decode($raw_data, true);
-		
 		if(empty($data)){
 			return false;
 		}
@@ -1830,7 +1555,6 @@ $Paid = 'half';
 			$TransactionData = $row['TransactionID'];
 		}
 		$TransactionData = json_decode($TransactionData, true);
-		
 		$NewData= array($data['TransactionHash'],date("d-m-Y"),$Amount,$Transferfrom,$Transferto);
 		array_push($TransactionData,$NewData);
 		$JData = json_encode($TransactionData);
@@ -1839,8 +1563,6 @@ $Paid = 'half';
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 	
 		}
 		$this->UpdateStatusDeal($ContractID);	
-		
-		
 		return true;
 	}
 	/*public function TransferAmount($ContractID,$Amount){
@@ -1849,33 +1571,26 @@ $Paid = 'half';
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		$Transferfrom = '';
 		$Transferto = '';
-		
 		while($row = $result->fetch_assoc())
 		{
 			$Transferto = $row['SellerUserID'];
 			$Transferfrom = $row['BuyerUserID'];
 		}
-	
 		if($this->getUID()==$Transferfrom){
-			
 		$sql = "SELECT * FROM users WHERE UserID ='".$Transferto."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		while($row = $result->fetch_assoc())
 		{
 			$TransfertoPubkey = $row['PublicKey'];
-			
 		}
 		$sql = "SELECT * FROM users WHERE UserID ='".$Transferfrom."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		while($row = $result->fetch_assoc())
 		{
-			
 			$TransferfromPubkey = $row['PublicKey'];
-			
 		}
 		$host    = "localhost";
 		$port    = 8080;
-
 		date_default_timezone_set('UTC');
 		$this->getEscrow();
 		$textToEncrypt = $this->getEscrowPrivate();
@@ -1912,25 +1627,19 @@ $Paid = 'half';
 		else{
 			return false;
 		}
-		
 		}
 			return true;
-		
 	}
 	*/
 		public function getEscrow(){
-
 		$sql = "SELECT * FROM users where `AccountType` = 'Escrow' ORDER BY RAND() LIMIT 1" ;
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		while($row = $result->fetch_assoc())
 		{ 
-			
 			$this->EscrowPrivate = $row["PrivateKey"];
 			return $row["PublicKey"];
-
 		}
 		}
-		
 		public function getEscrowPrivate(){
 			return $this->EscrowPrivate;
 		}
@@ -1997,7 +1706,6 @@ $Paid = 'half';
 			}
 		}
 		public function RemoveProduct($ProductID){
-			
 			$sql="DELETE FROM product WHERE ProductID='$ProductID'";
 			$result = $this->connect()->query($sql) or die($this->connect()->error);  
 		}
@@ -2026,11 +1734,9 @@ $Paid = 'half';
 			$result = $this->connect()->query($sql) or die($this->connect()->error);  
 		}
 		public function UnlistProduct($ProductID){
-			
 			$sql="UPDATE `product` SET `Status`='Unlisted' WHERE ProductID='$ProductID'";
 			$result = $this->connect()->query($sql) or die($this->connect()->error);  
 		}
-		
 		public function checkAccountInNetwork($WalletPubKey){
 			$host    = "localhost";
 			$port    = 8080;
@@ -2047,13 +1753,10 @@ $Paid = 'half';
 			$data = json_decode($raw_data, true);
 			if ($data['RESPONSE']){
 				return true;
-				
 			}
 			else{
 				return false;
 			}
-			
-			
 		}
 		public function creditCardOut($amount){
 			$host    = "localhost";
@@ -2072,7 +1775,6 @@ $Paid = 'half';
 			$this->TempCardAccount=$data['ACCOUNT'];
 			$this->TempAmount=$data['AMOUNT'];
 			return $data['RESPONSE'];
-
 		}
 			public function creditCardIn($amount){
 			$host    = "localhost";
@@ -2106,7 +1808,6 @@ $Paid = 'half';
 		$result = socket_read ($socket, 1024) or die("Could not read server response\n");
 		}
 		socket_close($socket);
-
 		$raw_data = file_get_contents('http://localhost:3002/TopUpSTIC');
 		$data = json_decode($raw_data, true);
 		if($data['Transaction']== "Success"){
@@ -2117,13 +1818,11 @@ $Paid = 'half';
 		}
 		}
 		public function RedeemSTICoin(){
-		
 		if(!isset($this->TempCardAccount)){
 			return false;
 		}
 		$host    = "localhost";
 		$port    = 8080;
-		
 		date_default_timezone_set('UTC');
 		$this->getEscrow();
 		$textToEncrypt = $this->getEscrowPrivate();
@@ -2152,12 +1851,10 @@ $Paid = 'half';
 		else{
 			return false;
 		}
-		
 	}
 	public function PayProduct($PubKey,$Amount,$Title){
 		$host    = "localhost";
 		$port    = 8080;
-
 		date_default_timezone_set('UTC');
 		$EscrowPub= $this->getEscrow();
 		$textToEncrypt = $this->getEscrowPrivate();
@@ -2182,11 +1879,8 @@ $Paid = 'half';
 		else{
 			return $data['Transaction'];
 		}
-		
 	}
-	
 	public function ListProduct($Name,$Category,$Description,$Cost,$Caption ,$FileNew){
-
 			$expirydate = date("Y-m-d", strtotime("+6 month"));
 			$Name = filter_var($Name,FILTER_SANITIZE_SPECIAL_CHARS);
 			$Description = filter_var($Description,FILTER_SANITIZE_SPECIAL_CHARS);
@@ -2208,10 +1902,7 @@ $Paid = 'half';
 						break;
 					  }
 				}
-	
-	
 			 mysqli_query($this->connect(),"INSERT INTO `product` (`ProductID`, `ProductCategory`, `ProductDescription`, `ProductCaption`, `ProductInitialPrice`, `ProductName`,`SellerUserID`,`Image`,`DateOfListing`,`DateOfExpiry`,`Tags`) VALUES ('".$ProductID."','".$Category."','".$Description."','".$Caption."','".$Cost."','".$Name."','".$this->getUID()."','".$FileNew."','".time()."','".$expirydate."','".$JsonData."')") or die(mysqli_error($this->connect()));
-	 	
 				return $ProductID;
 	}
 		public function UpdateProduct($ProductID,$Name,$Category,$Description,$Cost,$Caption,$File){
@@ -2229,7 +1920,6 @@ $Paid = 'half';
 				$JsonData = json_encode($TagArray);
 				$sql = "UPDATE `product` SET `ProductName`= '$Name',`ProductCategory`='$Category',`ProductDescription`='$Description',`ProductCaption`='$Caption',`ProductInitialPrice`='$Cost',`Image`='$File',`Tags`='$JsonData' WHERE `ProductID` = '$ProductID'";
 				$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
-			
 				return true;
 	}
 	public function temp(){
@@ -2241,8 +1931,6 @@ $Paid = 'half';
 			$ProductObj->InitialiseProduct($row['ProductID']);
 			$this->UpdateProduct($ProductObj->ProductID,$ProductObj->ProductName,$ProductObj->ProductCategory,$ProductObj->ProductDescription,$ProductObj->ProductInitialPrice,$ProductObj->ProductCaption,$ProductObj->Image);
 		}	
-	
-		
 	}
 	public function EditProfileValidate($Email,$FName,$LName,$ContactNumber,$DispName,$Address,$ProfilePicCurrent,$ProfilePicDest,$fileempty){
 		$Email = preg_replace('/(\'|&#0*39;)/', '', $Email);
@@ -2255,10 +1943,8 @@ $Paid = 'half';
 		if ($result->num_rows > 1) 
 		{
 			return "Email error";
-			
 		}
 		$ID = $this->getUID();
-
 		if(! $fileempty){
 		$sql = "UPDATE `users` SET `DisplayName`= '$DispName',`Email`= '$Email',`FirstName`= '$FName',`LastName`='$LName',`ContactNumber`='$ContactNumber',`Address`= '$Address', `ProfilePicture`='$ProfilePicDest' WHERE `UserID` = '$ID' ";
 			$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
@@ -2269,13 +1955,11 @@ $Paid = 'half';
 			}
 		}
 		else{
-			
 			$sql = "UPDATE `users` SET `DisplayName`= '$DispName',`Email`= '$Email',`FirstName`= '$FName',`LastName`='$LName',`ContactNumber`='$ContactNumber',`Address`= '$Address',`ProfilePicture`='$this->ProfilePic' WHERE `UserID` = '$ID' ";	
 			$result = $this->connect()->query($sql) or die( $this->connect()->error);  
 		}
 		return "validated";
 	}
-	
 	public function ChangePasswordValidate($Pass,$NewPass){
 			$Pass = preg_replace('/(\'|&#0*39;)/', '', $Pass);
 			$sql = "SELECT Password FROM users WHERE UserID='".$this->getUID()."'" ;
@@ -2284,9 +1968,7 @@ $Paid = 'half';
 			while($row = $result->fetch_assoc()){ 
 				if(Password_verify($Pass,$row["Password"]))
 				{	$validated = true;
-					
 				}
-				
 			}	
 			if($validated)
 			{
@@ -2294,7 +1976,6 @@ $Paid = 'half';
 				$ID = $this->getUID();
 				$sql = "UPDATE `users` SET `Password`= '$Hpass' WHERE `UserID` = '$ID' ";
 				$result = $this->connect()->query($sql) or die( $this->connect()->error);   
-			
 				return "Validated";
 			}
 			else{
@@ -2302,11 +1983,8 @@ $Paid = 'half';
 			}
 	}
 }
-
 class Admin extends StandardUser 
 {
-
-	
 	public function __construct($Object){
 		$this->UID = $Object->getUID();
 		$this->DisplayName =  $Object->getDisplayName();
@@ -2321,7 +1999,6 @@ class Admin extends StandardUser
 		$this->AccountBalance = $Object->getAccountBalance();
 		$this->ProfilePic = $Object->ProfilePic;
 		$this->Reported = $Object->Reported;
-	
 	}
 	public function HaltTransaction($ContractID){
 		$sql = " UPDATE `contracts` SET `Status`='Admin has halted this transaction' WHERE `ContractID`= '".$ContractID."' ";
@@ -2347,26 +2024,20 @@ class Admin extends StandardUser
 	$sql = "SELECT * FROM `contracts` WHERE DATEDIFF(`DateRequired`,now()) < 0 OR DATEDIFF(`DateRequired`,`TransactionOpenDate`) > 3 AND `Transaction` != 'Complete' " ;
 	}
 	if($ContractType=="Requested Refund"){
-
 	$sql = "SELECT * FROM contracts WHERE `Status` = 'Requested Refund' ORDER BY TransactionOpenDate" ;
 	}
 	$result = $this->connect()->query($sql) or die($this->connect()->error); 
-			
 	if ($result->num_rows == 0) 
 		{
 			return false;
-
 		}
 	$ArrayOfContracts = array();
 	while($row = $result->fetch_assoc())
 	{
 		array_push($ArrayOfContracts,$row['ContractID']);
-		
-			
 	}
 	return $ArrayOfContracts;
 	}
-	
 	public function Refund_Admin($ContractID,$Amount){
 		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
@@ -2384,26 +2055,21 @@ class Admin extends StandardUser
 		while($row = $result->fetch_assoc())
 		{
 			$TransfertoPubkey = $row['PublicKey'];
-			
 		}
 		$sql = "SELECT * FROM users WHERE UserID ='".$Transferfrom."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
 		while($row = $result->fetch_assoc())
 		{
-			
 			$TransferfromPubkey = $row['PublicKey'];
-			
 		}
 		$host    = "localhost";
 		$port    = 8080;
-
 		date_default_timezone_set('UTC');
 		$this->getEscrow();
 		$textToEncrypt = $this->getEscrowPrivate();;
 		$encryptionMethod = "AES-256-CBC";
 		$secret = "My32charPasswordAndInitVectorStr";  //must be 32 char length
 		$iv = substr($secret, 0, 16);
-		
 		$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secret,0,$iv);
 		$arr = array('REQUEST' => "RefundBuyer",'CONTRACTID'=>$ContractID,'AMOUNT'=>$Amount,'BUYERPUBLICKEY'=>$TransferfromPubkey ,'SELLERPUBLICKEY'=> $TransfertoPubkey ,'ESCROWPRIVATE'=>$encryptedMessage);
 		$message = json_encode($arr);
@@ -2445,11 +2111,9 @@ class Admin extends StandardUser
 		{ 	
 			array_push($usersarray,$row['UserID']);
 		}
-		
 		return $usersarray;
 	}
 	public function ListOfEscrows(){
-	
 		$sql = "SELECT * FROM users where `AccountType` = 'Escrow'";
 		$pubkeysarray = array();
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
@@ -2460,7 +2124,6 @@ class Admin extends StandardUser
 		return $pubkeysarray;
 	}
 	public function ListOfReportedProducts(){
-		
 		$sql = "SELECT * FROM product where `Reported` >0 ORDER BY `Reported` DESC";
 		$arrayret = array();
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
@@ -2469,10 +2132,8 @@ class Admin extends StandardUser
 			array_push($arrayret,$row['ProductID']);
 		}
 		return $arrayret;
-		
 	}
 	public function ListOfReportedUsers(){
-		
 		$sql = "SELECT * FROM users where `Reported` >0 ORDER BY `Reported` DESC";
 		$arrayret = array();
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
@@ -2481,10 +2142,8 @@ class Admin extends StandardUser
 			array_push($arrayret,$row['UserID']);
 		}
 		return $arrayret;
-		
 	}
 	public function ListOfReportedContracts(){
-		
 		$sql = "SELECT * FROM contracts where `Reported` >0 ORDER BY `Reported` DESC";
 		$arrayret = array();
 		$result = $this->connect()->query($sql) or die($this->connect()->error);    
@@ -2493,7 +2152,6 @@ class Admin extends StandardUser
 			array_push($arrayret,$row['ContractID']);
 		}
 		return $arrayret;
-		
 	}
 	public function suspendUser($ID,$SuspensionDate){
 		$data = array('Suspended',$SuspensionDate);
@@ -2520,9 +2178,7 @@ class Admin extends StandardUser
 	public function RemoveEscrow($pubkey){
 		$sql = "DELETE FROM users WHERE PublicKey='$pubkey'";
 		$result = $this->connect()->query($sql) or die( $this->connect()->error);
-		
 	}
-	
 	public function AddEscrow($pubkey,$privatekey){
 		$privatekey = preg_replace('/(\'|&#0*39;)/', '', $privatekey);
 		while(true){					
@@ -2536,17 +2192,13 @@ class Admin extends StandardUser
 				}
 				$sql = "INSERT INTO users (UserID,PublicKey,PrivateKey,AccountType)VALUES('".$UserID."','".$pubkey."','".$privatekey."','Escrow' )";
 				$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
-				
 	}
 	public function AddAds($File,$UserID){
-	
 		$sql = "INSERT INTO `advertisements` (`AdsImage`, `UserID`)VALUES('".$File."','".$UserID."')";
 		$result = $this->connect()->query($sql) or die( $this->connect()->error);    
 	}
 	public function RemoveAds($ImageID){
 		$sql = "DELETE FROM `advertisements` WHERE AdsImage='$ImageID'";
 		$result = $this->connect()->query($sql) or die( $this->connect()->error);
-		
 	}
-	
 }

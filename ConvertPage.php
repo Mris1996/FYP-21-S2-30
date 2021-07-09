@@ -301,6 +301,8 @@ unset($_SESSION['VerifiedUser']);
 $link = $_SESSION['Object'] -> creditCardOut($_SESSION['AmountRE']);
 unset($_SESSION['AmountRE']);
 $_SESSION['ConvertComplete'] = true;
+
+echo'<style> #transactionscontainer{display:none;}</style>';	
 echo'<style> .loadergui{display:block;}</style>';	
 echo '<script> location.replace("'.$link .'")</script> ';
 
@@ -418,8 +420,9 @@ $("#rightbox").css('width', '20%');
 <i class="fab fa-cc-stripe"></i>
 <i class="fa-brands fa-cc-mastercard"></i>
 <hr style="purple">
-<center><h1>Recent Transactions</h1></center>
+
 <div id="transactionscontainer">
+<center><h1>Recent Transactions</h1></center>
 </br></br></br>
 <?php
 $array = $_SESSION['Object']->ListOfRecentTransactions();
@@ -484,6 +487,7 @@ function ResendOTP(email){
 }
 function VerifyOTP(){
 	document.getElementById('convertGUI').style.display = "none";
+	document.getElementById('transactionscontainer').style.display = "none";
 	document.getElementById('loadergui').style.display = "block";
 	OTPEntry = document.getElementById('OTPinput').value;
 	document.getElementById('OTP').style.display = "none";
