@@ -7,6 +7,48 @@
 .Overduecontacts_GUI{
 	display:none;
 }
+#AllContracts{
+	
+	background-color:white;
+	width:1700px;
+	
+	color:purple;
+	border:1px solid grey;
+	margin:auto;
+	text-align:center;
+}
+ table,tr,th,td{
+	
+	border:1px solid #e8e6e6; 
+ }
+ tr{
+	 height:50px;
+	 vertical-align: text-bottom;
+ }
+ button,input[type=submit],input[type=button] {
+	margin-top:20px;
+	border:none;
+	background-color:purple;
+	color:white;
+	font-size:20px;
+	border-radius:10px;
+	margin-right:10px;
+}
+input[type=submit]:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+input[type=button]:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+button:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
 </style>
 <script>
 $(document).ready(function(){
