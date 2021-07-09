@@ -602,7 +602,7 @@ if(isset($_SESSION['ID'])){
 <center><h1 style='margin-top:30px'>You will like</h1></center>
 	";	
 	
-	$ArrayOfRecProducts = $_SESSION['Object']->RecomendedProduct($ProductObj->ProductCategory,$ProductObj->ProductName,$ProductID);
+	$ArrayOfRecProducts = $_SESSION['Object']->RecommendedProduct($ProductObj->ProductCategory,$ProductObj->ProductName,$ProductID);
 
 	foreach($ArrayOfRecProducts as $val){
 		$ProductObj = new Products();

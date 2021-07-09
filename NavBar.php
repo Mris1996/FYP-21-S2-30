@@ -34,12 +34,14 @@ body{
 	color:purple;
 }
 #dropdown{
+	
 	width:200px;
 	   background-color:black;
 }
  .dropdown-content {
   width:100%;
-  margin-top:70px;
+
+  margin-top:90px;
   display: none;
   position: absolute;
   margin-right:40%;
@@ -61,6 +63,7 @@ body{
   width:100%
   font-size:20px;
   margin:auto;
+
  color:purple;
   padding: 12px 16px;
   text-decoration: none;
@@ -71,12 +74,21 @@ body{
 }
  .dropdown-content{
 
-
 width:200px;
 margin-right:100px;
 background-color:black;
 }
-
+.dropdown-content:before {
+  content: '';
+  position: absolute;
+  width: 25px;
+  height: 15px;
+  top: -2.5px;
+  left: 90px;
+  z-index:-1;
+  background: indigo;
+  transform: rotate(135deg);
+}
 #dropbtn2{
     float:left;
 margin-left:50%;
@@ -144,16 +156,17 @@ border-radius: 50%;
   transform: translate(0%, -10%);
 }
 #notifications{
-	 display: none;
+
 margin:auto;
 margin-top:70px;
-
-max-height:250px;
-overflow:auto;
-max-height:100px;
-
 position:absolute;
-overflow-x: hidden;
+max-height:250px;
+
+max-height:100px;
+	width:300px;
+	display:none;
+
+
 }
 
 
@@ -164,6 +177,7 @@ margin-bottom:1%;
 z-index:100;
 max-height:100px;
 transition: height 2s;
+
 }
 
 #notifications::-webkit-scrollbar {
@@ -183,24 +197,42 @@ transition: height 2s;
 
 }
 #notifications a{
-color:white;
-background-color:purple;
-height:55px;
-font-size:20px;
-text-decoration:none;
 
+color:white;
+background-color:indigo;
+height:55px;
+font-size:15px;
+text-decoration:none;
+	width:100%;
+	margin-left:5px;
+	margin-top:20px;
 }
 #notificationmsg{
+
+position:Relative;
  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
   transition: 0.3s;
 	word-wrap: break-word;
 	max-height:200px;
-	width:300px;
-	background-color:purple;
+	width:100%;
+	background-color:indigo;
 	border:1px solid black;
 	margin-left:100px;
 	height:100px;
   transition: width 0.5s;
+  		margin-top:20px;
+}
+#notificationmsg:before {
+  content: '';
+  position: absolute;
+  width: 25px;
+  height: 15px;
+  top: -2.5px;
+  left: 70px;
+  z-index:-1;
+  background: indigo;
+  transform: rotate(135deg);
+  
 }
 #notificationmsg a:hover{
 		opacity:1;

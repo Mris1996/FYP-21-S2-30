@@ -909,7 +909,7 @@ class StandardUser extends BaseUser
 		$sql = "DELETE FROM notification WHERE Hyperlink='".$Link."' AND UserID='".$this->getUID()."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 	}
-	public function RecomendedProduct($Category,$Name,$ProductID){
+	public function RecommendedProduct($Category,$Name,$ProductID){
 			
 		$sql = "SELECT * FROM product WHERE SellerUserID != '".$this->getUID()."' AND ProductID != '".$ProductID."' AND(ProductCategory = '".$Category."' OR ProductName LIKE '%".$Name."%') ORDER BY RAND()";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 

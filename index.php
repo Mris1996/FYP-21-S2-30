@@ -157,9 +157,11 @@ if(sizeof($ArrayOFAds )!=0){
 <div id="carousel-example-2" class="carousel slide carousel-fade" data-ride="carousel">
   <!--Indicators-->
   <ol class="carousel-indicators">
-    <li data-target="#carousel-example-2" data-slide-to="0" class="active"></li>
+	   <li data-target="#carousel-example-2" data-slide-to="0" class="active"></li>
+  <?php for($x = 1; $x<sizeof($ArrayOFAds );$x++){?>
+ 
     <li data-target="#carousel-example-2" data-slide-to="1"></li>
-    <li data-target="#carousel-example-2" data-slide-to="2"></li>
+  <?php } ?>
   </ol>
    <div class="carousel-inner" role="listbox">
    <div class="carousel-item active">
