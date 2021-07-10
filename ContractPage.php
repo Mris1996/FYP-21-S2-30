@@ -370,6 +370,13 @@ float:right;
 font-size:30px;
 margin-right:2%;
 }
+#courierlink{
+	float:right;
+	text-align:center;
+	border:1px solid purple;
+	width:750px;
+	height:300px;
+}
 </style>
 </head>
 <body>
@@ -658,10 +665,10 @@ $("input[type=radio][name='DeliveryMode'][value='"+Delivery+"']").attr("checked"
 <?php
 if($Type=="Buyer" && $ContractObj->Status == "Seller has accepted service"||$Type=="Seller" && $ContractObj->Status == "Deal"){
 if($Type=="Seller" && $ContractObj->DeliveryMode!="Courier Delivery"){
-echo'<input type="button" name="service" id="service" onclick="AcceptConfirm()" value="Service fullfilled">';
+echo'</br><input type="button" name="service" id="service" onclick="AcceptConfirm()" value="Service fullfilled">';
 }
 if($Type=="Buyer"){
-echo'<input type="button" name="service" id="service" onclick="AcceptConfirm()" value="Service fullfilled">';
+echo'</br><input type="button" name="service" id="service" style="margin-top:20px;" onclick="AcceptConfirm()" value="Service fullfilled">';
 }
 }
 if($Type == "Buyer" && $ContractObj->Transaction == "Complete" &&  $ContractObj->Status!="Refunded Transaction" && $ContractObj->Status!="Rejected" &&  $ContractObj->Status!="Requested Refund"|| $Type == "Buyer" && $ContractObj->Transaction == "On-Going" &&  $ContractObj->Status!="Refunded Transaction"&&  $ContractObj->Status!="Requested Refund" ){
@@ -776,10 +783,12 @@ else{
 if($ContractObj->DeliveryMode =="Courier Delivery" && $Type == "Seller"){
 ?>
 <hr>
+<div id="courierlink">
 <h1  style="margin-top:10%">Courier Link</h1>
 <h2>Please do not give this link to anybody except your courier</h2>
 <h5>TempID:<?php echo $_SESSION['Object']->generateCourierLink($ContractID) ?></h5>
 <b style="color:red"><?php echo "http://abae1b52b3fb.ngrok.io/STIC/CourierPage.php?ID=".$_SESSION['Object']->generateCourierLink($ContractID);?></b>
+</div>
 <?php
 }
 ?>

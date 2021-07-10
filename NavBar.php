@@ -388,8 +388,8 @@ h1,h2,h3,h4,h5{
  
 <script>
 
-//webportconfig = 'ws://8.tcp.ngrok.io:16934';
-webportconfig = 'ws://localhost:3030';
+webportconfig = 'ws://8.tcp.ngrok.io:19773';
+//webportconfig = 'ws://localhost:3030';
 window.WebSocket = window.WebSocket || window.MozWebSocket;
 function deletenotification(ID){
 	

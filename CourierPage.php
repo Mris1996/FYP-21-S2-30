@@ -63,6 +63,30 @@ background-size: 270px 270px;
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+ button,input[type=submit],input[type=button] {
+	margin-top:20px;
+	border:none;
+	background-color:purple;
+	color:white;
+	font-size:20px;
+	border-radius:10px;
+	margin-right:10px;
+}
+input[type=submit]:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+input[type=button]:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
+button:hover {
+	
+	 outline:60%;
+    filter: drop-shadow(0 0 5px purple);
+}
 </style>
 <input type="hidden" class="text-box" id="UserID"  value = "<?php echo $ContractObj->SellerUserID?>">
 <input type="hidden" class="text-box" id="contractid"  value = "<?php echo $ContractID ?>">

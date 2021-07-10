@@ -883,6 +883,7 @@ class StandardUser extends BaseUser
 		$result = $this->connect()->query($sql) or die($this->connect()->error);  
 	}
 	public function NewOffer($Offer,$DateRequired,$SellerID,$ProductID,$InitialOffer){
+		
 		while(true){					
 					$ContractID = str_pad(rand(0000,9999),4,0,STR_PAD_LEFT).str_pad(rand(0000,9999),4,0,STR_PAD_LEFT).str_pad(rand(0000,9999),4,0,STR_PAD_LEFT).chr(rand(97,122)).chr(rand(97,122)).chr(rand(97,122)).str_pad(rand(0000,9999),4,0,STR_PAD_LEFT). substr(rand(0000,9999), 2, 4);
 					$result = $this->connect()->query("SELECT count(*) as 'c' FROM contracts WHERE ContractID='".$ContractID."'");
@@ -1014,66 +1015,9 @@ class StandardUser extends BaseUser
 		}
 		return $ArrayOfContracts;
 	}
-	/*
-	public function Chat($UserID){
-		$sql = "SELECT * FROM negotiation WHERE UserID='".$UserID."' AND UserID2='".$this->getUID()."' OR UserID='".$this->getUID()."' AND UserID2='".$UserID."'";
-		$result = $this->connect()->query($sql) or die($this->connect()->error);    
-		if ($result->num_rows == 0) 
-		{	
-			$FullMessageArray = array();
-			$JSONdata = Json_encode($FullMessageArray);
-			$sql = "INSERT INTO `negotiation`(`UserID`, `Message`, `UserID2`) VALUES ('".$this->getUID()."','".$JSONdata."','".$UserID ."')";
-			$result = $this->connect()->query($sql) or die($this->connect()->error); 
-		}
-	}
-	public function DeleteChat($UserID){
-		$sql = "DELETE FROM negotiation WHERE UserID='".$UserID."' AND UserID2='".$this->getUID()."' OR UserID='".$this->getUID()."' AND UserID2='".$UserID."'";
-		$result = $this->connect()->query($sql) or die($this->connect()->error);    
-	}
-	public function AllChatsArray(){
-		$sql = "SELECT * FROM negotiation WHERE UserID='".$this->getUID()."' OR UserID2='".$this->getUID()."'";
-		$result = $this->connect()->query($sql) or die($this->connect()->error);    
-		if ($result->num_rows == 0) 
-		{
-			echo'<b>You have no chats currently</b>';
-		}
-		else{
-			echo'<form method="post">';
-			while($row = $result->fetch_assoc())
-			{
-					if($row['UserID']!=$this->getUID()){
-					echo'<input type="submit" name ="Chat_with" value="'.$row['UserID'].'"></br>';
-					}
-					else{
-					echo'<input type="submit" name ="Chat_with" value="'.$row['UserID2'].'"></br>';	
-					}
-			}
-			echo'</form>';
-		}
-	}*/
-	public function InsertOrdinaryChat($User1,$User2,$Message){
-		$Message = preg_replace('/(\'|&#0*39;)/', '', $Message);
-		$sql = "SELECT * FROM negotiation WHERE UserID='".$User1."' AND UserID2='".$User2."' OR UserID='".$User2."' AND UserID2='".$User1."'";
-		$result = $this->connect()->query($sql) or die($this->connect()->error);    
-		if ($result->num_rows == 0) 
-		{
-			$FullMessageArray = array($Message);
-			$JSONdata = Json_encode($FullMessageArray);
-			$sql = "INSERT INTO `negotiation`(`UserID`, `Message`, `UserID2`) VALUES ('".$User1."','".$JSONdata."','".$User2 ."')";
-			$result = $this->connect()->query($sql) or die($this->connect()->error); 
-		}
-		else{
-			while($row = $result->fetch_assoc())
-			{ 
-				$FullMessageArray = Json_decode( $row["Message"],true);
-			}
-			array_push($FullMessageArray,$Message);
-			$JSONdata = Json_encode($FullMessageArray);
-			$sql = "UPDATE `negotiation` SET `Message`='".$JSONdata."' WHERE  UserID='".$User1."' AND UserID2='".$User2."' OR UserID='".$User2."' AND UserID2='".$User1."'";
-			$result = $this->connect()->query($sql) or die($this->connect()->error);  
-		}               
-	}
+
 	public function InsertChat($ContractID,$User,$Message,$Type){
+		$Message = filter_var($Message,FILTER_SANITIZE_SPECIAL_CHARS);
 	    $Message = preg_replace('/(\'|&#0*39;)/', '', $Message);
 		$Message = array("Message"=>$Message , "User"=>$User , "Time"=>Time() ,"Type"=>$Type);
 		$sql = "SELECT * FROM contracts WHERE ContractID='".$ContractID."'";
@@ -1171,6 +1115,8 @@ class StandardUser extends BaseUser
 		return $data;
 	}
 	public function UpdateContract($offer,$daterequired,$paymentmode,$ContractID,$Type,$DeliveryMode){
+		$offer = filter_var($offer,FILTER_SANITIZE_SPECIAL_CHARS);
+		$daterequired = filter_var($daterequired,FILTER_SANITIZE_SPECIAL_CHARS);
 		$sql = " UPDATE `contracts` SET `Status`= '".$Type." has updated',`NewOffer`='".$offer."',`DateRequired`= '".$daterequired."',`Payment Mode`= '".$paymentmode."',`TotalAccepted`= '0' ,`DeliveryMode` = '".$DeliveryMode."'  WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		$sql = " UPDATE `contracts` SET `TotalAccepted`=  0 WHERE `TotalAccepted`<0 ";
@@ -2180,6 +2126,8 @@ class Admin extends StandardUser
 		$result = $this->connect()->query($sql) or die( $this->connect()->error);
 	}
 	public function AddEscrow($pubkey,$privatekey){
+		$pubkey = filter_var($pubkey,FILTER_SANITIZE_SPECIAL_CHARS);
+		$privatekey = filter_var($privatekey,FILTER_SANITIZE_SPECIAL_CHARS);
 		$privatekey = preg_replace('/(\'|&#0*39;)/', '', $privatekey);
 		while(true){					
 					$UserID = "Escrow". substr(rand(0000,9999), 2, 4);
@@ -2194,7 +2142,8 @@ class Admin extends StandardUser
 				$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
 	}
 	public function AddAds($File,$UserID){
-		$sql = "INSERT INTO `advertisements` (`AdsImage`, `UserID`)VALUES('".$File."','".$UserID."')";
+		$UserID = filter_var($UserID,FILTER_SANITIZE_SPECIAL_CHARS);
+		$sql = "$UserID = filter_var($UserID,FILTER_SANITIZE_SPECIAL_CHARS); `advertisements` (`AdsImage`, `UserID`)VALUES('".$File."','".$UserID."')";
 		$result = $this->connect()->query($sql) or die( $this->connect()->error);    
 	}
 	public function RemoveAds($ImageID){
