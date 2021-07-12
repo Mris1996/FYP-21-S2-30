@@ -1,203 +1,414 @@
-<html>
-<style>
-
-label{
-	display:inline-block;
-	width:200px;
-	margin-right:30px;
-	text-align:center;
-}
-
-input[name="LoginButton"]{
-	margin-left:auto;
-	margin-right:auto;
-	font-size:30px;
-	color:white;
-	background-color:black;
-
-}
-
-fieldset{
-border:none;
-width:500px;
-margin:0px auto;
-}
-span{
-	color:blue;
-
-}
-input[type="text"],[type="password"]{
-	width:200px;
-}
-#container{
-	margin-top:5%;
-	width:1000px;
-	height:700px;
-	border-radius:20px;
-	border:2px solid purple;
-		margin-left:25%;
-	overflow: hidden;
- box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+<?php
+	require_once("NavBar.php");
 	
-}
-#innercontainer{
-	background-repeat: no-repeat; /* Do not repeat the image */
-	background-size: cover; /* Resize the background image to cover the entire container */
-	background-image: url('ads/LoginAds.jpg');
-	width:498px;
-	height:100%;
-	background-color:#4b0082;
-	   float: right;
-}
-#Login_GUI{
-		
-		margin-top:15%;
-	width:498px;
-	height:400px;
-	 float: left;
-	font-size:20px;
+	redirectUsersToIndexIfTheyAreLoggedIn();
 	
-}
-#Login_GUI input{
-
-	height:40px;
-
-
-}
-#Login_GUI input[type=submit]{
-	display:inline-block;
-	border:none;
-	font-family: 'Roboto';
-	background-color:purple;
-	color:white;
-	height:50px;
-	font-size:30px;
-	width:400px;
-	margin-top:5px;
-		border-radius:40px;
-	margin-right:10px;
-
-}
-#Login_GUI input[type=submit]:hover {
-	
-	 outline:60%;
-    filter: drop-shadow(0 0 5px purple);
-}
-</style>
-
-</html>
-<?php 
-require_once("NavBar.php");
-$LoginLoginIDerror = $MainError = $PasswordPassworderror = "";
-if(isset($_SESSION['ID'])){
-	echo '<script> location.replace("index.php")</script> ';
-}
-
-$submit = true;
-
-if(isset($_POST['SignupButton'])){
-echo '<script> location.replace("SignUpPage.php")</script> ';	
-	
-}
-if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['LoginButton'])){
-	if(empty($_POST["Login_LoginID"]))
-	{
-		$LoginLoginIDerror = "UserID is required";
-		$submit = false;
-	}
-
-	if(empty($_POST["Login_Password"]))
-	{
-		$PasswordPassworderror = "Password is required";
-		$submit = false;
-	}
-	if($submit){
-		
-		$BaseUserOBJ = new BaseUser("Login");
-		if($BaseUserOBJ->LoginValidate($_POST["Login_LoginID"],$_POST["Login_Password"])){
-			if(json_decode($BaseUserOBJ->Status)[0]=="Suspended"){
-				if(strtotime("now")>strtotime(json_decode($BaseUserOBJ->Status)[1])){
-					$AdminObj = new Admin($BaseUserOBJ);
-					$AdminObj ->RemoveStatus($BaseUserOBJ->getUID());	
-					$_SESSION['ID'] = $BaseUserOBJ->getUID();
-					$_SESSION['Type'] = $BaseUserOBJ->getAccountType();
-					echo'<script>history.pushState({}, "", "")</script>';
-					if($_SESSION['Type']=="Standard"){
-						// Downcasting to child class StandardUser
-						$UserObj = new StandardUser($BaseUserOBJ);
-						// Store UserObj to SESSION variable so it can be used on other pages
-						$_SESSION['Object'] = $UserObj;
-					}
-					if($_SESSION['Type']=="Administrator"){
-						// Downcasting to child class Admin
-						$AdminObj = new Admin($BaseUserOBJ);
-						// Store AdminObj to SESSION variable so it can be used on other pages
-						$_SESSION['Object'] = $AdminObj;
-					}
-					echo '<script> location.replace("index.php")</script> ';
-					exit();
-				}
-				else{
-					$MainError = "Account has been suspended till ".date("d/m/Y",strtotime(json_decode($BaseUserOBJ->Status)[1]))."";
-				}
-				
-				
-			}
-			else if(json_decode($BaseUserOBJ->Status)[0]=="Banned"){
-				$MainError = "Account has been banned";
-			}
-			else{
-			// Set SESSION variables here
-			$_SESSION['ID'] = $BaseUserOBJ->getUID();
-			$_SESSION['Type'] = $BaseUserOBJ->getAccountType();
-			echo'<script>history.pushState({}, "", "")</script>';
-			if($_SESSION['Type']=="Standard"){
-				// Downcasting to child class StandardUser
-				$UserObj = new StandardUser($BaseUserOBJ);
-				// Store UserObj to SESSION variable so it can be used on other pages
-				$_SESSION['Object'] = $UserObj;
-			}
-			if($_SESSION['Type']=="Administrator"){
-				// Downcasting to child class Admin
-				$AdminObj = new Admin($BaseUserOBJ);
-				// Store AdminObj to SESSION variable so it can be used on other pages
-				$_SESSION['Object'] = $AdminObj;
-			}
+	function redirectUsersToIndexIfTheyAreLoggedIn() {
+		if(isset($_SESSION['ID'])) {
 			echo '<script> location.replace("index.php")</script> ';
-			exit();
-			}
-		}
-		else{
-			$MainError = "UserID/Password is wrong";
-			
 		}
 	}
 	
-}
 ?>
-<div id="container">
-<div id="Login_GUI">
 
-<form method="post">
-<center><a href="index.php"><img src="systemimages/STIClogo.jpg" class="image" style="object-fit:cover;width:200px;height:100px;border-radius:10px"></a></center>
-<center><span class="error"><?php echo $MainError;?></span><br /><br /></center>
-<label>User ID:</label><input type="text" name="Login_LoginID"><br />
-<center><span class="error"><?php echo $LoginLoginIDerror;?></span><br /><br /></center>
-<label>Password:</label><input type="password" name="Login_Password">
-<center><span class="error"><?php echo $PasswordPassworderror;?></span><br /><br /></center>
-<center>
-<input type="Submit" name="LoginButton" value="Login"/>
-<input type = "Submit" name="SignupButton" value ="Sign Up"/><br />
-</form>
+<!doctype html>
+<html lang="en-us">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		
+		<style>
+			label {
+				display:inline-block;
+				width:200px;
+				margin-right:30px;
+				text-align:center;
+			}
+			
+			input[name="LoginButton"] {
+				margin-left:auto;
+				margin-right:auto;
+				font-size:30px;
+				color:white;
+				background-color:black;
+			}
+
+			fieldset {
+				border:none;
+				width:500px;
+				margin:0px auto;
+			}
+			
+			span{
+				color:blue;
+			}
+			
+			input[type="text"],[type="password"] {
+				width:200px;
+			}
+			
+			#container {
+				margin-top:5%;
+				width:1000px;
+				height:700px;
+				border-radius:20px;
+				border:2px solid purple;
+				margin-left:25%;
+				overflow: hidden;
+				box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			}
+			
+			#innercontainer {	
+				background-repeat: no-repeat; /* Do not repeat the image */
+				background-size: cover;       /* Resize the background image to cover the entire container */
+				background-image: url('ads/LoginAds.jpg');
+				width:498px;
+				height:100%;
+				background-color:#4b0082;
+				float: right;
+			}
+			
+			#Login_GUI {	
+				margin-top:15%;
+				width:498px;
+				height:400px;
+				float: left;
+				font-size:20px;
+			}
+			
+			#Login_GUI input {
+				height:40px;
+			}
+			
+			#Login_GUI input[type=submit] {
+				display:inline-block;
+				border:none;
+				font-family: 'Roboto';
+				background-color:purple;
+				color:white;
+				height:50px;
+				font-size:30px;
+				width:400px;
+				margin-top:5px;
+				border-radius:40px;
+				margin-right:10px;
+			}
+			
+			#Login_GUI input[type=submit]:hover {
+				outline:60%;
+				filter: drop-shadow(0 0 5px purple);
+			}
+		</style>
+		
+		<script src="https://www.google.com/recaptcha/api.js?render=6LemjY8bAAAAAHKCjJSDsyUnbeVaR-98zDihBDyS"></script>
+		<title>Login Page</title>
+	</head>
+
+	<body>
+		<?php
+			
+			// Event Listeners
+			redirectUsersToSignUpIfButtonIsClicked();
+			
+			$systemMessage = "";
+			try {
+				processFormSubmission();
+			} catch (Exception $e) {
+				$systemMessage = $e->getMessage() . "\n";
+			}
+		?>
+		
+		<div id="container">
+			<div id="Login_GUI">
+				<form method="post" style="text-align:center;">
+					
+					<input type="hidden" id="g-token" name="g-token">
+				
+					<a href="index.php">
+						<img src="systemimages/STIClogo.jpg" class="image" style="object-fit:cover;width:200px;height:100px;border-radius:10px">
+					</a>
+					
+					<br>
+					<br>
+					
+					<label for="Login_LoginID">User ID:</label>
+					<input type="text" name="Login_LoginID" id="Login_LoginID">
+					
+					<br>
+					<br>
+					
+					<label for="Login_Password">Password:</label>
+					<input type="password" name="Login_Password" id="Login_Password">
+					
+					<br>
+					
+					<span class="error">
+						<?php 
+							echo $systemMessage; 
+						?>
+					</span>
+					
+					<br>
+					<br>
+					
+					<input type="Submit" name="LoginButton" value="Login">
+					<input type = "Submit" name="SignupButton" value ="Sign Up"> 
+					
+					<br>
+					
+					<a href="ForgetPasswordPage.php" style="text-align:center;">Forgot password?</a>
+				</form>
+			</div>
+			
+			<div id="innercontainer">
+			</div>
+		
+		</div>
+		
+		<script>
+			/* Code here is to set the Token Value in the hidden g-token variable */
+			grecaptcha.ready(function() {
+				grecaptcha.execute('6LemjY8bAAAAAHKCjJSDsyUnbeVaR-98zDihBDyS', {action: 'submit'}).then(function(token) {
+					document.getElementById("g-token").value = token;
+				});
+			});
+		</script>
+	</body>
+</html>
+
+<?php 
+	function redirectUsersToSignUpIfButtonIsClicked() {
+		if(isset($_POST['SignupButton'])) {
+			echo '<script> location.replace("SignUpPage.php")</script> ';	
+		}
+	}
+	
+	function processFormSubmission() {
+		
+		$processingOutcome = false;
+		$processingOutcome = validateFormFields();
+		
+		if($processingOutcome) {	
+			$BaseUserOBJ = new BaseUser("Login");
+			
+			if(userCredentialsAreValid($BaseUserOBJ)) {
+				if(statusOfAccountIsSuspended($BaseUserOBJ)) {
+					if(accountIsNoLongerSuspended($BaseUserOBJ)) {
+						removeSuspensionRecordFromDatabase($BaseUserOBJ);
+						setSessionVariables($BaseUserOBJ);
+						redirectUserToIndexPage();	
+					}
+				} else if(statusOfAccountIsBanned($BaseUserOBJ)) {
+					throw new Exception("Account has been banned!");
+				} else {
+					setSessionVariables($BaseUserOBJ);
+					redirectUserToIndexPage();
+				}
+			}
+		}		
+	}
+	
+	function validateFormFields() {
+		if(postAndLoginButtonAreSelected()) {
+			if(recaptchaIsValid()) {
+				if(userIdFieldIsNotEmpty()) {
+					if(loginPasswordFieldIsNotEmpty()) {
+						return true;
+					}
+				}
+			}	
+		}
+		return false;
+	}
+	
+	function postAndLoginButtonAreSelected() {
+		if($_SERVER["REQUEST_METHOD"] == "POST" and isset($_POST['LoginButton'])) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	function recaptchaIsValid() {
+		
+		$queryRecaptchaUrl = constructRecaptchaQuery();
+		$resultOfRecaptcha = getRecaptchaResults($queryRecaptchaUrl);		
+		$recaptchaResponse = processRecaptchaResults($resultOfRecaptcha);
+
+		if ($recaptchaResponse->success) {
+			return true;
+		} else {
+			throw new Exception("reCAPTCHA verification Failed! Please try again!");
+			return false;
+		}
+	}
+	
+	function constructRecaptchaQuery() {
+		$secretKey = "6LemjY8bAAAAAAf5vVydIr9jsvxW9AH_vadz78Mp";
+		$token = $_POST["g-token"];
+		$ip = $_SERVER["REMOTE_ADDR"];
+		$url = "https://www.google.com/recaptcha/api/siteverify?secret=".$secretKey."&response=".$token."&remoteip=".$ip;
+		return $url;
+	}
+	
+	function getRecaptchaResults($queryRecaptchaUrl) {
+		return file_get_contents($queryRecaptchaUrl);
+	}
+	
+	function processRecaptchaResults($resultOfRecaptcha) {
+		return json_decode($resultOfRecaptcha);
+	}
+	
+	function userIdFieldIsNotEmpty() {
+		if(!empty($_POST["Login_LoginID"])) {
+			return true;
+		} else {
+			throw new Exception("UserID is required!");
+			return false;
+		}
+	}
+	
+	function loginPasswordFieldIsNotEmpty() {
+		if(!empty($_POST["Login_Password"])) {
+			return true;
+		} else {
+			throw new Exception("Password is required!");
+			return false;
+		}
+	}
+	
+	function userCredentialsAreValid(&$BaseUserOBJ) {
+		if($BaseUserOBJ->LoginValidate($_POST["Login_LoginID"],$_POST["Login_Password"])) {
+			return true;
+		} else {
+			throw new Exception("UserID/Password is wrong!");
+			return false;
+		}
+	}
+	
+	function statusOfAccountIsSuspended(&$BaseUserOBJ) {
+		if (json_decode($BaseUserOBJ->Status)[0]=="Suspended") {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	function accountIsNoLongerSuspended(&$BaseUserOBJ) {
+		
+		$currentDateTime = getCurrentDateTime();
+		$banDeadline = getBanDeadline($BaseUserOBJ);
+		
+		if($currentDateTime > $banDeadline) {
+			return true;
+		} else {
+			$formattedBanDeadlne = formatDate($banDeadline);
+			throw new Exception("Account has been suspended till ".$formattedBanDeadlne."");
+			return false;
+		}
+	}
+	
+	function getCurrentDateTime() {
+		return strtotime("now");
+	}
+	
+	function getBanDeadline(&$BaseUserOBJ) {
+		return strtotime(json_decode($BaseUserOBJ->Status)[1]);
+	}
+	
+	function formatDate(&$banDeadline) {
+		return date("d/m/Y", $banDeadline);
+	}
+	
+	function removeSuspensionRecordFromDatabase(&$BaseUserOBJ) {
+		$AdminObj = new Admin($BaseUserOBJ);
+		$AdminObj ->RemoveStatus($BaseUserOBJ->getUID());
+	}
+		
+	function statusOfAccountIsBanned(&$BaseUserOBJ) {
+		if (json_decode($BaseUserOBJ->Status)[0]=="Banned") {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	function setSessionVariables(&$BaseUserOBJ) {
+		setSessionId($BaseUserOBJ);
+		setSessionType($BaseUserOBJ);
+		
+		addNewLineToSessionVariable();
+		
+		setSessionObjectAccordingToType($BaseUserOBJ); 
+	}
+	
+	function setSessionId(&$BaseUserOBJ) {
+		$_SESSION['ID'] = $BaseUserOBJ->getUID();
+	}
+	
+	function setSessionType(&$BaseUserOBJ) {
+		$_SESSION['Type'] = $BaseUserOBJ->getAccountType();
+	}
+	
+	function addNewLineToSessionVariable() {
+		echo'<script>history.pushState({}, "", "")</script>';
+	}
+	
+	function setSessionObjectAccordingToType(&$BaseUserOBJ) {
+		if($_SESSION['Type']=="Standard") {
+			setSessionObjectToStandardUser($BaseUserOBJ);
+		}
+		
+		if($_SESSION['Type']=="Administrator") {
+			setSessionObjectToAdministratorUser($BaseUserOBJ);
+		}
+	}
+	
+	function setSessionObjectToStandardUser(&$BaseUserOBJ) {
+		$UserObj = new StandardUser($BaseUserOBJ); // Downcasting to child class 
+		$_SESSION['Object'] = $UserObj; 
+	}
+	
+	function setSessionObjectToAdministratorUser(&$BaseUserOBJ) {
+		$AdminObj = new Admin($BaseUserOBJ); // Downcasting to child class 
+		$_SESSION['Object'] = $AdminObj;
+	}
+	
+	function redirectUserToIndexPage() {
+		echo '<script> location.replace("index.php")</script> ';
+		exit();
+	}
+	
+?>
 
 
+<!--Links Used:-->
+<!-- 
+Base Structure of a HTML Page
+https://www.w3schools.com/html/html5_syntax.asp
 
-<a href="ForgetPasswordPage.php">Forgot password?</a>
-</center>
-</div>
-<div id="innercontainer">
+Pass by reference
+https://www.php.net/manual/en/language.references.pass.php
 
-</div>
-</div>
+History.pushState
+https://developer.mozilla.org/en-US/docs/Web/API/History/pushState
 
-<?php require_once("Footer.php");?> 
+"Center" tag is deprecated
+https://www.w3schools.com/tags/tag_center.asp
+
+Alternatives to "Center" tag
+https://developer.mozilla.org/en-US/docs/Web/HTML/Element/center
+
+Setting up ReCAPTCHA
+https://www.youtube.com/watch?v=s8oe8RpVWJg&ab_channel=Learn-and-Share
+https://developers.google.com/recaptcha/docs/v3      // Client Side Integration
+https://developers.google.com/recaptcha/docs/verify  // Server Side Integration
+
+Debug ReCAPTCHA
+https://developers.google.com/recaptcha/docs/faq#localhost_support
+https://stackoverflow.com/questions/3232904/using-recaptcha-on-localhost
+
+<pre> tag
+https://www.w3schools.com/tags/tag_pre.asp
+
+-->
