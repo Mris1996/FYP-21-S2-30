@@ -7,6 +7,8 @@ session_start();
 ?>
 <html lang="en">
 <head>
+<link  rel="shortcut icon" href="systemimages/Logo.jpg">
+<title>STIC</title>
 <meta charset="utf-8">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
@@ -385,10 +387,11 @@ h1,h2,h3,h4,h5{
 </style>
 
 
- 
+ <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> 
+
 <script>
 
-webportconfig = 'ws://8.tcp.ngrok.io:19773';
+webportconfig = 'ws://996a2eb3b993.ngrok.io';
 //webportconfig = 'ws://localhost:3030';
 window.WebSocket = window.WebSocket || window.MozWebSocket;
 function deletenotification(ID){

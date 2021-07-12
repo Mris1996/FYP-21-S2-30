@@ -85,11 +85,11 @@ var payWithCard = function(stripe, card, clientSecret) {
 var orderComplete = function(paymentIntentId,Amount) {
   loading(false);
 var ajax = new XMLHttpRequest();
-ajax.open("POST", "http://localhost/STIC/ConvertPageController.php", true);
+ajax.open("POST",  window.location.hostname+"ConvertPageController.php", true);
 ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 ajax.send("CreditCardIn=1"+"&Amount="+Amount+"&TxID="+paymentIntentId);
 console.log(ajax)
- //window.location.replace("localhost/STIC/test.php");
+ window.location.replace( window.location.hostname+"ConvertPage.php");
   document.querySelector("button").disabled = true;
 };
 
