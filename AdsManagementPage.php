@@ -360,7 +360,7 @@
 		$fileExtension = strtolower(end($filePath));
 		$newFileName = uniqid('', true).".".$fileExtension;
 		
-		$fileDestination = 'ads/'.$newFileName;
+		$fileDestination = 'systemads/'.$newFileName;
 		$fileTmpNameOnServer = $_FILES['file']['tmp_name'];
 		
 		$success = true;
@@ -379,7 +379,9 @@
 	}
 	
 	function addRecordToDatabase($fileDestination) {
+	
 		$_SESSION['Object'] ->AddAds($fileDestination ,$_POST["UserIDInput"]);
+	
 	}
 	
 	function displayTheAddButton() {

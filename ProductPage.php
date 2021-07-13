@@ -350,7 +350,7 @@ span.onclick = function() {
 <?php
 
 if($ProductObj->ProductCategory == "Home and Lifestyle"){
-		echo"<style> #container{background-image: url('systemimages/Tickets.jpg');}</style>";
+		echo"<style> #container{background-image: url('systemimages/Home.jpg');}</style>";
 	
 }
 if($ProductObj->ProductCategory == "Sports"){
@@ -597,7 +597,7 @@ if($_SESSION['ID'] != $Owner){
 
 <?php 
 if(isset($_SESSION['ID'])){
-	
+
 	echo"<div class='Rec_Prod_GUI'>
 <center><h1 style='margin-top:30px'>You will like</h1></center>
 	";	

@@ -786,6 +786,15 @@ class StandardUser extends BaseUser
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 	}
 	public function RecommendedProduct($Category,$Name,$ProductID){
+		$sql = "SELECT counter(* FROM product WHERE SellerUserID != '".$this->getUID()."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+		if ($result->num_rows<3)
+		{
+			$recommendedarray = array();
+			return $recommendedarray;
+			
+		}
+		
 		$sql = "SELECT * FROM product WHERE SellerUserID != '".$this->getUID()."' AND ProductID != '".$ProductID."' AND(ProductCategory = '".$Category."' OR ProductName LIKE '%".$Name."%') ORDER BY RAND()";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		$recommendedarray = array();
@@ -1723,6 +1732,7 @@ $Paid = 'half';
 			return $data['RESPONSE'];
 		}
 			public function creditCardIn($amount){
+				echo "bob";
 			$host    = "localhost";
 			$port    = 8080;
 			$arr = array('REQUEST' => "CreditCardPayIn",'AMOUNT'=>$amount,'UserID'=>$_SESSION['ID']);
@@ -2143,7 +2153,7 @@ class Admin extends StandardUser
 	}
 	public function AddAds($File,$UserID){
 		$UserID = filter_var($UserID,FILTER_SANITIZE_SPECIAL_CHARS);
-		$sql = "$UserID = filter_var($UserID,FILTER_SANITIZE_SPECIAL_CHARS); `advertisements` (`AdsImage`, `UserID`)VALUES('".$File."','".$UserID."')";
+		$sql = "INSERT INTO  `advertisements` (`AdsImage`, `UserID`)VALUES('".$File."','".$UserID."')";
 		$result = $this->connect()->query($sql) or die( $this->connect()->error);    
 	}
 	public function RemoveAds($ImageID){

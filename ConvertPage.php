@@ -292,7 +292,7 @@ unset($_SESSION['VerifiedUser']);
 $_SESSION['Object'] -> creditCardIn($_SESSION['AmountTU']);
 unset($_SESSION['AmountTU']);
 $_SESSION['ConvertComplete'] = true;
-echo '<script> location.replace("http://localhost:4242/checkout.html")</script> ';
+echo '<script> location.replace("https://7a0132ae9b4e.ngrok.io/checkout.html")</script> ';
 
 }
 
@@ -494,7 +494,7 @@ function VerifyOTP(){
 	ajax.open("POST", "ConvertPageController.php", true);
 	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	ajax.send("OTP=" + OTPEntry );
-	console.log(ajax);
+	
 }
 var connection =  new WebSocket(webportconfig);
 connection.onmessage = function (message) {

@@ -274,7 +274,7 @@ if(isset($_POST['submit'])&& $submit){
 	move_uploaded_file($fileTmpName, $fileDestination);
 	$File = $fileDestination;
 	echo'<style> .List_GUI{display:none;}</style>';
-	$ProductID = $_SESSION['Object']->ListProduct($Name,$Category,$Description,round($Cost, 0),$Caption,$File);
+	$ProductID = $_SESSION['Object']->ListProduct($Name,$Category,$Description,$Cost,$Caption,$File);
 	echo'<center>
 		<div class="Post_Insert_GUI" onclick="clickproduct(this.id)" id = "'.$ProductID.'">
 		<a href="#" class="fill-div"></a>

@@ -21,7 +21,7 @@ $submit = true;
 
 if(isset($_POST['submit'])){
 $Name = test_input($_POST["Name"]);
-$Category = test_input($_POST["Category"]);
+$Category = $_POST["Category"];
 $Caption = test_input($_POST["Caption"]); 
 $Description = test_input($_POST["Description"]); 
 $Cost = test_input($_POST["Cost"]);
@@ -231,11 +231,11 @@ h2{
 			$arr = explode(":",$line);
 			if($arr[0]==$ProductObj->ProductCategory){
 							echo 
-			"<option style='background-color:black;color:white;' value=".$arr[0]." selected>".$arr[0]."</option>";
+			"<option style='background-color:black;color:white;' value='".$arr[0]."' selected>".$arr[0]."</option>";
 			}
 			else{
 			echo 
-			"<option style='background-color:black;color:white;' value=".$arr[0].">".$arr[0]."</option>";
+			"<option style='background-color:black;color:white;' value='".$arr[0]."'>".$arr[0]."</option>";
 			
 			}}fclose($myfile);
 			?>
@@ -284,7 +284,7 @@ if(isset($_POST['submit'])&& $submit){
 	echo'<script>history.pushState({}, "", "")</script>';
 	exit();
 	}
-	if($_SESSION['Object']->UpdateProduct($_GET['ID'],$Name,$Category,$Description,round($Cost, 0),$Caption,$File)){
+	if($_SESSION['Object']->UpdateProduct($_GET['ID'],$Name,$Category,$Description,$Cost,$Caption,$File)){
 	echo'<script>history.pushState({}, "", "")</script>';
 echo'<center>
 		<div class="Post_Insert_GUI" onclick="clickproduct(this.id)" id = "'.$ProductObj->ProductID.'">

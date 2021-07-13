@@ -78,7 +78,7 @@ font-size:15px;
 	background-color:#000099;
 	color:white;
 	height:50px;
-	font-size:30px;
+	font-size:20px;
 	border-radius:40px;
 	margin-right:10px;
 width:500px;
