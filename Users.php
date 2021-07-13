@@ -839,14 +839,18 @@ class StandardUser extends BaseUser
 		arsort($counts);
 		$top_with_count = array_slice($counts, 0, 2, true);
 		$top = array_keys($top_with_count);	
-		$sql = "SELECT * FROM product WHERE SellerUserID != '".$this->getUID()."' ORDER BY RAND()";
+	
+	$recommendedarray = array();
+	$size = sizeof($TagsArray);
+	$newones = array_slice($TagsArray, $size-2, $size, true);
+	$top = array_merge($top,$newones);
+	
+		$sql = "SELECT * FROM product WHERE  SellerUserID != '".$this->getUID()."' ORDER BY RAND()";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
-		$recommendedarray = array();
-		$size = sizeof($TagsArray);
-		$newones = array_slice($TagsArray, $size-2, $size, true);
-		$top = array_merge($top,$newones);
+
 		while($row = $result->fetch_assoc())
 		{
+			
 			$counter = 0;
 			$TagsArray = json_decode($row['Tags'],true);
 			if(!empty($TagArray)){
@@ -1846,7 +1850,7 @@ $Paid = 'half';
 			$TagArray = array_merge($split,$TagArray);
 			$split = preg_split("/[^\w]*([\s]+[^\w]*|$)/", $Category, -1, PREG_SPLIT_NO_EMPTY);
 			$TagArray = array_merge($split,$TagArray);
-			$split = preg_split("/[^\w]*([\s]+[^\w]*|$)/", $Description, -1, PREG_SPLIT_NO_EMPTY);
+			$split = preg_split("/[^\w]*([\s]+[^\w]*|$)/", $Caption, -1, PREG_SPLIT_NO_EMPTY);
 			$TagArray = array_merge($split,$TagArray);
 			$JsonData = json_encode($TagArray);
 			while(true){					
@@ -1871,7 +1875,7 @@ $Paid = 'half';
 				$TagArray = array_merge($split,$TagArray);
 				$split = preg_split("/[^\w]*([\s]+[^\w]*|$)/", $Category, -1, PREG_SPLIT_NO_EMPTY);
 				$TagArray = array_merge($split,$TagArray);
-				$split = preg_split("/[^\w]*([\s]+[^\w]*|$)/", $Description, -1, PREG_SPLIT_NO_EMPTY);
+				$split = preg_split("/[^\w]*([\s]+[^\w]*|$)/", $Caption, -1, PREG_SPLIT_NO_EMPTY);
 				$TagArray = array_merge($split,$TagArray);
 				$JsonData = json_encode($TagArray);
 				$sql = "UPDATE `product` SET `ProductName`= '$Name',`ProductCategory`='$Category',`ProductDescription`='$Description',`ProductCaption`='$Caption',`ProductInitialPrice`='$Cost',`Image`='$File',`Tags`='$JsonData' WHERE `ProductID` = '$ProductID'";

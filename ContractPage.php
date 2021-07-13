@@ -373,8 +373,13 @@ margin-right:2%;
 #courierlink{
 	float:right;
 	text-align:center;
+	display:inline-block;
 	border:1px solid purple;
 	width:750px;
+	margin: 0;
+	margin-top:10%;
+	margin-left:20%;
+	margin-bottom:5%;
 	height:300px;
 }
 </style>
@@ -806,7 +811,7 @@ $('input[name="DeliveryMode"]').attr('disabled', 'disabled');
 </div>
 <script src="https://smtpjs.com/v3/smtp.js"></script>
 <script>
-webportconfig = 'ws://localhost:3030';
+webportconfig = 'wss://423ba18b25c3.ngrok.io';
 window.WebSocket = window.WebSocket || window.MozWebSocket;
 function OpenWindow(ID){
 window,opener.close();window.open(ID);

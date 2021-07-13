@@ -167,7 +167,7 @@ max-height:250px;
 max-height:100px;
 	width:300px;
 	display:none;
-
+overflow:scroll;
 
 }
 
@@ -222,9 +222,9 @@ position:Relative;
 	margin-left:100px;
 	height:100px;
   transition: width 0.5s;
-  		margin-top:20px;
+  
 }
-#notificationmsg:before {
+#notifications:before {
   content: '';
   position: absolute;
   width: 25px;
@@ -546,8 +546,9 @@ echo'
 		echo'<div id="notificationmsg">';
 		$NotificationMessageArr = $_SESSION['Object']->getNotificationMessage($val);
 		 echo '<a  id="'.$val.'" onclick="deletenotification(this.id)" href="'.$NotificationMessageArr['hreflink'].'">'.$NotificationMessageArr['msg'].'</a>';
-		 echo'</div>';
+			 echo'</div>';
 	}
+
 	if(empty($NotificationArr)){
 		echo'<div id="notificationmsg">';
 		echo '<a id="nonotification" >You have no notification</a>';

@@ -20,6 +20,7 @@ else{
 $submit = true;
 
 if(isset($_POST['submit'])){
+
 $Name = test_input($_POST["Name"]);
 $Category = $_POST["Category"];
 $Caption = test_input($_POST["Caption"]); 
@@ -55,10 +56,9 @@ if (empty($_POST["Cost"])){
 }
 
 
+if (empty($_POST["file"])){
 
-if (!empty($_POST["file"])){
 		$file = $_FILES['file'];
-		
 		$File = $_FILES['file']['name'];
 		$fileTmpName = $_FILES['file']['tmp_name'];
 		$fileSize = $_FILES['file']['size'];
@@ -73,7 +73,7 @@ if (!empty($_POST["file"])){
 		
 			if($FileError == 0){
 					
-				if($fileSize < 50000){	//if file size less then 50mb
+				if($fileSize < 5000000){	//if file size less then 50mb
 					$FileNew = uniqid('', true).".".$fileActualExt;
 					$submit = true;
 
@@ -211,12 +211,23 @@ h2{
 	
  <div class="List_GUI">
  <h1 style="font-size:40px"><center>Edit Product</center></h1>
-    <form method="post" enctype="multipart/form-data">  
+   <form method="post" enctype="multipart/form-data">  
 	
 	<h2>Basic Product Information</h2>
 		<center><image id="output" src="<?php echo $ProductObj->Image;?>" width="300" height="300"></center>
+
 		<label>Upload File:</label>
-		<input type="file" name="file" value="<?php echo $ProductObj->Image;?>"/>
+		<input type="file" name="file" accept="image/*" value="default" onchange="loadFile(event)">
+
+		<script>
+		var loadFile = function(event) {
+		var output = document.getElementById('output');
+		output.src = URL.createObjectURL(event.target.files[0]);
+		output.onload = function() {
+		URL.revokeObjectURL(output.src) // free memory
+		}
+		};
+		</script>
 		<span class="error"><?php echo $FileErr;?></span><br />
 	
 		<label>Name:</label>
@@ -270,12 +281,13 @@ h2{
 
 if(isset($_POST['submit'])&& $submit){
 	$File = $ProductObj->Image;
-	if (!empty($_POST["file"])){
+
+	if (empty($_POST["file"])){
 	$fileDestination = 'images/'.$FileNew;
 	move_uploaded_file($fileTmpName, $fileDestination);
 	$File = $fileDestination;
 	}
-	
+
 	echo'<style> .List_GUI{display:none;}</style>';
 	if($Name==$ProductObj->ProductName && $Category==$ProductObj->ProductCategory && $Description==$ProductObj->ProductDescription && $Cost==$ProductObj->ProductInitialPrice&& $Caption==$ProductObj->ProductCaption&& $File==$ProductObj->Image){
 		

@@ -283,16 +283,15 @@ if(isset($_POST['submit'])){
 		$_SESSION['Object']->PostContractRateBuyer( $_POST['ratingnumber'],$_SESSION['OtherUser'],$_POST['reviewtext'],$_POST['reviewtextproduct'],$ContractsObj->ProductID);
 	}
 	if($Type=="Seller"){
-			$_SESSION['Object']->PostContractRateSeller($_SESSION['Rating'],$_SESSION['OtherUser'],$_POST['reviewtext']);
+			$_SESSION['Object']->PostContractRateSeller($_POST['ratingnumber'],$_SESSION['OtherUser'],$_POST['reviewtext']);
 	}
 	unset($_SESSION['OtherUser']);
-	unset($_SESSION['Rating']);
+	
 	$ContractsObj->ReduceToken($_SESSION['ID']);
 	echo '<script>alert("Successfully submitted review")</script> ';
 	echo '<script>location.replace("MyContractsPage.php")</script> ';
 	
 
-echo $_POST['ratingnumber'];
 }
 require_once("Footer.php");
 ?>
