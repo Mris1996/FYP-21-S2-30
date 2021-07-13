@@ -87,7 +87,7 @@
 				background-color:purple;
 				color:white;
 				height:50px;
-				font-size:20px;
+				font-size:30px;
 				width:400px;
 				margin-top:5px;
 				border-radius:40px;
@@ -100,13 +100,12 @@
 			}
 		</style>
 		
-		<script src="https://www.google.com/recaptcha/api.js?render=6LemjY8bAAAAAHKCjJSDsyUnbeVaR-98zDihBDyS"></script>
-		<title>Login Page</title>
+		<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+		
 	</head>
 
 	<body>
 		<?php
-			
 			// Event Listeners
 			redirectUsersToSignUpIfButtonIsClicked();
 			
@@ -122,8 +121,6 @@
 			<div id="Login_GUI">
 				<form method="post" style="text-align:center;">
 					
-					<input type="hidden" id="g-token" name="g-token">
-				
 					<a href="index.php">
 						<img src="systemimages/STIClogo.jpg" class="image" style="object-fit:cover;width:200px;height:100px;border-radius:10px">
 					</a>
@@ -133,13 +130,18 @@
 					
 					<label for="Login_LoginID">User ID:</label>
 					<input type="text" name="Login_LoginID" id="Login_LoginID">
-					
+
 					<br>
 					<br>
 					
 					<label for="Login_Password">Password:</label>
 					<input type="password" name="Login_Password" id="Login_Password">
 					
+					<br>
+					<br>
+					
+					<div name="g-recaptcha" id="g-recaptcha" class="g-recaptcha" style="display: inline-block;" data-sitekey="6LcDyJEbAAAAAC_bjYEO7omDdzl84cHUVsUTWEOf"></div>
+	
 					<br>
 					
 					<span class="error">
@@ -148,7 +150,6 @@
 						?>
 					</span>
 					
-					<br>
 					<br>
 					
 					<input type="Submit" name="LoginButton" value="Login">
@@ -165,14 +166,6 @@
 		
 		</div>
 		
-		<script>
-			/* Code here is to set the Token Value in the hidden g-token variable */
-			grecaptcha.ready(function() {
-				grecaptcha.execute('6LemjY8bAAAAAHKCjJSDsyUnbeVaR-98zDihBDyS', {action: 'submit'}).then(function(token) {
-					document.getElementById("g-token").value = token;
-				});
-			});
-		</script>
 	</body>
 </html>
 
@@ -234,7 +227,7 @@
 		$queryRecaptchaUrl = constructRecaptchaQuery();
 		$resultOfRecaptcha = getRecaptchaResults($queryRecaptchaUrl);		
 		$recaptchaResponse = processRecaptchaResults($resultOfRecaptcha);
-		return true;
+
 		if ($recaptchaResponse->success) {
 			return true;
 		} else {
@@ -244,10 +237,11 @@
 	}
 	
 	function constructRecaptchaQuery() {
-		$secretKey = "6LemjY8bAAAAAAf5vVydIr9jsvxW9AH_vadz78Mp";
-		$token = $_POST["g-token"];
+		$secretKey = "6LcDyJEbAAAAAHe9yoguZglIch89VbhUsZVQEMdQ";
+		$token = $_POST["g-recaptcha-response"];
 		$ip = $_SERVER["REMOTE_ADDR"];
 		$url = "https://www.google.com/recaptcha/api/siteverify?secret=".$secretKey."&response=".$token."&remoteip=".$ip;
+
 		return $url;
 	}
 	
@@ -399,16 +393,25 @@ https://www.w3schools.com/tags/tag_center.asp
 Alternatives to "Center" tag
 https://developer.mozilla.org/en-US/docs/Web/HTML/Element/center
 
-Setting up ReCAPTCHA
+Setting up ReCAPTCHA V3
 https://www.youtube.com/watch?v=s8oe8RpVWJg&ab_channel=Learn-and-Share
 https://developers.google.com/recaptcha/docs/v3      // Client Side Integration
 https://developers.google.com/recaptcha/docs/verify  // Server Side Integration
 
-Debug ReCAPTCHA
+Debug ReCAPTCHA V3
 https://developers.google.com/recaptcha/docs/faq#localhost_support
 https://stackoverflow.com/questions/3232904/using-recaptcha-on-localhost
 
 <pre> tag
 https://www.w3schools.com/tags/tag_pre.asp
+
+Setting up ReCAPTCHA V2 (Similar to V3 setup)
+https://www.youtube.com/watch?v=5o7Q4qvimWM
+https://developers.google.com/recaptcha/docs/display // Client Side Integration
+https://developers.google.com/recaptcha/docs/verify  // Server Side Integration
+https://developers.google.com/recaptcha/docs/faq    
+
+How to style the ReCAPTCHA V2 box using CSS
+https://ourcodeworld.com/articles/read/781/how-to-center-recaptcha-element-with-css
 
 -->
