@@ -319,7 +319,7 @@ echo '<b>You do not have any contracts under this section</b>';
 echo'</div>';
 if(isset($_POST['Halt'])){
 	$_SESSION['Object']->HaltTransaction($_POST['HaltContractID']);
-	echo '<script> location.replace("ContractPage.php?ID='.$_POST['HaltContractID'].'")</script> ';
+	echo '<script> window.open("ContractPage.php?ID='.$_POST['HaltContractID'].'","winname","width=1500,height=900");</script> ';
 	
 }
 

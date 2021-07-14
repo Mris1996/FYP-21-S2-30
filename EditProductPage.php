@@ -5,7 +5,7 @@ if(!isset($_SESSION['ID'])){
 }
 $BaseUserOBJ = new BaseUser("Edit Product");
 $NameErr = $CategoryErr = $CaptionErr = $DescriptionErr = $CostErr = $FileErr= "";
-if($_SESSION['ID'] == $BaseUserOBJ->getProductOwner($_GET['ID'])){
+if($_SESSION['ID'] == $BaseUserOBJ->getProductOwner($_GET['ID'])||$_SESSION['Object']->getAccountType()=="Administrator"){
 $ProductObj = new Products();
 $ProductObj->InitialiseProduct($_GET['ID']);
 

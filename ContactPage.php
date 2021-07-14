@@ -3,17 +3,12 @@
 	<head>
 
 		<style>
-			#container{
-				
-				width:1400px;
-				height:900px;
-				margin:auto;
-				
-			}
+
 			#innercontainer1{
 				float:left;
 				width:50%;
 				height:100%;
+				margin-bottom:20%;
 			}
 			#logoimage{
 				width:200px;
@@ -175,6 +170,6 @@ function initMap() {
 			}
 		</script>
 	</div>
-
+	
 	</body>
 </html>

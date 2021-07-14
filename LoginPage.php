@@ -28,7 +28,7 @@
 			input[name="LoginButton"] {
 				margin-left:auto;
 				margin-right:auto;
-				font-size:30px;
+				font-size:20px;
 				color:white;
 				background-color:black;
 			}

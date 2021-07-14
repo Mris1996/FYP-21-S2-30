@@ -292,7 +292,7 @@ unset($_SESSION['VerifiedUser']);
 $_SESSION['Object'] -> creditCardIn($_SESSION['AmountTU']);
 unset($_SESSION['AmountTU']);
 $_SESSION['ConvertComplete'] = true;
-echo '<script> location.replace("https://7a0132ae9b4e.ngrok.io/checkout.html")</script> ';
+echo '<script> location.replace("https://c5d3f7b5956e.ngrok.io/checkout.html")</script> ';
 
 }
 

@@ -38,7 +38,7 @@ body{
 #dropdown{
 	
 	width:200px;
-	   background-color:black;
+
 }
  .dropdown-content {
   width:100%;
@@ -53,7 +53,7 @@ body{
 }
  .dropdown-content input not(#reload){
   width:100%;
-  color: black;
+
   padding: 12px 16px;
   text-decoration: none;
   display: block;
@@ -78,7 +78,7 @@ body{
 
 width:200px;
 margin-right:100px;
-background-color:black;
+
 }
 .dropdown-content:before {
   content: '';
@@ -160,12 +160,13 @@ border-radius: 50%;
 #notifications{
 
 margin:auto;
-margin-top:70px;
+margin-top:90px;
 position:absolute;
 max-height:250px;
 
-max-height:100px;
-	width:300px;
+max-height:120px;
+	width:200px;
+	float:right;
 	display:none;
 overflow:scroll;
 
@@ -173,13 +174,13 @@ overflow:scroll;
 
 
 #notificationcontainer{
-width:300px;
+
 margin:auto;
 margin-bottom:1%;
 z-index:100;
 max-height:100px;
 transition: height 2s;
-
+float:right;
 }
 
 #notifications::-webkit-scrollbar {
@@ -216,26 +217,15 @@ position:Relative;
   transition: 0.3s;
 	word-wrap: break-word;
 	max-height:200px;
-	width:100%;
+	
 	background-color:indigo;
 	border:1px solid black;
-	margin-left:100px;
+	
 	height:100px;
   transition: width 0.5s;
   
 }
-#notifications:before {
-  content: '';
-  position: absolute;
-  width: 25px;
-  height: 15px;
-  top: -2.5px;
-  left: 70px;
-  z-index:-1;
-  background: indigo;
-  transform: rotate(135deg);
-  
-}
+
 #notificationmsg a:hover{
 		opacity:1;
 		webkit-transform: rotate(360deg);
@@ -331,6 +321,15 @@ bottom:0;
     0 0 70px 20px #0ff; /* outer cyan */
 
 }
+@media screen and (max-width: 320px) { 
+
+   position: absolute;
+
+}
+
+@media screen and (max-width: 800px) { 
+
+}
 h1,h2,h3,h4,h5{
 	font-family: 'Roboto';
 
@@ -391,7 +390,7 @@ h1,h2,h3,h4,h5{
 
 <script>
 
-webportconfig = 'ws://423ba18b25c3.ngrok.io';
+webportconfig = 'ws://6ed597925c2c.ngrok.io';
 //webportconfig = 'ws://localhost:3030';
 window.WebSocket = window.WebSocket || window.MozWebSocket;
 function deletenotification(ID){
@@ -404,6 +403,7 @@ ajax.send("Delete="+ID);
 </script>
 </head>
 <div id="navbar" >
+<div id="navbarinner" >
 <div class="input-group">
 <a href="index.php">
 <img src="systemimages/CompanyLogo.jpg" id="homebtn" style="border-radius:20px;margin-left:10px;margin-bottom:5%;"  width="150" height="70">
@@ -538,7 +538,7 @@ echo'
 	<a onclick="displaynotification()">
 	<img id="dropbtn2" src="systemimages/Notification.png" height="70" width="70">
 	</a>
-	<span id="notificationbadge" class="badge"></span><div id="notifications">';
+	<span id="notificationbadge" class="badge"></span><div id="notifications" >';
 	$NotificationArr = $_SESSION['Object']->getNotification();
 	sort($NotificationArr);
 	
@@ -560,7 +560,11 @@ echo'
 	}
 	
 	echo'
-	</div></div>';
+	<form method="post">
+	<input type="submit" style="background-color:white;color:purple;width:50%;margin:auto;height:50px;border-radius:0px" id="navbutton" name="clear" value="clear all">
+		</form>	
+	</div>	
+	</div>';
 
 $BaseUserOBJ = new BaseUser("check status");
 $BaseUserOBJ->setUID_Admin($_SESSION["ID"]);
@@ -579,8 +583,9 @@ else{
 ?>
 
 <?php 
-
-
+if(isset($_POST['clear'])){
+$_SESSION["Object"]->RemoveAllNotification();
+}
 if(isset($_POST['Nav_Main'])){
 
 echo '<script> location.replace("index.php")</script> ';
@@ -657,6 +662,7 @@ echo'<a   href="CategoryPage.php?Category='.$arr[0].'">
 fclose($myfile);
 ?>
 </center>
+</div>
 </div>
 </div>
 <div style="padding-top:220px"></div>

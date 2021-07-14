@@ -27,6 +27,7 @@ $BaseUserOBJ = new BaseUser("index page");
  display: inline-block;
  margin-left:50px;
  margin-top:50px;
+  position:relative;
  height:320px;
  width:300px;
  margin-bottom:50px;
@@ -80,7 +81,7 @@ bottom:   0;
 
 .Rec_Prod_GUI .card{
  margin-right:20px;
- 
+
 }
 .sorter{
 
@@ -223,7 +224,7 @@ if(isset($_SESSION['ID'])){
 		$ProductObj->InitialiseProduct($val);
 		echo'
 
-			<div class="card" onclick="clickproduct(this.id)" id = "'.$val.'">
+			<div class="card"  onclick="clickproduct(this.id)" id = "'.$val.'">
 			<img src="'.$ProductObj->Image.'" class="image" style="object-fit: cover;width:200px;height:200px;border-radius:20px;margin-top:20px">
 			<div class="text" style="font-size:10px"><b>'.$ProductObj->ProductCategory.'</b></div>
 			<div class="text" style="font-size:15px"><b>'.$ProductObj->ProductName.'</b></div>

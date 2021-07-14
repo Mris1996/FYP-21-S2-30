@@ -811,7 +811,7 @@ $('input[name="DeliveryMode"]').attr('disabled', 'disabled');
 </div>
 <script src="https://smtpjs.com/v3/smtp.js"></script>
 <script>
-webportconfig = 'wss://423ba18b25c3.ngrok.io';
+webportconfig = 'wss://6ed597925c2c.ngrok.io';
 window.WebSocket = window.WebSocket || window.MozWebSocket;
 function OpenWindow(ID){
 window,opener.close();window.open(ID);

@@ -111,7 +111,7 @@ class BaseUser
 	}
 	public function VerifyOTP ($temporary_password)
 	{
-	return "Success";
+
 		// Initialize variables
 		$new_hashed_password = "";
 		$result = "";
@@ -613,20 +613,21 @@ class BaseUser
 			}
 			}
 	public function ViewSearchProduct($sortby,$Order,$Query,$page){
-			$sql = "SELECT * FROM product WHERE ProductName LIKE '%$Query%' or ProductCategory LIKE '%$Query' or SellerUserID LIKE '%$Query%' ORDER BY $sortby $Order" ;
+			$sql = "SELECT * FROM product WHERE ProductName LIKE '%$Query%' or ProductCategory LIKE '%$Query' or SellerUserID LIKE '%$Query%' or ProductID LIKE '%$Query%'  ORDER BY $sortby $Order" ;
 			$result = $this->connect()->query($sql) or die($this->connect()->error); 
 			$number_of_result = mysqli_num_rows($result);  
 			$number_of_page = ceil ($number_of_result / $this->results_per_page); 
 			if($page>$number_of_page){
 				$page = 1;
 			}			
+	
 			$page_first_result = ($page-1) * $this->results_per_page;  
 			if ($result->num_rows == 0) 
 			{
 				echo'
 					<b>No search result found</b>';
 			}
-			$sql = "SELECT * FROM product WHERE ProductName LIKE '%$Query%' or ProductCategory LIKE '%$Query' or SellerUserID LIKE '%$Query%' ORDER BY $sortby $Order LIMIT " . $page_first_result . ',' . $this->results_per_page; 
+			$sql = "SELECT * FROM product WHERE ProductName LIKE '%$Query%' or ProductCategory LIKE '%$Query' or SellerUserID LIKE '%$Query%' or ProductID LIKE '%$Query%' ORDER BY $sortby $Order LIMIT " . $page_first_result . ',' . $this->results_per_page; 
 			$result = mysqli_query($this->connect(), $sql);  
 			echo'<div id="container">';
 			while($row = $result->fetch_assoc())
@@ -785,8 +786,15 @@ class StandardUser extends BaseUser
 		$sql = "DELETE FROM notification WHERE Hyperlink='".$Link."' AND UserID='".$this->getUID()."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 	}
+	public function RemoveAllNotification(){
+	
+		$sql = "DELETE FROM notification WHERE UserID='".$this->getUID()."'";
+		$result = $this->connect()->query($sql) or die($this->connect()->error); 
+			
+	}
 	public function RecommendedProduct($Category,$Name,$ProductID){
-		$sql = "SELECT counter(* FROM product WHERE SellerUserID != '".$this->getUID()."'";
+	
+		$sql = "SELECT * FROM product WHERE SellerUserID != '".$this->getUID()."'";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 		if ($result->num_rows<3)
 		{
@@ -803,6 +811,7 @@ class StandardUser extends BaseUser
 		{
 			array_push($recommendedarray,$row['ProductID']);
 		}	
+	
 		if(sizeof($recommendedarray)==0){		
 			$Name = str_split($Name, 1);
 			foreach ($Name as $Val){
@@ -823,9 +832,11 @@ class StandardUser extends BaseUser
 			}
 		}
 		arsort($recommendedarray);
+		
 	    $recommendedarray= 	array_unique($recommendedarray);
 		$recommendedarray = array_slice($recommendedarray, 0, 3, true);
 		}
+		
 		return $recommendedarray;
 	}
 	public function UserProductBehaviourAnalysis(){
@@ -836,15 +847,19 @@ class StandardUser extends BaseUser
 			$TagsArray = json_decode($row['Tags'],true);
 		}	
 		$counts = array_count_values($TagsArray);
-		arsort($counts);
-		$top_with_count = array_slice($counts, 0, 2, true);
-		$top = array_keys($top_with_count);	
-	
+	asort($counts);
+
 	$recommendedarray = array();
 	$size = sizeof($TagsArray);
 	$newones = array_slice($TagsArray, $size-2, $size, true);
-	$top = array_merge($top,$newones);
+	$counts = array_merge($counts,$newones);
+	$productsarr = array();
 	
+	foreach($counts as $key=>$val){
+			array_push($productsarr ,$key);
+	}
+
+
 		$sql = "SELECT * FROM product WHERE  SellerUserID != '".$this->getUID()."' ORDER BY RAND()";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 
 
@@ -853,18 +868,31 @@ class StandardUser extends BaseUser
 			
 			$counter = 0;
 			$TagsArray = json_decode($row['Tags'],true);
-			if(!empty($TagArray)){
+					
+			if(!empty($TagsArray)){
+		
 			foreach($TagsArray as $val){
-				if(array_search(strtoupper($val),$top)){
+				if(array_search(strtoupper($val),$productsarr)){
 					$counter++;
 				}
+				
 			}
 			}
 			$recommendedarray[$row['ProductID']]=$counter;
+			
 		}	
+			krsort($counts);
+				arsort($recommendedarray);
+
+			$recommendedarray = array_slice($recommendedarray, 0,5, true);
+			$counts = array_slice($counts, 0,4, true);
+
 		arsort($recommendedarray);
-		$recommendedarray = array_slice($recommendedarray, 0, 3, true);
+	
 		$recommendedarray = array_keys($recommendedarray);
+		
+			shuffle($recommendedarray);
+$recommendedarray = array_slice($recommendedarray, 0,4, true);			
 		return $recommendedarray;
 	}
 	public function AddUserTags($Tag){
@@ -879,8 +907,8 @@ class StandardUser extends BaseUser
 			$TagsArray = array();
 		}
 		array_push($TagsArray,$Tag);
-		if(sizeof($TagsArray)>30){
-			$totalremove = sizeof($TagsArray) - 30;
+		if(sizeof($TagsArray)>10){
+			$totalremove = sizeof($TagsArray) - 10;
 			$TagsArray = array_slice($TagsArray,0, $totalremove); 
 		}
 		$to_remove = array();
@@ -1284,7 +1312,7 @@ $Paid = 'half';
 			$Jdata = json_encode($Data);
 			$sql = " UPDATE `contracts` SET `Status`= 'Transaction Complete' ,`Paid`='full',`TransactionCloseDate`= '".date("Y-m-d")."',`RatingToken` = '".$Jdata."', `Transaction` = 'Complete' WHERE `ContractID`= '".$ContractID."' ";
 			$result = $this->connect()->query($sql) or die($this->connect()->error);
-			$this->addNotification($SellerUID,"ContractID:".$ContractID.", transaction is complete","MyContractsPage.php");
+			$this->addNotification($Seller,"ContractID:".$ContractID.", transaction is complete","MyContractsPage.php");
 	}
 	public function CheckAccepted($ContractID){
 		$sql = "SELECT * FROM contracts  WHERE `ContractID`= '".$ContractID."' ";
@@ -1517,7 +1545,6 @@ $Paid = 'half';
 		$NewData= array($data['TransactionHash'],date("d-m-Y"),$Amount,$Transferfrom,$Transferto);
 		array_push($TransactionData,$NewData);
 		$JData = json_encode($TransactionData);
-		print_r($JData);
 		$sql = " UPDATE `contracts` SET `TransactionID`= '".$JData ."' WHERE `ContractID`= '".$ContractID."' ";
 		$result = $this->connect()->query($sql) or die($this->connect()->error); 	
 		}

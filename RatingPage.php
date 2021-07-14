@@ -293,6 +293,7 @@ if(isset($_POST['submit'])){
 	
 
 }
-require_once("Footer.php");
+
 ?>
 </div>
+<?php require_once("Footer.php");?>
