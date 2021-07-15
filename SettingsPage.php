@@ -368,7 +368,7 @@ $submit2 = true;
 		if ( !preg_match("#[a-z]+#", $_POST["ChangePasswordNewPassword"]) ) {
 	
 			$submit2 = False;
-			$EditProfilePasswordError = "Password must contain 8 characters at least , with alphabets and numbers";
+			$EditProfilePasswordError = "Must have 8 characters,containing alphabets and numbers";
 		}
 
 

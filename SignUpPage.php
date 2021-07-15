@@ -217,19 +217,19 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SignUpButton'])){
 		
 		if ( strlen($_POST["SignUpPassword"]) < 8 ) {
 			$submit = False;
-			$SignUpPasswordError = "Password must contain 8 characters at least , with alphabets and numbers";
+			$SignUpPasswordError = "Must have 8 characters,containing alphabets and numbers";
 		}
 
 		if ( !preg_match("#[0-9]+#", $_POST["SignUpPassword"]) ) {
 		
 			$submit = False;
-			$SignUpPasswordError = "Password must contain 8 characters at least , with alphabets and numbers";
+			$SignUpPasswordError = "Must have 8 characters,containing alphabets and numbers";
 		}
 
 		if ( !preg_match("#[a-z]+#", $_POST["SignUpPassword"]) ) {
 	
 			$submit = False;
-			$SignUpPasswordError = "Password must contain 8 characters at least , with alphabets and numbers";
+			$SignUpPasswordError = "Must have 8 characters,containing alphabets and numbers";
 		}
 
 

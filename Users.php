@@ -327,13 +327,13 @@ class BaseUser
 		{
 			return "Email error";
 		}
-		$HPass = password_hash($Pass, PASSWORD_DEFAULT);
+		$hashedpassword = password_hash($Pass, PASSWORD_DEFAULT);
 		$Type = "Standard";
 		if(isset($ProfilePicCurrent)){
-		$sql = "INSERT INTO users (UserID,FirstName,LastName,Email,ContactNumber,Password,AccountType,DisplayName,Address,DateOfBirth,PublicKey,PrivateKey,ProfilePicture)VALUES('".$ID."','".$FName."','".$LName."','".$Email."' ,'".$ContactNumber."','".$HPass."','".$Type."','".$DispName."','".$Address."','".date('d/m/Y', strtotime($DOB))."','".$this->PubKey."','".$this->PrivateKey."','".$ProfilePicDest."' )";
+		$sql = "INSERT INTO users (UserID,FirstName,LastName,Email,ContactNumber,Password,AccountType,DisplayName,Address,DateOfBirth,PublicKey,PrivateKey,ProfilePicture)VALUES('".$ID."','".$FName."','".$LName."','".$Email."' ,'".$ContactNumber."','".$hashedpassword."','".$Type."','".$DispName."','".$Address."','".date('d/m/Y', strtotime($DOB))."','".$this->PubKey."','".$this->PrivateKey."','".$ProfilePicDest."' )";
 		}
 		else{
-		$sql = "INSERT INTO users (UserID,FirstName,LastName,Email,ContactNumber,Password,AccountType,DisplayName,Address,DateOfBirth,PublicKey,PrivateKey)VALUES('".$ID."','".$FName."','".$LName."','".$Email."' ,'".$ContactNumber."','".$HPass."','".$Type."','".$DispName."','".$Address."','".date('d/m/Y', strtotime($DOB))."','".$this->PubKey."','".$this->PrivateKey."')";
+		$sql = "INSERT INTO users (UserID,FirstName,LastName,Email,ContactNumber,Password,AccountType,DisplayName,Address,DateOfBirth,PublicKey,PrivateKey)VALUES('".$ID."','".$FName."','".$LName."','".$Email."' ,'".$ContactNumber."','".$hashedpassword."','".$Type."','".$DispName."','".$Address."','".date('d/m/Y', strtotime($DOB))."','".$this->PubKey."','".$this->PrivateKey."')";
 		}
 		$result = $this->connect()->query($sql) or die( $this->connect()->error);    	
 		move_uploaded_file($ProfilePicCurrent, $ProfilePicDest);
@@ -1763,7 +1763,6 @@ $Paid = 'half';
 			return $data['RESPONSE'];
 		}
 			public function creditCardIn($amount){
-				echo "bob";
 			$host    = "localhost";
 			$port    = 8080;
 			$arr = array('REQUEST' => "CreditCardPayIn",'AMOUNT'=>$amount,'UserID'=>$_SESSION['ID']);
@@ -1959,9 +1958,9 @@ $Paid = 'half';
 			}	
 			if($validated)
 			{
-				$Hpass = password_hash($NewPass, PASSWORD_DEFAULT);
+				$hashedpassword = password_hash($NewPass, PASSWORD_DEFAULT);
 				$ID = $this->getUID();
-				$sql = "UPDATE `users` SET `Password`= '$Hpass' WHERE `UserID` = '$ID' ";
+				$sql = "UPDATE `users` SET `Password`= '$hashedpassword' WHERE `UserID` = '$ID' ";
 				$result = $this->connect()->query($sql) or die( $this->connect()->error);   
 				return "Validated";
 			}
