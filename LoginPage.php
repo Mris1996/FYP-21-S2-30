@@ -100,6 +100,8 @@
 			}
 		</style>
 		
+		<title>Login Page</title>
+		
 		<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 		
 	</head>
@@ -203,10 +205,12 @@
 	
 	function validateFormFields() {
 		if(postAndLoginButtonAreSelected()) {
-			if(recaptchaIsValid()) {
-				if(userIdFieldIsNotEmpty()) {
-					if(loginPasswordFieldIsNotEmpty()) {
-						return true;
+			if(recaptchaIsNotEmpty()) {
+				if(recaptchaIsValid()) {
+					if(userIdFieldIsNotEmpty()) {
+						if(loginPasswordFieldIsNotEmpty()) {
+							return true;
+						}
 					}
 				}
 			}	
@@ -218,6 +222,15 @@
 		if($_SERVER["REQUEST_METHOD"] == "POST" and isset($_POST['LoginButton'])) {
 			return true;
 		} else {
+			return false;
+		}
+	}
+	
+	function recaptchaIsNotEmpty() {
+		if(isset($_POST["g-recaptcha-response"])) {
+			return true;
+		} else {
+			throw new Exception("reCAPTCHA verification is empty! Please try again!");
 			return false;
 		}
 	}
