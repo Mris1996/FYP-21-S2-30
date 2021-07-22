@@ -54,7 +54,7 @@
 					<li class="list-inline-item"><a href="index.php">Home</a></li>
 					<li class="list-inline-item"><a href="#">About us</a></li>
 					<li class="list-inline-item"><a href="ContactPage.php">Contact Us</a></li>
-					<li class="list-inline-item"><a href="#">Terms and conditions</a></li>
+					<li class="list-inline-item"><a href="TermsAndConditions.php">Terms and conditions</a></li>
 				</ul>
 			
 				<b> <p class="copyright">S.T.I.C Version 0.4 © 2021</p> </b>
